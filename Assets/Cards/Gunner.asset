@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e4e87ef44ac0934298d8773e4605e72, type: 3}
+  m_Name: Gunner
+  m_EditorClassIdentifier: 
+  Name: Gunner
+  CardCount: 10
+  Type: 0
+  Subtypes: 03000000
+  Cost: 1
+  Artwork: {fileID: 21300000, guid: 5703c77e31ae99b44850342934e9ae20, type: 3}
+  Origin: 0
+  MaxHP: 3
+  Armor: 1
+  Attack: 4
+  SkillSet:
+  - shared: 1
+    pasive: 1
+    title: Anti-armor
+    description: Deal +2 damage against defending units.
+    skillEffects:
+    - target: 0
+      trigger: 0
+      conditions:
+      - if target.isDefending
+      effects:
+      - deal damage +2
+      oncePerTurn: 0
+      oncePerGame: 0

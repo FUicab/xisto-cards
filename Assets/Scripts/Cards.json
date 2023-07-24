@@ -1,0 +1,347 @@
+{"list":[
+    {
+        "id": "P0001",
+        "cardCount": 10,
+        "name": "Spearman",
+        "cost": 1,
+        "type": "warrior",
+        "origin": "protectors",
+        "subtypes": ["defender","assistant"],
+        "stats": {
+            "hp": 6,
+            "armor": 2,
+            "damage": 2
+        },
+        "skills": []
+    },{
+        "id": "P0002",
+        "cardCount": 10,
+        "name": "Gunner",
+        "cost": 1,
+        "type": "warrior",
+        "origin": "protectors",
+        "subtypes": ["assistant"],
+        "stats": {
+            "hp": 3,
+            "armor": 1,
+            "damage": 4
+        },
+        "skills": [
+            {
+                "shared": true,
+                "pasive": true,
+                "params": ["toSelf","onAttack","if target.isDefending","deal +2 dmg"],
+                "code": "toSelf . onAttack if target.isDefending : deal +2 dmg",
+                "title": "Anti-armor",
+                "description": "Deal +2 damage against defending targets."
+            }
+        ]
+    },{
+        "id": "P0003",
+        "cardCount": 10,
+        "name": "Soldier",
+        "cost": 2,
+        "type": "warrior",
+        "origin": "protectors",
+        "subtypes": ["defender","combo"],
+        "stats": {
+            "hp": 8,
+            "armor": 2,
+            "damage": 6
+        },
+        "skills": []
+    },{
+        "id": "P0004",
+        "cardCount": 5,
+        "name": "Hwacha",
+        "cost": 2,
+        "type": "machine",
+        "origin": "protectors",
+        "subtypes": [],
+        "stats": {
+            "hp": 4,
+            "armor": 8,
+            "damage": 7
+        },
+        "skills": [
+            {
+                "shared": true,
+                "pasive": true,
+                "params": ["toSelf","onAttack","","spreadDamage toSameLine"],
+                "code": "toSelf . onAttack : deal current dmg toSameLine",
+                "title": "Arrow rain",
+                "description": "Deal damage to all enemies within the same line of the target."
+            }
+        ]
+    },{
+        "id": "P0005",
+        "cardCount": 5,
+        "name": "Rocket launcher",
+        "cost": 2,
+        "type": "machine",
+        "origin": "protectors",
+        "subtypes": [],
+        "stats": {
+            "hp": 2,
+            "armor": 8,
+            "damage": 16
+        },
+        "skills": []
+    },{
+        "id": "P0006",
+        "cardCount": 2,
+        "name": "Davis",
+        "cost": 4,
+        "type": "warrior",
+        "origin": "protectors",
+        "subtypes": ["mercenary"],
+        "stats": {
+            "hp": 9,
+            "armor": 2,
+            "damage": 6
+        },
+        "skills": [
+            {
+                "shared": false,
+                "pasive": true,
+                "params": ["toTeam","onAttack","","refundActionPoint","oncePerTurn"],
+                "code": "toTeam . onAttack : refundActionPoint ; oncePerTurn",
+                "title": "Speed augment",
+                "description": "The first attack of any ally does not consume an action point, once per turn."
+            },{
+                "shared": true,
+                "pasive": true,
+                "params": ["toSelf","onAttack","if target.HP < this.dmg","execute"],
+                "code": "toSelf . onAttack if target HP < attacker dmg : execute",
+                "title": "Execution",
+                "description": "If the target's current HP is lower than Davis' damage it gets executed."
+            }
+        ]
+    },{
+        "id": "P0007",
+        "cardCount": 2,
+        "name": "Zean",
+        "cost": 4,
+        "type": "warrior",
+        "origin": "protectors",
+        "subtypes": ["assistant"],
+        "stats": {
+            "hp": 12,
+            "armor": 2,
+            "damage": 4
+        },
+        "skills": [
+            {
+                "shared": true,
+                "pasive": true,
+                "params": ["toSelf","pasively","forEach ally.isAssistant","+1 dmg"],
+                "code": "toSelf . pasively forEach ally isAssistant : +1 dmg",
+                "title": "Collaboration",
+                "description": "+1 damage for each Assistant ally."
+            },{
+                "shared": true,
+                "pasive": true,
+                "params": ["toSelf","afterAttack","if target.isDead","refundActionPoint"],
+                "code": "toSelf . afterAttack if target isDead : refundActionPoint",
+                "title": "Lion's fury",
+                "description": "Zean's attacks refund the action point if the target is killed."
+            },{
+                "shared": false,
+                "pasive": true,
+                "params": ["toTeam","pasively","if ally.isMachine","+1 dmg, +1 armorPierce"],
+                "code": "toTeam . pasively if ally isMachine : +1 dmg, +1 armorPierce",
+                "title": "Blue shot",
+                "description": "Ally machines gain +1 damage and +1 armor pierce."
+            }
+        ]
+    },{
+        "id": "P0008",
+        "cardCount": 2,
+        "name": "Uxclar",
+        "cost": 3,
+        "type": "warrior",
+        "origin": "protectors",
+        "subtypes": ["dual","defender"],
+        "stats": {
+            "hp": 15,
+            "armor": 3,
+            "damage": 5
+        },
+        "skills": [
+            {
+                "shared": false,
+                "pasive": true,
+                "params": ["toDefendedAllies","pasively","","+1 dmg"],
+                "code": "toDefendedAllies . pasively : +1 dmg",
+                "title": "Inspiration",
+                "description": "The allies defended by Uxclar gain +1 damage."
+            }
+        ]
+    },{
+        "id": "P0009",
+        "cardCount": 2,
+        "name": "Taio",
+        "cost": 3,
+        "type": "support",
+        "origin": "protectors",
+        "subtypes": [],
+        "stats": {
+            "hp": 1,
+            "armor": 3,
+            "damage": 7
+        },
+        "skills": [
+            {
+                "shared": false,
+                "pasive": true,
+                "params": ["toSelf","whenAttacked","","this.hp = attacker.hp","oncePerTurn"],
+                "code": "toSelf . whenAttacked : hp = attacker.hp ; oncePerTurn",
+                "title": "Hemomancy",
+                "description": "Taio obtains the same HP of the first enemy that attacks him, each turn."
+            },{
+                "shared": false,
+                "pasive": false,
+                "params": ["toAnAlly","onActivate","","target.isDual = true"],
+                "code": "toAnAlly . onActivate : target becomesDual",
+                "title": "Adrenaline",
+                "description": "Apply to an ally to make them Dual during the current turn."
+            }
+        ]
+    },{
+        "id": "P0010",
+        "cardCount": 2,
+        "name": "Beryll (+20)",
+        "cost": 3,
+        "type": "warrior",
+        "origin": "protectors",
+        "subtypes": ["assistant"],
+        "stats": {
+            "hp": 7,
+            "armor": 4,
+            "damage": 5
+        },
+        "skills": [
+            {
+                "shared": false,
+                "pasive": true,
+                "params": ["toDefendingAllies","pasively","","+1 armor"],
+                "title": "Wind shield",
+                "description": "Defending allies gain +1 armor."
+            },{
+                "shared": false,
+                "pasive": true,
+                "params": ["noTarget","onTurnEnd","skippedActionPoints >= 1","+1 gold"],
+                "title": "Energy accumulation",
+                "description": "When skipping at least 1 action point each turn, you earn +1 gold."
+            },{
+                "shared": true,
+                "pasive": true,
+                "params": ["toSelf","pasively","forEach ally.isPacifist","+1 dmg"],
+                "title": "Offensive defense",
+                "description": "Beryll gains +1 damage for each pacifist ally."
+            }
+        ]
+    },{
+        "id": "P0011",
+        "cardCount": 1,
+        "name": "Yan",
+        "cost": 6,
+        "type": "leader",
+        "origin": "protectors",
+        "subtypes": ["defender"],
+        "stats": {
+            "hp": 18,
+            "armor": 2,
+            "damage": 8
+        },
+        "skills": [
+            {
+                "shared": false,
+                "pasive": true,
+                "params": ["toTeam","pasively","if ally.sameFaction || ally.faction == null","+1 dmg"],
+                "title": "Protector's Leader",
+                "description": "Ally Protectors and Independent allies gain +1 damage."
+            },{
+                "shared": false,
+                "pasive": true,
+                "params": ["toDefendingAllies","pasively","","+2 dmg, +2 armor"],
+                "title": "Anti-motion",
+                "description": "Defending allies gain +2 damage and +2 armor."
+            },{
+                "shared": true,
+                "pasive": true,
+                "params": ["toSelf","onAttack","if target.HP <= 10","+4 dmg"],
+                "title": "Stomping",
+                "description": "Yan's targets with 10 HP or less receive +4 damage from her."
+            }
+        ]
+    },{
+        "id": "P0012",
+        "cardCount": 1,
+        "name": "Nimklan",
+        "cost": 6,
+        "type": "leader",
+        "origin": "protectors",
+        "subtypes": ["defender"],
+        "stats": {
+            "hp": 16,
+            "armor": 3,
+            "damage": 7
+        },
+        "skills": [
+            {
+                "shared": true,
+                "pasive": true,
+                "params": ["toTeam","uponDeath","","+1 dmg, +6 gold","duringNextTurn"],
+                "title": "Legend",
+                "description": "Nimklan's death makes your allies gain +1 damage during the next turn and adds +6 gold."
+            },{
+                "shared": false,
+                "pasive": true,
+                "params": ["to2ndLine","pasively","","+2 dmg, +1 armor pierce"],
+                "title": "Protector's Commander",
+                "description": "Ally Protectors in the 2nd line gain +2 damage and +1 armor pierce."
+            },{
+                "shared": true,
+                "pasive": true,
+                "params": ["toSelf","onAttack","if target.baseArmor > this.baseArmor","x2 dmg"],
+                "title": "Bigger",
+                "description": "Nimklan's attacks deal double damage if his target has more base armor than him."
+            }
+        ]
+    },{
+        "id": "P0013",
+        "cardCount": 1,
+        "name": "Ankathlima",
+        "cost": 6,
+        "type": "leader",
+        "origin": "protectors",
+        "subtypes": [],
+        "stats": {
+            "hp": 14,
+            "armor": 2,
+            "damage": 8
+        },
+        "skills": [
+            {
+                "shared": true,
+                "pasive": true,
+                "params": ["toSelfDefenders","whenAttacked","","attacker.damage = 1","oncePerTurn"],
+                "title": "Vitality",
+                "description": "Ankathlima's defenders receive only 1 damage on the first hit received each turn."
+            },{
+                "shared": false,
+                "pasive": true,
+                "params": ["toTeam","pasively","","ally.isDefender = true, +1 armor"],
+                "title": "Protector's Devotion",
+                "description": "Ally Protectors become Defenders and gain +1 armor while defending."
+            },{
+                "shared": false,
+                "pasive": true,
+                "params": ["toAlliesOfSameFaction","pasively","forEach ally.isDefending","+1 dmg"],
+                "title": "Phalanx",
+                "description": "Ally Protectors gain +1 damage for each defending ally."
+            }
+        ]
+    }
+]}
