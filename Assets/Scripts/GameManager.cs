@@ -5,6 +5,12 @@ using UnityEngine.UI;
 using TMPro;
 using static CardSpace;
 
+public enum ActionType{
+    CardPurchase,
+    PerformAttack,
+    MoveCard
+}
+
 public class GameManager : MonoBehaviour
 {
     // public List<CardTest> Deck = new List<CardTest>();
@@ -20,6 +26,7 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI DiscardPileSizeText;
     public GameObject ConfirmButtonObject;
     public TextMeshProUGUI GoldText;
+    public TextMeshProUGUI ActionPointsText;
     public GameObject FloatingMessageObject;
 
     public Transform[] Hand;
@@ -39,6 +46,7 @@ public class GameManager : MonoBehaviour
     public CardDisplay AttackTarget;
     public bool PerformingAttack = false;
     public List<TurnAction> TurnActions;
+    public TurnAction CurrentAction = new TurnAction();
     public int ActionPoints = 3;
     public PlayerProfile Host;
     public PlayerProfile Opponent;
@@ -103,6 +111,7 @@ public class GameManager : MonoBehaviour
         Host.Role = PlayerRole.Host;
         Host.Gold = 8;
         GoldText.text = Host.Gold.ToString();
+        ActionPointsText.text = ActionPoints.ToString();
         Opponent.Role = PlayerRole.Opponent;
         Opponent.Gold = 50;
         Players.Add(Host);
@@ -125,41 +134,73 @@ public class GameManager : MonoBehaviour
 
     /* --- Attack management functions --------------------------------------------- */
     public void SetAttacker(CardDisplay attacker){
+        
+        // We check if this is a proper "attacker" overall
         if(attacker != null && attacker.mySpace.Owner == PlayerRole.Opponent){
             return;
         }
-        if(Attacker != null){
-            Attacker.SetOutline();
-            Attacker.SetLine();
+
+        // We check if this attacker has already an action in queue
+        TurnAction AttackerAction = ActionOfCard(attacker);
+        if(AttackerAction != null){
+            AttackerAction.Attacker.SetOutline();
+            AttackerAction.Attacker.SetLine();
+            AttackerAction.AttackTarget.SetOutline();
+            TurnActions.Remove(AttackerAction);
+            return;
         }
 
-        Attacker = attacker;
-        
-        if(Attacker != null){
-            Attacker.SetOutline("orange");
-            PerformingAttack = true;
-        } else {
-            PerformingAttack = false;
-            if(AttackTarget != null){
-                AttackTarget.SetOutline();
-                AttackTarget = null;
+        // We procceed to give the attacker the proper display for its action
+        if(CurrentAction.Attacker != null){
+            CurrentAction.Attacker.SetOutline();
+            CurrentAction.Attacker.SetLine();
+            CurrentAction.Attacker = null;
+            if(CurrentAction.AttackTarget != null){
+                CurrentAction.AttackTarget.SetOutline();
+                CurrentAction.AttackTarget = null;
                 ConfirmButtonObject.SetActive(false);
             }
+        } else {
+            CurrentAction.Attacker = attacker;
+            CurrentAction.Action = ActionType.PerformAttack;
+            CurrentAction.Attacker.SetOutline("orange");
+        }
+
+        // CurrentAction.Attacker = attacker;
+        // Attacker = attacker;
+        
+        if(CurrentAction.Attacker != null){
+            // CurrentAction.Attacker.SetOutline("orange");
+            // PerformingAttack = true;
+        } else {
+            // PerformingAttack = false;
+            // if(CurrentAction.AttackTarget != null){
+            //     CurrentAction.AttackTarget.SetOutline();
+            //     CurrentAction.AttackTarget = null;
+            //     ConfirmButtonObject.SetActive(false);
+            // }
         }
     }
     public void SetAttackTarget(CardDisplay attackTarget){
-        if((attackTarget != null && attackTarget.mySpace.Owner == PlayerRole.Host) || !PerformingAttack){
+        CurrentAction.Action = ActionType.PerformAttack;
+        if((attackTarget != null && attackTarget.mySpace.Owner == PlayerRole.Host) || CurrentAction.Attacker == null){
             return;
         }
-        if(AttackTarget != null){
-            AttackTarget.SetOutline();
+        if(CurrentAction.AttackTarget != null){
+            CurrentAction.AttackTarget.SetOutline();
+            CurrentAction.AttackTarget = null;
         }
 
-        AttackTarget = attackTarget;
+        CurrentAction.AttackTarget = attackTarget;
+        // AttackTarget = attackTarget;
 
-        if(AttackTarget != null){
-            AttackTarget.SetOutline("red");
-            Attacker.SetLine(AttackTarget);
+        if(CurrentAction.AttackTarget != null && CurrentAction.Attacker != null){
+            // CurrentAction.Attacker = Attacker;
+            // CurrentAction.AttackTarget = AttackTarget;
+            CurrentAction.Attacker.SetLine(CurrentAction.AttackTarget);
+            CurrentAction.AttackTarget.SetOutline("red");
+            TurnActions.Add(new TurnAction(CurrentAction));
+            CurrentAction.Clean();
             ConfirmButtonObject.SetActive(true);
         }
     }
@@ -188,6 +229,30 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void DoAttackAction(TurnAction ActionData){
+        int damageDealt;
+        if(ActionData.AttackTarget!=null && ActionData.Attacker!=null){
+            damageDealt = ActionData.Attacker.attack - ActionData.AttackTarget.armor;
+            if(damageDealt <= 0){
+                damageDealt = 1;
+            }
+            ActionData.AttackTarget.ReceiveDamage(damageDealt);
+            GameObject MessageObject = Instantiate(FloatingMessageObject);
+            MessageObject.GetComponent<FloatingMessage>().SetMessage(damageDealt.ToString());
+            Debug.Log(ActionData.AttackTarget.transform.position);
+            Debug.Log(MainUI.scaleFactor);
+            Debug.Log(ActionData.AttackTarget.SlotGroup.localScale);
+            MessageObject.transform.Find("Canvas").GetComponent<RectTransform>().anchoredPosition = ActionData.AttackTarget.transform.position;
+
+            ConfirmButtonObject.SetActive(false);
+            ActionData.AttackTarget.SetOutline();
+            ActionData.AttackTarget = null;
+            ActionData.Attacker.SetOutline();
+            ActionData.Attacker.SetLine();
+            ActionData.Attacker = null;
+        }
+    }
+
     /* --- Turn management functions --------------------------------------------- */
     public bool BuyCard(CardDisplay card){
         bool CardCanBeBought = false;
@@ -200,8 +265,44 @@ public class GameManager : MonoBehaviour
         GoldText.text = Host.Gold.ToString();
         return CardCanBeBought;
     }
+    public void UndoAction(){
+        if(TurnActions.Count > 0){
+            TurnActions.RemoveAt(TurnActions.Count - 1);
+        }
+    }
     public void TurnEnd(){
+        foreach (var action in TurnActions)
+        {
+            switch (action.Action)
+            {
+                case ActionType.CardPurchase:
+                break;
 
+                case ActionType.PerformAttack:
+                    DoAttackAction(action);
+                break;
+
+                case ActionType.MoveCard:
+                break;
+                
+                default:
+                break;
+            }
+        }
+        TurnActions.Clear();
+    }
+
+    /* --- Action check functions --------------------------------------------- */
+    
+    /** Searchs for a card and returns the first action performed with it */
+    public TurnAction ActionOfCard(CardDisplay card){
+        foreach (TurnAction action in TurnActions)
+        {
+            if(action.Attacker == card){
+                return action;
+            }
+        }
+        return null;
     }
 
     /**
@@ -244,8 +345,23 @@ public class CardSlot{
 
 [System.Serializable]
 public class TurnAction{
+    
+    public ActionType Action;
     public CardDisplay Attacker;
     public CardDisplay AttackTarget;
+
+    public TurnAction(TurnAction Origin = null){
+        if(Origin != null){
+            this.Action = Origin.Action;
+            this.Attacker = Origin.Attacker;
+            this.AttackTarget = Origin.AttackTarget;
+        }
+    }
+
+    public void Clean(){
+        Attacker = null;
+        AttackTarget = null;
+    }
 }
 
 [System.Serializable]

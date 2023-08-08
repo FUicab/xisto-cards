@@ -134,13 +134,13 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
             // mySpace.Occupied = false;
             // GM.Deck.Add(card);
             // Destroy(gameObject);
-            if(GM.Attacker == null || GM.Attacker != this){
+            if(GM.CurrentAction.Attacker == null || GM.CurrentAction.Attacker != this){
                 GM.SetAttacker(this);
-            } else if(GM.Attacker == this){
+            } else if(GM.CurrentAction.Attacker == this){
                 GM.SetAttacker(null);
             }
 
-            if(GM.PerformingAttack && mySpace.Owner == PlayerRole.Opponent){
+            if(mySpace.Owner == PlayerRole.Opponent){
                 GM.SetAttackTarget(this);
             }
 
