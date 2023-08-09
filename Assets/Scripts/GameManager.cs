@@ -91,6 +91,24 @@ public class GameManager : MonoBehaviour
 
     }
 
+    public void DrawCards(){
+
+        if(Deck.Count>=1){
+            for(int i = 0; i < AvailableCardSlots.Length; i++){
+                if(AvailableCardSlots[i] == true){
+                    Card RandomCard = Deck[Random.Range(0, Deck.Count)];
+                    GameObject CardInstance = Instantiate(CardObject,Hand[i].transform);
+                    CardInstance.GetComponent<CardDisplay>().card = RandomCard;
+                    CardInstance.GetComponent<CardDisplay>().HasBeenPlayed = false;
+                    CardInstance.GetComponent<CardDisplay>().HandIndex = i;
+                    AvailableCardSlots[i] = false;
+                    Deck.Remove(RandomCard);
+                }
+            }
+        }
+
+    }
+
     private void Start(){
         foreach(Card card in CardList){
             for(int i = 0; i < card.CardCount; i++){
@@ -105,7 +123,7 @@ public class GameManager : MonoBehaviour
             newSlot.Line = slot.Line;
             PlayingCards.Add(newSlot);
         }
-        ConfirmButtonObject.SetActive(false);
+        // ConfirmButtonObject.SetActive(false);
         MainUI = GameObject.Find("MainUI").GetComponent<Canvas>();
         // CardDeck = JsonUtility.FromJson<CardList>(CardsJSON.text);
         Host.Role = PlayerRole.Host;
@@ -116,6 +134,7 @@ public class GameManager : MonoBehaviour
         Opponent.Gold = 50;
         Players.Add(Host);
         Players.Add(Opponent);
+        DrawCards();
     }
 
     private void Update(){
@@ -123,11 +142,12 @@ public class GameManager : MonoBehaviour
         DiscardPileSizeText.text = DiscardPile.Count.ToString();
     }
 
-    public void RegisterCurrentAction(){
+    public TurnAction RegisterCurrentAction(){
         TurnActions.Add(new TurnAction(CurrentAction));
         CurrentAction.Clean();
         ActionPoints -= 1;
         ActionPointsText.text = ActionPoints.ToString();
+        return TurnActions[TurnActions.Count - 1];
     }
 
     public void RemoveAction(TurnAction Action){
@@ -164,9 +184,11 @@ public class GameManager : MonoBehaviour
         */
         TurnAction AttackerAction = ActionOfCard(attacker);
         if(AttackerAction != null){
-            AttackerAction.Attacker.SetOutline();
-            AttackerAction.Attacker.SetLine();
-            AttackerAction.AttackTarget.SetOutline();
+            if(AttackerAction.Attacker != null){
+                AttackerAction.Attacker.SetOutline();
+                AttackerAction.Attacker.SetLine();
+                AttackerAction.AttackTarget.SetOutline();
+            }
             RemoveAction(AttackerAction);
             return;
         }
@@ -279,16 +301,25 @@ public class GameManager : MonoBehaviour
     }
 
     /* --- Turn management functions --------------------------------------------- */
-    public bool BuyCard(CardDisplay card){
+    public bool CanBuyCard(CardDisplay card){
         bool CardCanBeBought = false;
-        if(Host.Gold >= card.cost){
+        if(Host.Gold >= card.cost && ActionPoints > 0){
             Host.Gold -= card.cost;
             CardCanBeBought = true;
-        } else {
-            CardCanBeBought = false;
         }
         GoldText.text = Host.Gold.ToString();
         return CardCanBeBought;
+    }
+    public void RefundCard(TurnAction PurchaseAction){
+        if(PurchaseAction != null){
+            Host.Gold += PurchaseAction.PurchasePrice;
+            // PurchaseAction.BoughtCard.HasBeenPlayed = false;
+            // PurchaseAction.BoughtCard.rectTransform.anchoredPosition = PurchaseAction.BoughtCard.OriginPosition;
+            AvailableCardSlots[PurchaseAction.HandIndexOrigin] = false;
+            // PurchaseAction.BoughtCard.OriginParent = Hand[PurchaseAction.HandIndexOrigin];
+            RemoveAction(PurchaseAction);
+            GoldText.text = Host.Gold.ToString();
+        }
     }
     public void UndoAction(){
         if(TurnActions.Count > 0){
@@ -307,6 +338,7 @@ public class GameManager : MonoBehaviour
             switch (action.Action)
             {
                 case ActionType.CardPurchase:
+                    action.BoughtCard.DisableUndoPurchase();
                 break;
 
                 case ActionType.PerformAttack:
@@ -321,6 +353,7 @@ public class GameManager : MonoBehaviour
             }
         }
         ClearActionPoints();
+        DrawCards();
     }
 
     /* --- Action check functions --------------------------------------------- */
@@ -380,12 +413,18 @@ public class TurnAction{
     public ActionType Action;
     public CardDisplay Attacker;
     public CardDisplay AttackTarget;
+    public CardDisplay BoughtCard;
+    public int HandIndexOrigin;
+    public int PurchasePrice;
 
     public TurnAction(TurnAction Origin = null){
         if(Origin != null){
             this.Action = Origin.Action;
             this.Attacker = Origin.Attacker;
             this.AttackTarget = Origin.AttackTarget;
+            this.BoughtCard = Origin.BoughtCard;
+            this.PurchasePrice = Origin.PurchasePrice;
+            this.HandIndexOrigin = Origin.HandIndexOrigin;
         }
     }
 

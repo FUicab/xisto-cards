@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using static Card;
+using static ActionType;
 
 public class CardSpace : MonoBehaviour, IDropHandler {
 
@@ -43,8 +44,13 @@ public class CardSpace : MonoBehaviour, IDropHandler {
                 //Check if the unit is defender and if the slot is also not for traps
                 if(CanPlaceCard(PlayingCard.card) ){
                     //Check if we can buy this card
-                    if(GM.BuyCard(PlayingCard)){
+                    if(GM.CanBuyCard(PlayingCard)){
                         PlaceCard(PlayingCard);
+                        GM.CurrentAction.BoughtCard = PlayingCard;
+                        GM.CurrentAction.PurchasePrice = PlayingCard.card.Cost;
+                        GM.CurrentAction.HandIndexOrigin = PlayingCard.HandIndex;
+                        PlayingCard.SetPurchaseAction(GM.RegisterCurrentAction());
+                        // PlayingCard.PurchaseAction = GM.RegisterCurrentAction();
                         Occupied = true;
                     }
                 }
@@ -72,6 +78,17 @@ public class CardSpace : MonoBehaviour, IDropHandler {
             card.mySpace.Occupied = false;
         }
         card.mySpace = this;
+    }
+    public void UndoPlaceCard(){
+        PlayingCard.HasBeenPlayed = false;
+        PlayingCard.OriginParent = null;
+        PlayingCard.mySpace = null;
+        this.Occupied = false;
+        this.CardObject = null;
+        this.PlayingCard = null;
+        // if(PlayingCard.mySpace != null){
+        //     PlayingCard.mySpace.Occupied = false;
+        // }
     }
 
     void Start(){

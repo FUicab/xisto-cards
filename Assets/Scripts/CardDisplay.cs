@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 using static CardSpace;
+using static TurnAction;
 
 public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler
 {
@@ -39,6 +40,31 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
     private LineRenderer line;
     // [SerializeField] private Canvas LocalCanvas;
 
+    public GameObject UndoButtonObject;
+    public TurnAction PurchaseAction;
+    public void SetPurchaseAction(TurnAction Action){
+        PurchaseAction = Action;
+        UndoButtonObject.SetActive(true);
+    }
+    public void UndoPurchaseAction(){
+        if(PurchaseAction != null){
+            GM.RefundCard(PurchaseAction);
+            mySpace.UndoPlaceCard();
+            HasBeenPlayed = false;
+            HandIndex = PurchaseAction.HandIndexOrigin;
+            OriginParent = GM.Hand[HandIndex];
+            transform.SetParent(OriginParent);
+            rectTransform.anchoredPosition = OriginPosition;
+            rectTransform.rotation = OriginParent.rotation;
+            PurchaseAction = null;
+            UndoButtonObject.SetActive(false);
+        }
+    }
+    public void DisableUndoPurchase(){
+        PurchaseAction = null;
+        UndoButtonObject.SetActive(false);
+    }
+
     void Start()
     {
         GM = FindObjectOfType<GameManager>();
@@ -50,6 +76,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
         outline = GetComponent<Outline>();
         line = GetComponent<LineRenderer>();
         line.enabled = false;
+        UndoButtonObject.SetActive(false);
         OriginParent = transform.parent;
         OriginPosition = rectTransform.anchoredPosition;
         // LocalCanvas.worldCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
