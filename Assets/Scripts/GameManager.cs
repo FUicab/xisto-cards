@@ -123,6 +123,25 @@ public class GameManager : MonoBehaviour
         DiscardPileSizeText.text = DiscardPile.Count.ToString();
     }
 
+    public void RegisterCurrentAction(){
+        TurnActions.Add(new TurnAction(CurrentAction));
+        CurrentAction.Clean();
+        ActionPoints -= 1;
+        ActionPointsText.text = ActionPoints.ToString();
+    }
+
+    public void RemoveAction(TurnAction Action){
+        TurnActions.Remove(Action);
+        ActionPoints += 1;
+        ActionPointsText.text = ActionPoints.ToString();
+    }
+
+    public void ClearActionPoints(){
+        TurnActions.Clear();
+        ActionPoints = 3;
+        ActionPointsText.text = ActionPoints.ToString();
+    }
+
     public void Shuffle(){
         if(DiscardPile.Count >= 1){
             foreach(Card card in DiscardPile){
@@ -140,15 +159,20 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        // We check if this attacker has already an action in queue
+        /* We check if this attacker has already an action in queue.
+           If that's the case we remove the action from the list.
+        */
         TurnAction AttackerAction = ActionOfCard(attacker);
         if(AttackerAction != null){
             AttackerAction.Attacker.SetOutline();
             AttackerAction.Attacker.SetLine();
             AttackerAction.AttackTarget.SetOutline();
-            TurnActions.Remove(AttackerAction);
+            RemoveAction(AttackerAction);
             return;
         }
+
+        // Are there Action Points left to perform this action?
+        if(ActionPoints <= 0){ return; }
 
         // We procceed to give the attacker the proper display for its action
         if(CurrentAction.Attacker != null){
@@ -183,7 +207,7 @@ public class GameManager : MonoBehaviour
     }
     public void SetAttackTarget(CardDisplay attackTarget){
         CurrentAction.Action = ActionType.PerformAttack;
-        if((attackTarget != null && attackTarget.mySpace.Owner == PlayerRole.Host) || CurrentAction.Attacker == null){
+        if((attackTarget != null && attackTarget.mySpace.Owner == PlayerRole.Host) || CurrentAction.Attacker == null || ActionPoints <= 0){
             return;
         }
         if(CurrentAction.AttackTarget != null){
@@ -199,8 +223,9 @@ public class GameManager : MonoBehaviour
             // CurrentAction.AttackTarget = AttackTarget;
             CurrentAction.Attacker.SetLine(CurrentAction.AttackTarget);
             CurrentAction.AttackTarget.SetOutline("red");
-            TurnActions.Add(new TurnAction(CurrentAction));
-            CurrentAction.Clean();
+            RegisterCurrentAction();
+            // TurnActions.Add(new TurnAction(CurrentAction));
+            // CurrentAction.Clean();
             ConfirmButtonObject.SetActive(true);
         }
     }
@@ -267,6 +292,12 @@ public class GameManager : MonoBehaviour
     }
     public void UndoAction(){
         if(TurnActions.Count > 0){
+            TurnAction Action = TurnActions[TurnActions.Count - 1];
+            if(Action.Action == ActionType.PerformAttack){
+                Action.Attacker.SetLine();
+                Action.Attacker.SetOutline();
+                Action.AttackTarget.SetOutline();
+            }
             TurnActions.RemoveAt(TurnActions.Count - 1);
         }
     }
@@ -289,7 +320,7 @@ public class GameManager : MonoBehaviour
                 break;
             }
         }
-        TurnActions.Clear();
+        ClearActionPoints();
     }
 
     /* --- Action check functions --------------------------------------------- */
