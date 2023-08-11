@@ -4392,7 +4392,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Finish turn
+  m_text: End turn
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5268,7 +5268,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814392, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 171.48
+      value: 171.46
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814392, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
       propertyPath: m_SizeDelta.y
@@ -5304,7 +5304,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814392, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -400
+      value: -399.99
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814392, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -6607,6 +6607,18 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 963194227}
+    - target: {fileID: 4076725041110941128, guid: 2746a2fadeb5a7a46809cdcefcf99e1c, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.20392157
+      objectReference: {fileID: 0}
+    - target: {fileID: 4076725041110941128, guid: 2746a2fadeb5a7a46809cdcefcf99e1c, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.49056602
+      objectReference: {fileID: 0}
+    - target: {fileID: 4076725041110941128, guid: 2746a2fadeb5a7a46809cdcefcf99e1c, type: 3}
+      propertyPath: m_fontColor.r
+      value: 0.20042431
+      objectReference: {fileID: 0}
     - target: {fileID: 4076725041719474040, guid: 2746a2fadeb5a7a46809cdcefcf99e1c, type: 3}
       propertyPath: m_RootOrder
       value: 5

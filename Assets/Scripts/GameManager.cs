@@ -127,7 +127,7 @@ public class GameManager : MonoBehaviour
         MainUI = GameObject.Find("MainUI").GetComponent<Canvas>();
         // CardDeck = JsonUtility.FromJson<CardList>(CardsJSON.text);
         Host.Role = PlayerRole.Host;
-        Host.Gold = 8;
+        Host.Gold = 5;
         GoldText.text = Host.Gold.ToString();
         ActionPointsText.text = ActionPoints.ToString();
         Opponent.Role = PlayerRole.Opponent;
@@ -195,18 +195,22 @@ public class GameManager : MonoBehaviour
         }
 
         // Are there Action Points left to perform this action?
-        if(ActionPoints <= 0){ return; }
+        if(!CheckActionPoints()){ return; }
 
         // We procceed to give the attacker the proper display for its action
         if(CurrentAction.Attacker != null){
-            CurrentAction.Attacker.SetOutline();
-            CurrentAction.Attacker.SetLine();
-            CurrentAction.Attacker = null;
+            // If there's an attacker already set, then the attack is canceled
+            // CurrentAction.Attacker.SetOutline();
+            // CurrentAction.Attacker.SetLine();
+            // CurrentAction.Attacker = null;
+            CurrentAction.Attacker.ClearAllDisplay();
             if(CurrentAction.AttackTarget != null){
-                CurrentAction.AttackTarget.SetOutline();
-                CurrentAction.AttackTarget = null;
-                ConfirmButtonObject.SetActive(false);
+                CurrentAction.AttackTarget.ClearAllDisplay();
+                // CurrentAction.AttackTarget.SetOutline();
+                // CurrentAction.AttackTarget = null;
+                // ConfirmButtonObject.SetActive(false);
             }
+            CurrentAction.Clean();
         } else {
             CurrentAction.Attacker = attacker;
             CurrentAction.Action = ActionType.PerformAttack;
@@ -278,7 +282,8 @@ public class GameManager : MonoBehaviour
                 if(TurnActions[i].AttackTarget != null){
                     TurnActions[i].AttackTarget.ClearAllDisplay();
                 }
-                attacker.ClearAllDisplay();
+                TurnActions[i].Attacker.ClearAllDisplay();
+                // attacker.ClearAllDisplay();
                 RemoveAction(TurnActions[i]);
             }
         }
@@ -306,7 +311,7 @@ public class GameManager : MonoBehaviour
     /* --- Turn management functions --------------------------------------------- */
     public bool CanBuyCard(CardDisplay card){
         bool CardCanBeBought = false;
-        if(Host.Gold >= card.cost && ActionPoints > 0){
+        if(CheckGold(card.cost) && CheckActionPoints()){
             Host.Gold -= card.cost;
             CardCanBeBought = true;
         }
@@ -340,6 +345,8 @@ public class GameManager : MonoBehaviour
             TurnActions.RemoveAt(TurnActions.Count - 1);
         }
     }
+
+    /* --- Turn End functions --------------------------------------------- */
     public void TurnEnd(){
         foreach (var action in TurnActions)
         {
@@ -354,6 +361,8 @@ public class GameManager : MonoBehaviour
                 break;
             }
         }
+        Host.Gold += (ActionPoints + 1);
+        GoldText.text = Host.Gold.ToString();
         ClearActionPoints();
         DrawCards();
     }
@@ -373,8 +382,22 @@ public class GameManager : MonoBehaviour
 
     /* --- Values and resource checks --------------------------------------------- */
     public bool CheckGold(int requirement){
-        
-        return false;
+        bool isOk = false;
+        if(Host.Gold >= requirement){
+            isOk = true;
+        } else {
+            DisplayFloatingMessage("Not enough gold", Camera.main.ScreenToWorldPoint(Input.mousePosition), "gold");
+        }
+        return isOk;
+    }
+    public bool CheckActionPoints(int requirement = 1){
+        bool isOk = false;
+        if(ActionPoints >= requirement){
+            isOk = true;
+        } else {
+            DisplayFloatingMessage("No more action points\nEnd your turn to continue", Camera.main.ScreenToWorldPoint(Input.mousePosition), "green");
+        }
+        return isOk;
     }
 
     /* --- Floating messages --------------------------------------------- */
@@ -382,6 +405,13 @@ public class GameManager : MonoBehaviour
         GameObject MessageObject = Instantiate(FloatingMessageObject);
         MessageObject.GetComponent<FloatingMessage>().SetMessage(damage.ToString());
         MessageObject.transform.Find("Canvas").GetComponent<RectTransform>().anchoredPosition = target.transform.position;
+    }
+    public void DisplayFloatingMessage(string message, Vector3 location, string colorName = ""){
+        GameObject MessageObject = Instantiate(FloatingMessageObject);
+        MessageObject.GetComponent<FloatingMessage>().SetFontSize(0.33f);
+        MessageObject.GetComponent<FloatingMessage>().SetColor(colorName);
+        MessageObject.GetComponent<FloatingMessage>().SetMessage(message);
+        MessageObject.transform.Find("Canvas").GetComponent<RectTransform>().anchoredPosition = location;
     }
 
     /**
@@ -444,14 +474,8 @@ public class TurnAction{
     }
 
     public void Clean(){
-        if(Attacker != null){
-            Attacker.ClearAllDisplay();
-            Attacker = null;
-        }
-        if(AttackTarget != null){
-            AttackTarget.ClearAllDisplay();
-            AttackTarget = null;
-        }
+        Attacker = null;
+        AttackTarget = null;
         BoughtCard = null;
         HandIndexOrigin = 0;
         PurchasePrice = 0;
