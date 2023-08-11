@@ -19,6 +19,7 @@ public class CardSpace : MonoBehaviour, IDropHandler {
     // public bool IsTrap = false;
     public GameObject CardObject;
     public CardDisplay PlayingCard;
+    public List<CardSpace> Defenders = new List<CardSpace>();
     public enum PlayerRole {
         Host,
         Opponent
@@ -35,8 +36,15 @@ public class CardSpace : MonoBehaviour, IDropHandler {
     public void OnDrop(PointerEventData eventData){
         // Debug.Log("OnDrop");
         if(eventData.pointerDrag != null){
-            CardObject = eventData.pointerDrag;
-            PlayingCard = CardObject.GetComponent<CardDisplay>();
+            GameObject obj = eventData.pointerDrag;
+            CardDisplay display = obj.GetComponent<CardDisplay>();
+            
+            if(display != null && !display.HasBeenPlayed){
+                PlayingCard = display;
+                CardObject = obj;
+            } else {
+                return;
+            }
             // eventData.pointerDrag.GetComponent<RectTransform>().anchoredPosition = GetComponent<RectTransform>().anchoredPosition;
             
             if(!Occupied && !PlayingCard.HasBeenPlayed){
@@ -54,6 +62,8 @@ public class CardSpace : MonoBehaviour, IDropHandler {
                         PlayingCard.SetPurchaseAction(GM.RegisterCurrentAction());
                         // PlayingCard.PurchaseAction = GM.RegisterCurrentAction();
                         Occupied = true;
+                    } else {
+                        PlayingCard = null;
                     }
                 }
             }
@@ -104,8 +114,9 @@ public class CardSpace : MonoBehaviour, IDropHandler {
             do { RandomCard = GM.Deck[Random.Range(0, GM.Deck.Count)]; }
             while (!CardPlacingIsValid(RandomCard));
             CardObject = Instantiate(GM.CardObject,transform);
-            CardObject.GetComponent<CardDisplay>().card = RandomCard;
-            PlaceCard(CardObject.GetComponent<CardDisplay>());
+            PlayingCard = CardObject.GetComponent<CardDisplay>();
+            PlayingCard.card = RandomCard;
+            PlaceCard(PlayingCard);
             GM.Deck.Remove(RandomCard);
         }
     }

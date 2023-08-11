@@ -102,10 +102,10 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
         if(mySpace != null && mySpace.Owner != PlayerRole.Host){
             return;
         }
-        if(mySpace != null){
-            mySpace.PlayingCard = null;
-            mySpace.CardObject = null;
-        }
+        // if(mySpace != null){
+        //     mySpace.PlayingCard = null;
+        //     mySpace.CardObject = null;
+        // }
         if(HasBeenPlayed){
             return;
         }
@@ -161,10 +161,13 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
             // mySpace.Occupied = false;
             // GM.Deck.Add(card);
             // Destroy(gameObject);
-            if(GM.CurrentAction.Attacker == null || GM.CurrentAction.Attacker != this){
+            // if(GM.CurrentAction.Attacker == null || GM.CurrentAction.Attacker != this){
+            //     GM.SetAttacker(this);
+            // } else if(GM.CurrentAction.Attacker == this){
+            //     GM.SetAttacker(null);
+            // }
+            if(mySpace.Owner == PlayerRole.Host){
                 GM.SetAttacker(this);
-            } else if(GM.CurrentAction.Attacker == this){
-                GM.SetAttacker(null);
             }
 
             if(mySpace.Owner == PlayerRole.Opponent){

@@ -41,6 +41,7 @@ public class FloatingMessage : MonoBehaviour
     public void SetColor(string colorName){
         switch(colorName){
             case "gold": messageBox.color = new Color32(255,214,71,255); break;
+            case "orange": messageBox.color = new Color32(251,149,53,255); break;
             case "green": messageBox.color = new Color32(52,126,52,255); break;
             case "red": messageBox.color = new Color32(224,69,69,255); break;
             default: messageBox.color = new Color32(16,16,16,255); break;

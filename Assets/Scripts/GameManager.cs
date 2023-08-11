@@ -131,7 +131,7 @@ public class GameManager : MonoBehaviour
         GoldText.text = Host.Gold.ToString();
         ActionPointsText.text = ActionPoints.ToString();
         Opponent.Role = PlayerRole.Opponent;
-        Opponent.Gold = 50;
+        Opponent.Gold = 5;
         Players.Add(Host);
         Players.Add(Opponent);
         DrawCards();
@@ -175,7 +175,7 @@ public class GameManager : MonoBehaviour
     public void SetAttacker(CardDisplay attacker){
         
         // We check if this is a proper "attacker" overall
-        if(attacker != null && attacker.mySpace.Owner == PlayerRole.Opponent){
+        if(attacker == null || attacker.mySpace.Owner == PlayerRole.Opponent){
             return;
         }
 
@@ -190,6 +190,7 @@ public class GameManager : MonoBehaviour
             //     AttackerAction.AttackTarget.SetOutline();
             // }
             // RemoveAction(AttackerAction);
+            attacker.ClearAllDisplay();
             ClearAttackActions(attacker);
             return;
         }
@@ -199,23 +200,16 @@ public class GameManager : MonoBehaviour
 
         // We procceed to give the attacker the proper display for its action
         if(CurrentAction.Attacker != null){
-            // If there's an attacker already set, then the attack is canceled
-            // CurrentAction.Attacker.SetOutline();
-            // CurrentAction.Attacker.SetLine();
-            // CurrentAction.Attacker = null;
+            /* If there's an attacker already set, then we remove it from the current action */
             CurrentAction.Attacker.ClearAllDisplay();
-            if(CurrentAction.AttackTarget != null){
-                CurrentAction.AttackTarget.ClearAllDisplay();
-                // CurrentAction.AttackTarget.SetOutline();
-                // CurrentAction.AttackTarget = null;
-                // ConfirmButtonObject.SetActive(false);
-            }
+            // if(CurrentAction.AttackTarget != null){
+            //     CurrentAction.AttackTarget.ClearAllDisplay();
+            // }
             CurrentAction.Clean();
-        } else {
-            CurrentAction.Attacker = attacker;
-            CurrentAction.Action = ActionType.PerformAttack;
-            CurrentAction.Attacker.SetOutline("orange");
         }
+        CurrentAction.Attacker = attacker;
+        CurrentAction.Attacker.SetOutline("orange");
+        CurrentAction.Action = ActionType.PerformAttack;
 
         // CurrentAction.Attacker = attacker;
         // Attacker = attacker;
@@ -234,9 +228,13 @@ public class GameManager : MonoBehaviour
     }
     public void SetAttackTarget(CardDisplay attackTarget){
         CurrentAction.Action = ActionType.PerformAttack;
-        if((attackTarget != null && attackTarget.mySpace.Owner == PlayerRole.Host) || CurrentAction.Attacker == null || ActionPoints <= 0){
+        if(attackTarget == null || attackTarget.mySpace.Owner == PlayerRole.Host || CurrentAction.Attacker == null || ActionPoints <= 0){
             return;
         }
+        if(!CheckValidAttack(attackTarget)){
+            return;
+        }
+
         if(CurrentAction.AttackTarget != null){
             CurrentAction.AttackTarget.SetOutline();
             CurrentAction.AttackTarget = null;
@@ -278,11 +276,13 @@ public class GameManager : MonoBehaviour
     public void ClearAttackActions(CardDisplay attacker){
         for (int i = TurnActions.Count-1; i >= 0; i--)
         {
-            if(TurnActions[i].Attacker == attacker){
+            if(TurnActions[i].Attacker == attacker && TurnActions[i].Action == ActionType.PerformAttack){
                 if(TurnActions[i].AttackTarget != null){
                     TurnActions[i].AttackTarget.ClearAllDisplay();
                 }
-                TurnActions[i].Attacker.ClearAllDisplay();
+                if(TurnActions[i].Attacker != null){
+                    TurnActions[i].Attacker.ClearAllDisplay();
+                }
                 // attacker.ClearAllDisplay();
                 RemoveAction(TurnActions[i]);
             }
@@ -378,6 +378,26 @@ public class GameManager : MonoBehaviour
             }
         }
         return null;
+
+    }
+
+    /** Checks if the attacked target can be attacked */
+    public bool CheckValidAttack(CardDisplay target, CardDisplay attacker = null){
+        bool isOk = false;
+
+        /* Check for defending status */
+        bool isDefended = false;
+        foreach (var defendingSpace in target.mySpace.Defenders){
+            if(defendingSpace.PlayingCard != null){
+                isDefended = true;
+            }
+        }
+        if(isDefended){
+            DisplayFloatingMessage("Can't attack defended cards", Camera.main.ScreenToWorldPoint(Input.mousePosition), "orange");
+        } else {
+            isOk = true;
+        }
+        return isOk;
     }
 
     /* --- Values and resource checks --------------------------------------------- */
