@@ -46,6 +46,8 @@ public class CardSpace : MonoBehaviour, IDropHandler {
                     //Check if we can buy this card
                     if(GM.CanBuyCard(PlayingCard)){
                         PlaceCard(PlayingCard);
+                        GM.CurrentAction.Clean();
+                        GM.CurrentAction.Action = ActionType.CardPurchase;
                         GM.CurrentAction.BoughtCard = PlayingCard;
                         GM.CurrentAction.PurchasePrice = PlayingCard.card.Cost;
                         GM.CurrentAction.HandIndexOrigin = PlayingCard.HandIndex;

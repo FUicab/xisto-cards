@@ -184,12 +184,13 @@ public class GameManager : MonoBehaviour
         */
         TurnAction AttackerAction = ActionOfCard(attacker);
         if(AttackerAction != null){
-            if(AttackerAction.Attacker != null){
-                AttackerAction.Attacker.SetOutline();
-                AttackerAction.Attacker.SetLine();
-                AttackerAction.AttackTarget.SetOutline();
-            }
-            RemoveAction(AttackerAction);
+            // if(AttackerAction.Attacker != null){
+            //     AttackerAction.Attacker.SetOutline();
+            //     AttackerAction.Attacker.SetLine();
+            //     AttackerAction.AttackTarget.SetOutline();
+            // }
+            // RemoveAction(AttackerAction);
+            ClearAttackActions(attacker);
             return;
         }
 
@@ -259,12 +260,7 @@ public class GameManager : MonoBehaviour
                 damageDealt = 1;
             }
             AttackTarget.ReceiveDamage(damageDealt);
-            GameObject MessageObject = Instantiate(FloatingMessageObject);
-            MessageObject.GetComponent<FloatingMessage>().SetMessage(damageDealt.ToString());
-            Debug.Log(AttackTarget.transform.position);
-            Debug.Log(MainUI.scaleFactor);
-            Debug.Log(AttackTarget.SlotGroup.localScale);
-            MessageObject.transform.Find("Canvas").GetComponent<RectTransform>().anchoredPosition = AttackTarget.transform.position;
+            DisplayDamage(damageDealt, AttackTarget);
 
             ConfirmButtonObject.SetActive(false);
             AttackTarget.SetOutline();
@@ -273,6 +269,18 @@ public class GameManager : MonoBehaviour
             Attacker.SetLine();
             Attacker = null;
             PerformingAttack = false;
+        }
+    }
+    public void ClearAttackActions(CardDisplay attacker){
+        for (int i = TurnActions.Count-1; i >= 0; i--)
+        {
+            if(TurnActions[i].Attacker == attacker){
+                if(TurnActions[i].AttackTarget != null){
+                    TurnActions[i].AttackTarget.ClearAllDisplay();
+                }
+                attacker.ClearAllDisplay();
+                RemoveAction(TurnActions[i]);
+            }
         }
     }
 
@@ -284,12 +292,7 @@ public class GameManager : MonoBehaviour
                 damageDealt = 1;
             }
             ActionData.AttackTarget.ReceiveDamage(damageDealt);
-            GameObject MessageObject = Instantiate(FloatingMessageObject);
-            MessageObject.GetComponent<FloatingMessage>().SetMessage(damageDealt.ToString());
-            Debug.Log(ActionData.AttackTarget.transform.position);
-            Debug.Log(MainUI.scaleFactor);
-            Debug.Log(ActionData.AttackTarget.SlotGroup.localScale);
-            MessageObject.transform.Find("Canvas").GetComponent<RectTransform>().anchoredPosition = ActionData.AttackTarget.transform.position;
+            DisplayDamage(damageDealt, ActionData.AttackTarget);
 
             ConfirmButtonObject.SetActive(false);
             ActionData.AttackTarget.SetOutline();
@@ -317,6 +320,11 @@ public class GameManager : MonoBehaviour
             // PurchaseAction.BoughtCard.rectTransform.anchoredPosition = PurchaseAction.BoughtCard.OriginPosition;
             AvailableCardSlots[PurchaseAction.HandIndexOrigin] = false;
             // PurchaseAction.BoughtCard.OriginParent = Hand[PurchaseAction.HandIndexOrigin];
+            if(CurrentAction.Attacker != null){
+                CurrentAction.Attacker.ClearAllDisplay();
+                CurrentAction.Attacker = null;
+            }
+            ClearAttackActions(PurchaseAction.BoughtCard);
             RemoveAction(PurchaseAction);
             GoldText.text = Host.Gold.ToString();
         }
@@ -344,12 +352,6 @@ public class GameManager : MonoBehaviour
                 case ActionType.PerformAttack:
                     DoAttackAction(action);
                 break;
-
-                case ActionType.MoveCard:
-                break;
-                
-                default:
-                break;
             }
         }
         ClearActionPoints();
@@ -367,6 +369,19 @@ public class GameManager : MonoBehaviour
             }
         }
         return null;
+    }
+
+    /* --- Values and resource checks --------------------------------------------- */
+    public bool CheckGold(int requirement){
+        
+        return false;
+    }
+
+    /* --- Floating messages --------------------------------------------- */
+    public void DisplayDamage(int damage, CardDisplay target){
+        GameObject MessageObject = Instantiate(FloatingMessageObject);
+        MessageObject.GetComponent<FloatingMessage>().SetMessage(damage.ToString());
+        MessageObject.transform.Find("Canvas").GetComponent<RectTransform>().anchoredPosition = target.transform.position;
     }
 
     /**
@@ -429,8 +444,17 @@ public class TurnAction{
     }
 
     public void Clean(){
-        Attacker = null;
-        AttackTarget = null;
+        if(Attacker != null){
+            Attacker.ClearAllDisplay();
+            Attacker = null;
+        }
+        if(AttackTarget != null){
+            AttackTarget.ClearAllDisplay();
+            AttackTarget = null;
+        }
+        BoughtCard = null;
+        HandIndexOrigin = 0;
+        PurchasePrice = 0;
     }
 }
 

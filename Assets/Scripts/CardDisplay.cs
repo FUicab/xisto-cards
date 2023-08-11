@@ -190,6 +190,10 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
         }
         outline.enabled = shouldActivate;
     }
+    public void ClearAllDisplay(){
+        SetOutline();
+        SetLine();
+    }
 
     /* --- Combat functions --------------------------------------------- */
     public void ReceiveDamage(int dmg){
