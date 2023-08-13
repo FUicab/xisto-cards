@@ -22,3 +22,4 @@ MonoBehaviour:
   MaxHP: 2
   Armor: 1
   Attack: 6
+  SkillSet: []

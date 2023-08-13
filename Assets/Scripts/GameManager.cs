@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using static CardSpace;
+using static UnitType;
+using static PlayerAI;
 
 public enum ActionType{
     CardPurchase,
@@ -50,6 +52,8 @@ public class GameManager : MonoBehaviour
     public int ActionPoints = 3;
     public PlayerProfile Host;
     public PlayerProfile Opponent;
+    public PlayerProfile PlayerAtPlay;
+    public PlayerAI OpponentAI;
 
 
     [SerializeField] private Canvas MainUI;
@@ -91,17 +95,17 @@ public class GameManager : MonoBehaviour
 
     }
 
-    public void DrawCards(){
+    public void DrawCards(PlayerProfile player){
 
         if(Deck.Count>=1){
             for(int i = 0; i < AvailableCardSlots.Length; i++){
-                if(AvailableCardSlots[i] == true){
+                if(player.AvailableCardSlots[i] == true){
                     Card RandomCard = Deck[Random.Range(0, Deck.Count)];
-                    GameObject CardInstance = Instantiate(CardObject,Hand[i].transform);
+                    GameObject CardInstance = Instantiate(CardObject,player.Hand[i].transform);
                     CardInstance.GetComponent<CardDisplay>().card = RandomCard;
                     CardInstance.GetComponent<CardDisplay>().HasBeenPlayed = false;
                     CardInstance.GetComponent<CardDisplay>().HandIndex = i;
-                    AvailableCardSlots[i] = false;
+                    player.AvailableCardSlots[i] = false;
                     Deck.Remove(RandomCard);
                 }
             }
@@ -134,7 +138,11 @@ public class GameManager : MonoBehaviour
         Opponent.Gold = 5;
         Players.Add(Host);
         Players.Add(Opponent);
-        DrawCards();
+        OpponentAI = new PlayerAI();
+        OpponentAI.Profile = Opponent;
+        DrawCards(Host);
+        DrawCards(Opponent);
+        PlayerAtPlay = Host;
     }
 
     private void Update(){
@@ -323,7 +331,7 @@ public class GameManager : MonoBehaviour
             Host.Gold += PurchaseAction.PurchasePrice;
             // PurchaseAction.BoughtCard.HasBeenPlayed = false;
             // PurchaseAction.BoughtCard.rectTransform.anchoredPosition = PurchaseAction.BoughtCard.OriginPosition;
-            AvailableCardSlots[PurchaseAction.HandIndexOrigin] = false;
+            PlayerAtPlay.AvailableCardSlots[PurchaseAction.HandIndexOrigin] = false;
             // PurchaseAction.BoughtCard.OriginParent = Hand[PurchaseAction.HandIndexOrigin];
             if(CurrentAction.Attacker != null){
                 CurrentAction.Attacker.ClearAllDisplay();
@@ -361,10 +369,22 @@ public class GameManager : MonoBehaviour
                 break;
             }
         }
-        Host.Gold += (ActionPoints + 1);
+        PlayerAtPlay.Gold += ActionPoints;
+        PlayerAtPlay.Gold += 1;
+        DrawCards(PlayerAtPlay);
         GoldText.text = Host.Gold.ToString();
         ClearActionPoints();
-        DrawCards();
+        SwitchTurns();
+    }
+    public void SwitchTurns(){
+        if(PlayerAtPlay == Host){
+            PlayerAtPlay = Opponent;
+        } else {
+            PlayerAtPlay = Host;
+        }
+        if(PlayerAtPlay.useAI){
+            OpponentAI.StartAIBehavior();
+        }
     }
 
     /* --- Action check functions --------------------------------------------- */
@@ -394,6 +414,8 @@ public class GameManager : MonoBehaviour
         }
         if(isDefended){
             DisplayFloatingMessage("Can't attack defended cards", Camera.main.ScreenToWorldPoint(Input.mousePosition), "orange");
+        } else if(target.card.Type == UnitType.Trap){
+            DisplayFloatingMessage("Can't attack traps", Camera.main.ScreenToWorldPoint(Input.mousePosition), "orange");
         } else {
             isOk = true;
         }
@@ -505,5 +527,8 @@ public class TurnAction{
 [System.Serializable]
 public class PlayerProfile{
     public PlayerRole Role;
+    public bool useAI = false;
     public int Gold = 0;
+    public Transform[] Hand;
+    public bool[] AvailableCardSlots;
 }

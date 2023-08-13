@@ -20,6 +20,7 @@ public class CardSpace : MonoBehaviour, IDropHandler {
     public GameObject CardObject;
     public CardDisplay PlayingCard;
     public List<CardSpace> Defenders = new List<CardSpace>();
+    public CardSpace AttachedTrap;
     public enum PlayerRole {
         Host,
         Opponent
@@ -104,12 +105,13 @@ public class CardSpace : MonoBehaviour, IDropHandler {
     }
 
     void Start(){
-        GM = FindObjectOfType<GameManager>();
+        // GM = FindObjectOfType<GameManager>();
+        // GM = GameObject.Find("GameManager").GetComponent<GameManager>();
         outline = GetComponent<Outline>();
     }
 
     private void AutoDraw(){
-        if(AutoDrawCards && CardObject == null){
+        if(AutoDrawCards && CardObject == null && GM != null){
             Card RandomCard;
             do { RandomCard = GM.Deck[Random.Range(0, GM.Deck.Count)]; }
             while (!CardPlacingIsValid(RandomCard));
@@ -122,6 +124,7 @@ public class CardSpace : MonoBehaviour, IDropHandler {
     }
 
     void OnEnable(){
+        GM = FindObjectOfType<GameManager>();
         EventManager.DeckReady += AutoDraw;
     }
 

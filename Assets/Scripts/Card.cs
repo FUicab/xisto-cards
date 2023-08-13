@@ -11,33 +11,10 @@ public class Card : ScriptableObject
 
     public string Name;
     public int CardCount;
-    public enum UnitType {
-        Warrior,
-        Support,
-        Machine,
-        Leader,
-        Trap
-    };
     public UnitType Type;
-    public enum UnitSubtype {
-        Defender,
-        Dual,
-        Mercenary,
-        Assistant,
-        Pacifist,
-        Combo    
-    }
     public List<UnitSubtype> Subtypes;
     public int Cost;
     public Sprite Artwork;
-    public enum Faction {
-        Protectors,
-        Saggists,
-        Keraneans,
-        Voucari,
-        Auro,
-        Independent
-    };
     public Faction Origin;
     public int MaxHP;
     private int HP;
@@ -100,4 +77,28 @@ public class SkillEffect{
     public string[] effects;
     public bool oncePerTurn;
     public bool oncePerGame;
+}
+
+public enum UnitType {
+    Warrior,
+    Support,
+    Machine,
+    Leader,
+    Trap
+};
+public enum Faction {
+    Protectors,
+    Saggists,
+    Keraneans,
+    Voucari,
+    Auro,
+    Independent
+};
+public enum UnitSubtype {
+    Defender,
+    Dual,
+    Mercenary,
+    Assistant,
+    Pacifist,
+    Combo    
 }
