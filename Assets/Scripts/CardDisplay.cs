@@ -29,7 +29,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
     public TextMeshProUGUI AttackText;
 
     private GameManager GM;
-    private RectTransform rectTransform;
+    public RectTransform rectTransform;
     [SerializeField] private Canvas MainUI;
     private CanvasGroup canvasGroup;
     private Outline outline;
@@ -147,7 +147,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
         rectTransform.anchoredPosition = OriginPosition;
         rectTransform.rotation = OriginParent.rotation;
         if(HasBeenPlayed && HandIndex!=-1){
-            GM.AvailableCardSlots[HandIndex] = true;
+            // GM.AvailableCardSlots[HandIndex] = true;
             HandIndex = -1;
         }
         if(LastHoveredSpace != null){
@@ -202,11 +202,12 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
     public void ReceiveDamage(int dmg){
         hp -= dmg;
         if(hp<=0){
-            mySpace.Occupied = false;
+            mySpace.FreeSpace();
             GM.Deck.Add(card);
             Destroy(gameObject);
             return;
         }
+        GM.DisplayDamage(dmg, this);
         HPText.text = hp.ToString();
         ArmorText.text = armor.ToString();
         AttackText.text = attack.ToString();
@@ -217,6 +218,13 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
             line.SetPositions(points);
             line.enabled = true;
         }
+    }
+    public void ResetHP(){
+        hp = card.MaxHP;
+        HPText.text = hp.ToString();
+    }
+    public int GetDamageAgainstTarget(CardDisplay target){
+        return GM.GetDamage(this, target);
     }
 
 }

@@ -28,11 +28,12 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI DiscardPileSizeText;
     public GameObject ConfirmButtonObject;
     public TextMeshProUGUI GoldText;
+    public TextMeshProUGUI OpponentGoldText;
     public TextMeshProUGUI ActionPointsText;
     public GameObject FloatingMessageObject;
 
     public Transform[] Hand;
-    public bool[] AvailableCardSlots;
+    // public bool[] AvailableCardSlots;
 
     public List<CardSlot> PlayingCards;
     public CardSpace[] CardSpaces;
@@ -53,7 +54,7 @@ public class GameManager : MonoBehaviour
     public PlayerProfile Host;
     public PlayerProfile Opponent;
     public PlayerProfile PlayerAtPlay;
-    public PlayerAI OpponentAI;
+    public PlayerAI OpponentAI = new PlayerAI();
 
 
     [SerializeField] private Canvas MainUI;
@@ -74,31 +75,31 @@ public class GameManager : MonoBehaviour
         //         }
         //     }
         // }
-        if(Deck.Count>=1){
-            Card RandomCard = Deck[Random.Range(0, Deck.Count)];
-            for(int i = 0; i < AvailableCardSlots.Length; i++){
-                if(AvailableCardSlots[i] == true){
-                    // RandomCard.gameObject.SetActive(true);
-                    // RandomCard.HandIndex = i;
-                    // RandomCard.transform.position = CardSlots[i].position;
-                    // RandomCard.HasBeenPlayed = false;
-                    GameObject CardInstance = Instantiate(CardObject,Hand[i].transform);
-                    CardInstance.GetComponent<CardDisplay>().card = RandomCard;
-                    CardInstance.GetComponent<CardDisplay>().HasBeenPlayed = false;
-                    CardInstance.GetComponent<CardDisplay>().HandIndex = i;
-                    AvailableCardSlots[i] = false;
-                    Deck.Remove(RandomCard);
-                    return;
-                }
-            }
-        }
+        // if(Deck.Count>=1){
+        //     Card RandomCard = Deck[Random.Range(0, Deck.Count)];
+        //     for(int i = 0; i < AvailableCardSlots.Length; i++){
+        //         if(AvailableCardSlots[i] == true){
+        //             // RandomCard.gameObject.SetActive(true);
+        //             // RandomCard.HandIndex = i;
+        //             // RandomCard.transform.position = CardSlots[i].position;
+        //             // RandomCard.HasBeenPlayed = false;
+        //             GameObject CardInstance = Instantiate(CardObject,Hand[i].transform);
+        //             CardInstance.GetComponent<CardDisplay>().card = RandomCard;
+        //             CardInstance.GetComponent<CardDisplay>().HasBeenPlayed = false;
+        //             CardInstance.GetComponent<CardDisplay>().HandIndex = i;
+        //             AvailableCardSlots[i] = false;
+        //             Deck.Remove(RandomCard);
+        //             return;
+        //         }
+        //     }
+        // }
 
     }
 
     public void DrawCards(PlayerProfile player){
 
         if(Deck.Count>=1){
-            for(int i = 0; i < AvailableCardSlots.Length; i++){
+            for(int i = 0; i < player.AvailableCardSlots.Length; i++){
                 if(player.AvailableCardSlots[i] == true){
                     Card RandomCard = Deck[Random.Range(0, Deck.Count)];
                     GameObject CardInstance = Instantiate(CardObject,player.Hand[i].transform);
@@ -132,13 +133,13 @@ public class GameManager : MonoBehaviour
         // CardDeck = JsonUtility.FromJson<CardList>(CardsJSON.text);
         Host.Role = PlayerRole.Host;
         Host.Gold = 5;
-        GoldText.text = Host.Gold.ToString();
         ActionPointsText.text = ActionPoints.ToString();
         Opponent.Role = PlayerRole.Opponent;
         Opponent.Gold = 5;
+        UpdateDisplayGoldValues();
         Players.Add(Host);
         Players.Add(Opponent);
-        OpponentAI = new PlayerAI();
+        OpponentAI.GM = this;
         OpponentAI.Profile = Opponent;
         DrawCards(Host);
         DrawCards(Opponent);
@@ -148,6 +149,11 @@ public class GameManager : MonoBehaviour
     private void Update(){
         DeckSizeText.text = Deck.Count.ToString();
         DiscardPileSizeText.text = DiscardPile.Count.ToString();
+    }
+
+    public void UpdateDisplayGoldValues(){
+        GoldText.text = Host.Gold.ToString();
+        OpponentGoldText.text = Opponent.Gold.ToString();
     }
 
     public TurnAction RegisterCurrentAction(){
@@ -182,8 +188,9 @@ public class GameManager : MonoBehaviour
     /* --- Attack management functions --------------------------------------------- */
     public void SetAttacker(CardDisplay attacker){
         
+        Debug.Log(attacker.gameObject.name);
         // We check if this is a proper "attacker" overall
-        if(attacker == null || attacker.mySpace.Owner == PlayerRole.Opponent){
+        if(attacker == null || (attacker != null && attacker.mySpace.Owner != PlayerAtPlay.Role)){
             return;
         }
 
@@ -201,6 +208,11 @@ public class GameManager : MonoBehaviour
             attacker.ClearAllDisplay();
             ClearAttackActions(attacker);
             return;
+        }
+
+        if(CurrentAction.Attacker == attacker){
+            CurrentAction.Attacker.ClearAllDisplay();
+            CurrentAction.Attacker = null;
         }
 
         // Are there Action Points left to perform this action?
@@ -235,8 +247,9 @@ public class GameManager : MonoBehaviour
         }
     }
     public void SetAttackTarget(CardDisplay attackTarget){
+        Debug.Log(attackTarget.gameObject.name);
         CurrentAction.Action = ActionType.PerformAttack;
-        if(attackTarget == null || attackTarget.mySpace.Owner == PlayerRole.Host || CurrentAction.Attacker == null || ActionPoints <= 0){
+        if(attackTarget == null || (attackTarget != null  && attackTarget.mySpace.Owner == PlayerAtPlay.Role) || CurrentAction.Attacker == null || ActionPoints <= 0){
             return;
         }
         if(!CheckValidAttack(attackTarget)){
@@ -259,7 +272,7 @@ public class GameManager : MonoBehaviour
             RegisterCurrentAction();
             // TurnActions.Add(new TurnAction(CurrentAction));
             // CurrentAction.Clean();
-            ConfirmButtonObject.SetActive(true);
+            // ConfirmButtonObject.SetActive(true);
         }
     }
     public void ConfirmAttack(){
@@ -272,7 +285,7 @@ public class GameManager : MonoBehaviour
             AttackTarget.ReceiveDamage(damageDealt);
             DisplayDamage(damageDealt, AttackTarget);
 
-            ConfirmButtonObject.SetActive(false);
+            // ConfirmButtonObject.SetActive(false);
             AttackTarget.SetOutline();
             AttackTarget = null;
             Attacker.SetOutline();
@@ -298,16 +311,10 @@ public class GameManager : MonoBehaviour
     }
 
     public void DoAttackAction(TurnAction ActionData){
-        int damageDealt;
         if(ActionData.AttackTarget!=null && ActionData.Attacker!=null){
-            damageDealt = ActionData.Attacker.attack - ActionData.AttackTarget.armor;
-            if(damageDealt <= 0){
-                damageDealt = 1;
-            }
-            ActionData.AttackTarget.ReceiveDamage(damageDealt);
-            DisplayDamage(damageDealt, ActionData.AttackTarget);
+            ActionData.AttackTarget.ReceiveDamage(GetDamage(ActionData.Attacker, ActionData.AttackTarget));
 
-            ConfirmButtonObject.SetActive(false);
+            // ConfirmButtonObject.SetActive(false);
             ActionData.AttackTarget.SetOutline();
             ActionData.AttackTarget = null;
             ActionData.Attacker.SetOutline();
@@ -316,19 +323,27 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public int GetDamage(CardDisplay attacker, CardDisplay target){
+        int dmg = attacker.attack - target.armor;
+        if(dmg <= 0){
+            dmg = 1;
+        }
+        return dmg;
+    }
+
     /* --- Turn management functions --------------------------------------------- */
     public bool CanBuyCard(CardDisplay card){
         bool CardCanBeBought = false;
         if(CheckGold(card.cost) && CheckActionPoints()){
-            Host.Gold -= card.cost;
+            PlayerAtPlay.Gold -= card.cost;
             CardCanBeBought = true;
         }
-        GoldText.text = Host.Gold.ToString();
+        UpdateDisplayGoldValues();
         return CardCanBeBought;
     }
     public void RefundCard(TurnAction PurchaseAction){
         if(PurchaseAction != null){
-            Host.Gold += PurchaseAction.PurchasePrice;
+            PlayerAtPlay.Gold += PurchaseAction.PurchasePrice;
             // PurchaseAction.BoughtCard.HasBeenPlayed = false;
             // PurchaseAction.BoughtCard.rectTransform.anchoredPosition = PurchaseAction.BoughtCard.OriginPosition;
             PlayerAtPlay.AvailableCardSlots[PurchaseAction.HandIndexOrigin] = false;
@@ -339,7 +354,7 @@ public class GameManager : MonoBehaviour
             }
             ClearAttackActions(PurchaseAction.BoughtCard);
             RemoveAction(PurchaseAction);
-            GoldText.text = Host.Gold.ToString();
+            UpdateDisplayGoldValues();
         }
     }
     public void UndoAction(){
@@ -372,7 +387,7 @@ public class GameManager : MonoBehaviour
         PlayerAtPlay.Gold += ActionPoints;
         PlayerAtPlay.Gold += 1;
         DrawCards(PlayerAtPlay);
-        GoldText.text = Host.Gold.ToString();
+        UpdateDisplayGoldValues();
         ClearActionPoints();
         SwitchTurns();
     }
@@ -382,8 +397,21 @@ public class GameManager : MonoBehaviour
         } else {
             PlayerAtPlay = Host;
         }
+        HealCardsOfPlayer(PlayerAtPlay);
         if(PlayerAtPlay.useAI){
-            OpponentAI.StartAIBehavior();
+            OpponentAI.StartAI();
+        }
+        
+    }
+
+    public void HealCardsOfPlayer(PlayerProfile player){
+        CardSpace[] AllSpaces = Object.FindObjectsOfType<CardSpace>();
+        for (int i = 0; i < AllSpaces.Length; i++){
+            if(AllSpaces[i].Owner == player.Role){
+                if(AllSpaces[i].PlayingCard != null){
+                    AllSpaces[i].PlayingCard.ResetHP();
+                }
+            }
         }
     }
 
@@ -425,7 +453,7 @@ public class GameManager : MonoBehaviour
     /* --- Values and resource checks --------------------------------------------- */
     public bool CheckGold(int requirement){
         bool isOk = false;
-        if(Host.Gold >= requirement){
+        if(PlayerAtPlay.Gold >= requirement){
             isOk = true;
         } else {
             DisplayFloatingMessage("Not enough gold", Camera.main.ScreenToWorldPoint(Input.mousePosition), "gold");
