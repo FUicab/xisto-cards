@@ -100,5 +100,9 @@ public enum UnitSubtype {
     Mercenary,
     Assistant,
     Pacifist,
-    Combo    
+    Combo,
+    Executioner,
+    Noble,
+    Solitary,
+    Inheritor
 }

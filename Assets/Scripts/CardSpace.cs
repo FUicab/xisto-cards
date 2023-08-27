@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using static Card;
 using static ActionType;
+using static PlayerProfile;
 
 public class CardSpace : MonoBehaviour, IDropHandler {
 
@@ -16,11 +17,8 @@ public class CardSpace : MonoBehaviour, IDropHandler {
     public CardDisplay PlayingCard;
     public List<CardSpace> Defenders = new List<CardSpace>();
     public CardSpace AttachedTrap;
-    public enum PlayerRole {
-        Host,
-        Opponent
-    }
-    public PlayerRole Owner = PlayerRole.Host;
+    public PlayerRole OwnerRole = PlayerRole.Host;
+    public PlayerProfile Owner;
 
     /* ONLY FOR TESTING*/
     public bool AutoDrawCards = false; // Will draw a random card (valid for the space) from the deck at the start of the game.
@@ -39,33 +37,28 @@ public class CardSpace : MonoBehaviour, IDropHandler {
         }
     }
 
-    public bool AttemptToPlaceCard(CardDisplay display){
+    public bool AttemptToPlaceCard(CardDisplay CDisplay){
         bool WasPlaced = false;
 
-        if(display != null && !display.HasBeenPlayed){
-            PlayingCard = display;
-            CardObject = PlayingCard.gameObject;
-        } else {
+        if(CDisplay == null || CDisplay.HasBeenPlayed){
             return false;
         }
         
-        if(!Occupied && !PlayingCard.HasBeenPlayed){
+        if(!Occupied && !CDisplay.HasBeenPlayed){
 
             //Check if the unit is defender and if the slot is also not for traps
-            if(CanPlaceCard(PlayingCard.card) ){
+            if(CanPlaceCard(CDisplay.card) ){
                 //Check if we can buy this card
-                if(GM.CanBuyCard(PlayingCard)){
-                    PlaceCard(PlayingCard);
+                if(GM.CanBuyCard(CDisplay)){
+                    PlaceCard(CDisplay);
                     GM.CurrentAction.Clean();
                     GM.CurrentAction.Action = ActionType.CardPurchase;
-                    GM.CurrentAction.BoughtCard = PlayingCard;
-                    GM.CurrentAction.PurchasePrice = PlayingCard.card.Cost;
-                    GM.CurrentAction.HandIndexOrigin = PlayingCard.HandIndex;
-                    PlayingCard.SetPurchaseAction(GM.RegisterCurrentAction());
+                    GM.CurrentAction.BoughtCard = CDisplay;
+                    GM.CurrentAction.PurchasePrice = CDisplay.card.Cost;
+                    GM.CurrentAction.HandIndexOrigin = CDisplay.HandIndex;
+                    CDisplay.SetPurchaseAction(GM.RegisterCurrentAction());
                     Occupied = true;
                     WasPlaced = true;
-                } else {
-                    PlayingCard = null;
                 }
             }
         }
@@ -74,7 +67,7 @@ public class CardSpace : MonoBehaviour, IDropHandler {
     }
 
     public bool CanPlaceCard(Card card){
-        return (Owner == GM.PlayerAtPlay.Role) &&
+        return (Owner == GM.PlayerAtPlay) &&
                (CardPlacingIsValid(card));
     }
 
@@ -88,13 +81,23 @@ public class CardSpace : MonoBehaviour, IDropHandler {
         card.HasBeenPlayed = true;
         card.OriginParent = transform;
         card.transform.SetParent(card.OriginParent);
-        card.rectTransform.anchoredPosition = card.OriginParent.position;
         card.rectTransform.rotation = card.OriginParent.rotation;
+        // LeanTween.move(card.rectTransform, card.OriginParent.position, 0.25f);
+        if(Owner.useAI){
+            card.rectTransform.LeanMove(card.OriginParent.position, 0.25f).setEaseOutQuart().setOnComplete(AnimEnd);
+        } else {
+            card.rectTransform.anchoredPosition = card.OriginParent.position;
+        }
         GM.PlayerAtPlay.AvailableCardSlots[card.HandIndex] = true;
+        PlayingCard = card;
+        CardObject = card.gameObject;
         if(card.mySpace != null){
             card.mySpace.Occupied = false;
         }
         card.mySpace = this;
+    }
+    public void AnimEnd(){
+        Debug.Log("Animation ended");
     }
     public void UndoPlaceCard(){
         PlayingCard.HasBeenPlayed = false;
@@ -116,10 +119,10 @@ public class CardSpace : MonoBehaviour, IDropHandler {
         // GM = FindObjectOfType<GameManager>();
         // GM = GameObject.Find("GameManager").GetComponent<GameManager>();
         CardSocketImage = gameObject.GetComponent<Image>();
-        if(Owner == PlayerRole.Opponent){
-            // Debug.Log(CardSocketImage);
-            // CardSocketImage.Colorize = new Color(255,238,238,255);
-        }
+        // if(Owner == PlayerRole.Opponent){
+        //     Debug.Log(CardSocketImage);
+        //     CardSocketImage.Colorize = new Color(255,238,238,255);
+        // }
         outline = GetComponent<Outline>();
     }
 

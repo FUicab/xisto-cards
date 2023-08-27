@@ -64,7 +64,7 @@ public class PlayerAI{
             }
 
         }
-        // GM.TurnEnd();
+        GM.TurnEnd();
         TurnCount ++;
     }
 
@@ -103,10 +103,12 @@ public class PlayerAI{
         if(PrioritizesDefendersForDefendingOnly){
             for (int i = 0; i < Profile.Hand.Length; i++){
                 CardDisplay card = Profile.Hand[i].gameObject.GetComponentInChildren<CardDisplay>();
-                if(card != null && card.card.Type != UnitType.Trap){
+                if(card != null){
                     if(space.Line == CardLine.Defensive && card.card.Subtypes.Contains(UnitSubtype.Defender)){
                         ValidCards.Add(card); }
                     if(space.Line == CardLine.Backline && !card.card.Subtypes.Contains(UnitSubtype.Defender)){
+                        ValidCards.Add(card); }
+                    if(space.Line == CardLine.Trap && card.card.Type == UnitType.Trap){
                         ValidCards.Add(card); }
                 }
             }
@@ -114,19 +116,32 @@ public class PlayerAI{
         if(ValidCards.Count == 0 || !PrioritizesDefendersForDefendingOnly){
             for (int i = 0; i < Profile.Hand.Length; i++){
                 CardDisplay card = Profile.Hand[i].gameObject.GetComponentInChildren<CardDisplay>();
-                if(card != null && card.card.Type != UnitType.Trap){
-                    ValidCards.Add(card);
+                if(card != null){
+                    if(space.Line == CardLine.Trap && card.card.Type == UnitType.Trap){
+                        ValidCards.Add(card);
+                    }
+                    if(space.Line != CardLine.Trap && card.card.Type != UnitType.Trap){
+                        ValidCards.Add(card);
+                    }
                 }
             }
         }
-        return ValidCards[Random.Range(0,ValidCards.Count-1)];
+        if(ValidCards.Count == 0){
+            return null;
+        } else {
+            return ValidCards[Random.Range(0,ValidCards.Count-1)];
+        }
     }
 
     public List<CardDisplay> PickBestAttackers(){
         List<CardDisplay> AttackerList = new List<CardDisplay>();
+        AttackerList.Sort((a,b) => {
+            return b.attack.CompareTo(a.attack);
+        });
         foreach (var card in MyCards){
             if(card.attack > 0 && AttackerList.Count < GM.ActionPoints){
                 AttackerList.Add(card);
+                Debug.Log(card.card.Name);
             }
         }
         return AttackerList;
@@ -147,6 +162,7 @@ public class PlayerAI{
                 if(CanBeAttacked){ AttackableTargets.Add(OSpace.PlayingCard); }
             }
         }
+        AttackableTargets.Sort((a,b) => a.hp.CompareTo(b.hp));
         foreach (var target in AttackableTargets){
             int health = target.hp;
             foreach (var attacker in Attackers){
@@ -189,7 +205,7 @@ public class PlayerAI{
         OpponentSpaces.Clear();
         for (int i = 0; i < AllSpaces.Length; i++)
         {
-            if(AllSpaces[i].Owner == Profile.Role){
+            if(AllSpaces[i].Owner == Profile){
                 MyCardSpaces.Add(AllSpaces[i]);
                 switch(AllSpaces[i].Line){
                     case CardLine.Backline: MyBackline.Add(AllSpaces[i]); break;

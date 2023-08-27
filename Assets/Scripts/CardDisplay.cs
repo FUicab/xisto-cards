@@ -99,7 +99,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
     }
 
     public void OnBeginDrag(PointerEventData eventData){
-        if(mySpace != null && mySpace.Owner != PlayerRole.Host){
+        if(mySpace != null && mySpace.Owner.Role != PlayerRole.Host){
             return;
         }
         // if(mySpace != null){
@@ -118,7 +118,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
     private CardSpace LastHoveredSpace;
     public void OnDrag(PointerEventData eventData){
 
-        if((mySpace!=null && mySpace.Owner != PlayerRole.Host) || HasBeenPlayed){
+        if((mySpace!=null && mySpace.Owner.Role != PlayerRole.Host) || HasBeenPlayed){
             return;
         }
 
@@ -166,11 +166,11 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
             // } else if(GM.CurrentAction.Attacker == this){
             //     GM.SetAttacker(null);
             // }
-            if(mySpace.Owner == PlayerRole.Host){
+            if(mySpace.Owner.Role == PlayerRole.Host){
                 GM.SetAttacker(this);
             }
 
-            if(mySpace.Owner == PlayerRole.Opponent){
+            if(mySpace.Owner.Role == PlayerRole.Opponent){
                 GM.SetAttackTarget(this);
             }
 

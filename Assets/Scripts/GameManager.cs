@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
     public Transform[] Hand;
     // public bool[] AvailableCardSlots;
 
-    public List<CardSlot> PlayingCards;
+    // public List<CardSlot> PlayingCards;
     public CardSpace[] CardSpaces;
  
     /* >>>> The list of the individual cards that will be available */
@@ -58,43 +58,6 @@ public class GameManager : MonoBehaviour
 
 
     [SerializeField] private Canvas MainUI;
-
-    public void DrawCard(){
-
-        // if(Deck.Count>=1){
-        //     CardTest RandomCard = Deck[Random.Range(0, Deck.Count)];
-        //     for(int i = 0; i < AvailableCardSlots.Length; i++){
-        //         if(AvailableCardSlots[i] == true){
-        //             RandomCard.gameObject.SetActive(true);
-        //             RandomCard.HandIndex = i;
-        //             RandomCard.transform.position = CardSlots[i].position;
-        //             RandomCard.HasBeenPlayed = false;
-        //             AvailableCardSlots[i] = false;
-        //             Deck.Remove(RandomCard);
-        //             return;
-        //         }
-        //     }
-        // }
-        // if(Deck.Count>=1){
-        //     Card RandomCard = Deck[Random.Range(0, Deck.Count)];
-        //     for(int i = 0; i < AvailableCardSlots.Length; i++){
-        //         if(AvailableCardSlots[i] == true){
-        //             // RandomCard.gameObject.SetActive(true);
-        //             // RandomCard.HandIndex = i;
-        //             // RandomCard.transform.position = CardSlots[i].position;
-        //             // RandomCard.HasBeenPlayed = false;
-        //             GameObject CardInstance = Instantiate(CardObject,Hand[i].transform);
-        //             CardInstance.GetComponent<CardDisplay>().card = RandomCard;
-        //             CardInstance.GetComponent<CardDisplay>().HasBeenPlayed = false;
-        //             CardInstance.GetComponent<CardDisplay>().HandIndex = i;
-        //             AvailableCardSlots[i] = false;
-        //             Deck.Remove(RandomCard);
-        //             return;
-        //         }
-        //     }
-        // }
-
-    }
 
     public void DrawCards(PlayerProfile player){
 
@@ -124,9 +87,14 @@ public class GameManager : MonoBehaviour
         // Debug.Log(GameObject.FindObjectsOfType<CardSpace>());
         CardSpaces = GameObject.FindObjectsOfType<CardSpace>();
         foreach(CardSpace slot in CardSpaces){
-            CardSlot newSlot = new CardSlot();
-            newSlot.Line = slot.Line;
-            PlayingCards.Add(newSlot);
+            // CardSlot newSlot = new CardSlot();
+            // newSlot.Line = slot.Line;
+            // PlayingCards.Add(newSlot);
+            if(slot.OwnerRole == PlayerRole.Host){
+                slot.Owner = Host;
+            } else if(slot.OwnerRole == PlayerRole.Opponent){
+                slot.Owner = Opponent;
+            }
         }
         // ConfirmButtonObject.SetActive(false);
         MainUI = GameObject.Find("MainUI").GetComponent<Canvas>();
@@ -188,9 +156,9 @@ public class GameManager : MonoBehaviour
     /* --- Attack management functions --------------------------------------------- */
     public void SetAttacker(CardDisplay attacker){
         
-        Debug.Log(attacker.gameObject.name);
+        // Debug.Log(attacker.mySpace.gameObject.name);
         // We check if this is a proper "attacker" overall
-        if(attacker == null || (attacker != null && attacker.mySpace.Owner != PlayerAtPlay.Role)){
+        if(attacker == null || (attacker != null && attacker.mySpace.Owner != PlayerAtPlay)){
             return;
         }
 
@@ -247,9 +215,9 @@ public class GameManager : MonoBehaviour
         }
     }
     public void SetAttackTarget(CardDisplay attackTarget){
-        Debug.Log(attackTarget.gameObject.name);
+        // Debug.Log(attackTarget.gameObject.name);
         CurrentAction.Action = ActionType.PerformAttack;
-        if(attackTarget == null || (attackTarget != null  && attackTarget.mySpace.Owner == PlayerAtPlay.Role) || CurrentAction.Attacker == null || ActionPoints <= 0){
+        if(attackTarget == null || (attackTarget != null  && attackTarget.mySpace.Owner == PlayerAtPlay) || CurrentAction.Attacker == null || ActionPoints <= 0){
             return;
         }
         if(!CheckValidAttack(attackTarget)){
@@ -407,7 +375,7 @@ public class GameManager : MonoBehaviour
     public void HealCardsOfPlayer(PlayerProfile player){
         CardSpace[] AllSpaces = Object.FindObjectsOfType<CardSpace>();
         for (int i = 0; i < AllSpaces.Length; i++){
-            if(AllSpaces[i].Owner == player.Role){
+            if(AllSpaces[i].Owner == player){
                 if(AllSpaces[i].PlayingCard != null){
                     AllSpaces[i].PlayingCard.ResetHP();
                 }
@@ -559,4 +527,9 @@ public class PlayerProfile{
     public int Gold = 0;
     public Transform[] Hand;
     public bool[] AvailableCardSlots;
+}
+
+public enum PlayerRole {
+    Host,
+    Opponent
 }

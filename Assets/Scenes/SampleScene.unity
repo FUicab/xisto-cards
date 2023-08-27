@@ -583,6 +583,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
+      propertyPath: OwnerRole
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
       propertyPath: AutoDrawCards
       value: 0
       objectReference: {fileID: 0}
@@ -906,6 +910,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
       propertyPath: Owner
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
+      propertyPath: OwnerRole
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
@@ -2324,6 +2332,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
       propertyPath: Owner
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
+      propertyPath: OwnerRole
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
@@ -3890,8 +3902,6 @@ MonoBehaviour:
   - {fileID: 1080917685}
   - {fileID: 423671478}
   - {fileID: 46014567}
-  AvailableCardSlots: 01010101010101
-  PlayingCards: []
   CardSpaces: []
   CardList:
   - {fileID: 11400000, guid: e549e3fea25119f4d8c565c31bf940d6, type: 2}
@@ -3901,6 +3911,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a968466772dd038438c075d310a5743f, type: 2}
   - {fileID: 11400000, guid: 50bb0ed52ead427489da53ef4762099c, type: 2}
   - {fileID: 11400000, guid: 78d1cc2387a1cff4e85c6c7deae9106a, type: 2}
+  - {fileID: 11400000, guid: 50680e7f142ded947a88d0ed810a074e, type: 2}
+  - {fileID: 11400000, guid: 5d4ed055858698f429ed3c6e71864a76, type: 2}
+  - {fileID: 11400000, guid: 17c5b708fbc42274782cec7e5f2170fa, type: 2}
   Deck: []
   DiscardPile: []
   Players: []
@@ -4137,6 +4150,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
       propertyPath: Owner
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
+      propertyPath: OwnerRole
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
@@ -4627,6 +4644,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
       propertyPath: Owner
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
+      propertyPath: OwnerRole
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
@@ -5940,6 +5961,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
+      propertyPath: OwnerRole
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
       propertyPath: AttachedTrap
       value: 
       objectReference: {fileID: 1550747125}
@@ -6713,6 +6738,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
+      propertyPath: OwnerRole
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
       propertyPath: AutoDrawCards
       value: 0
       objectReference: {fileID: 0}
@@ -6843,6 +6872,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
       propertyPath: Owner
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
+      propertyPath: OwnerRole
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
@@ -6987,6 +7020,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
       propertyPath: Owner
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
+      propertyPath: OwnerRole
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
@@ -7676,6 +7713,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
+      propertyPath: OwnerRole
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
       propertyPath: AttachedTrap
       value: 
       objectReference: {fileID: 541253920}
@@ -7811,6 +7852,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
       propertyPath: Owner
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
+      propertyPath: OwnerRole
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
@@ -8189,6 +8234,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
+      propertyPath: OwnerRole
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
       propertyPath: AttachedTrap
       value: 
       objectReference: {fileID: 1550747125}
@@ -8316,6 +8365,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
       propertyPath: Owner
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
+      propertyPath: OwnerRole
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
@@ -8989,6 +9042,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
       propertyPath: Owner
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
+      propertyPath: OwnerRole
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5320343544017814397, guid: 513ba2bea48631343b628bee5e55a18a, type: 3}
