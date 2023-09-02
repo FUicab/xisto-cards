@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using static System.DateTime;
 using static Card;
 using static ActionType;
 using static PlayerProfile;
@@ -37,7 +38,7 @@ public class CardSpace : MonoBehaviour, IDropHandler {
         }
     }
 
-    public bool AttemptToPlaceCard(CardDisplay CDisplay){
+    public bool AttemptToPlaceCard(CardDisplay CDisplay, System.Action OnAnimEnd = null){
         bool WasPlaced = false;
 
         if(CDisplay == null || CDisplay.HasBeenPlayed){
@@ -50,7 +51,8 @@ public class CardSpace : MonoBehaviour, IDropHandler {
             if(CanPlaceCard(CDisplay.card) ){
                 //Check if we can buy this card
                 if(GM.CanBuyCard(CDisplay)){
-                    PlaceCard(CDisplay);
+                    if(OnAnimEnd == null){ PlaceCard(CDisplay); } else
+                                         { PlaceCard(CDisplay, OnAnimEnd); }
                     GM.CurrentAction.Clean();
                     GM.CurrentAction.Action = ActionType.CardPurchase;
                     GM.CurrentAction.BoughtCard = CDisplay;
@@ -59,7 +61,11 @@ public class CardSpace : MonoBehaviour, IDropHandler {
                     CDisplay.SetPurchaseAction(GM.RegisterCurrentAction());
                     Occupied = true;
                     WasPlaced = true;
+                } else {
+                    if(OnAnimEnd != null){ OnAnimEnd(); }
                 }
+            } else {
+                if(OnAnimEnd != null){ OnAnimEnd(); }
             }
         }
 
@@ -77,14 +83,23 @@ public class CardSpace : MonoBehaviour, IDropHandler {
                (card.Type == UnitType.Trap && Line==CardLine.Trap);
     }
 
-    private void PlaceCard(CardDisplay card){
+    // public delegate void VoidCallback();
+    // private void AnimEnd(System.DateTime? time = null){
+    //     Debug.Log("Animation ended");
+    // }
+    private void PlaceCard(CardDisplay card, System.Action OnAnimEnd = null){
         card.HasBeenPlayed = true;
         card.OriginParent = transform;
         card.transform.SetParent(card.OriginParent);
         card.rectTransform.rotation = card.OriginParent.rotation;
         // LeanTween.move(card.rectTransform, card.OriginParent.position, 0.25f);
         if(Owner.useAI){
-            card.rectTransform.LeanMove(card.OriginParent.position, 0.25f).setEaseOutQuart().setOnComplete(AnimEnd);
+            // Debug.Log(OnAnimEnd);
+            if(OnAnimEnd != null){
+                card.rectTransform.LeanMove(card.OriginParent.position, 0.25f).setEaseOutQuart().setOnComplete(delegate(){OnAnimEnd();});
+            } else {
+                card.rectTransform.LeanMove(card.OriginParent.position, 0.25f).setEaseOutQuart();
+            }
         } else {
             card.rectTransform.anchoredPosition = card.OriginParent.position;
         }
@@ -95,9 +110,6 @@ public class CardSpace : MonoBehaviour, IDropHandler {
             card.mySpace.Occupied = false;
         }
         card.mySpace = this;
-    }
-    public void AnimEnd(){
-        Debug.Log("Animation ended");
     }
     public void UndoPlaceCard(){
         PlayingCard.HasBeenPlayed = false;

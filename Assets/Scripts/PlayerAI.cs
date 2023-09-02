@@ -7,7 +7,9 @@ using static CardSpace;
 using static CardLine;
 using static UnitType;
 using static UnitSubtype;
+using static ActionType;
 
+[System.Serializable]
 public class PlayerAI{
     public PlayerProfile Profile;
     
@@ -19,6 +21,8 @@ public class PlayerAI{
     public bool StartsWithBasicTrio = true; // On its first move will place at least a backline card with a defender
     public bool UnprotectedTargetsFirst = true; // Will try to attack undefended cards if possible
     public AIActionStrategy ChosenStrategy = AIActionStrategy.SaveGold;
+    [SerializeField] public List<AITurnActions> MyActions = new List<AITurnActions>();
+    public int currentActionIndex = 0;
 
     /* --- AI card management --------------------------------------------- */
     public List<CardSpace> MyCardSpaces = new List<CardSpace>();
@@ -27,6 +31,7 @@ public class PlayerAI{
     public List<CardSpace> MyDefline = new List<CardSpace>();
     public List<CardSpace> OpponentSpaces = new List<CardSpace>();
     public List<CardDisplay> MyCards = new List<CardDisplay>();
+    public List<CardDisplay> ReservedCards = new List<CardDisplay>(); // These cards are currently being used in other actions within this same turn and will not be considered for other actions
 
     /* --- Other variables --------------------------------------------- */
     public GameManager GM; // GM is designated during instatiation
@@ -40,15 +45,23 @@ public class PlayerAI{
         if(Profile == null){ return; }
         if(!Profile.useAI){ return; }
 
+        MyActions.Clear();
+        for (int i = 0; i < GM.ActionPoints; i++){
+            MyActions.Add(new AITurnActions());
+        }
+
         LookAtSpaces();
-        if(StartsWithBasicTrio && TurnCount <= 1){ PlaceStartingComp(); } else {
+        if(StartsWithBasicTrio && TurnCount <= 1){
+            SetActionsForStartingComp();
+            StartActions();
+        } else {
             
             RandomizeStrategy();
-
-            Debug.Log(ChosenStrategy);
+            GenerateActions();
+            // Debug.Log(ChosenStrategy);
             switch (ChosenStrategy){
                 case AIActionStrategy.PlaceCards:
-                    RandomlyPlaceCardsInHand();
+                    StartActions();
                 break;
 
                 case AIActionStrategy.Aggresive:
@@ -64,7 +77,7 @@ public class PlayerAI{
             }
 
         }
-        GM.TurnEnd();
+        // GM.TurnEnd();
         TurnCount ++;
     }
 
@@ -77,6 +90,47 @@ public class PlayerAI{
         }
     }
 
+    public void StartActions(){
+        currentActionIndex = 0;
+        PerformAction();
+    }
+
+    public void GenerateActions(){
+        switch (ChosenStrategy){
+            case AIActionStrategy.PlaceCards:
+                foreach (var action in MyActions){
+                    action.Action = ActionType.CardPurchase;
+                    action.DestinationSlot = PickRandomAvailableSpace();
+                    CardDisplay ChosenCard = PickAValidCardForSpace(action.DestinationSlot);
+                    ReservedCards.Add(ChosenCard);
+                    action.BoughtCard = ChosenCard;
+                }
+            break;
+        }
+    }
+    public void PerformNextAction(){
+        PerformAction();
+    }
+    public void PerformAction(){
+        bool Success = true;
+        if(GM.ActionPoints <= 0 || currentActionIndex >= GM.InitialActionPoints){
+            GM.TurnEnd();
+            return;
+        }
+        AITurnActions CurrentAction = MyActions[currentActionIndex];
+        switch (CurrentAction.Action){
+            case ActionType.CardPurchase:
+                if(CurrentAction.BoughtCard != null){
+                    CurrentAction.DestinationSlot.AttemptToPlaceCard(CurrentAction.BoughtCard, PerformNextAction);
+                } else {
+                    Success = false;
+                }
+            break;
+        }
+        currentActionIndex ++;
+        if(!Success){ PerformNextAction(); }
+    }
+
     public void RandomlyPlaceCardsInHand(){
         foreach (var cardInHand in Profile.Hand){
             CardDisplay card = cardInHand.gameObject.GetComponentInChildren<CardDisplay>();
@@ -87,23 +141,39 @@ public class PlayerAI{
         for (int i = 0; i < 3; i++)
         {
             RandomIndex = Random.Range(0,Profile.Hand.Length);
-            // CardDisplay RandomCardDisplay = Profile.Hand[RandomIndex].gameObject.GetComponentInChildren<CardDisplay>();
             do {
-                RandomSlot = Random.Range(0,MyCardSpaces.Count-1);
+                RandomSlot = Random.Range(0,MyCardSpaces.Count);
             } while (MyCardSpaces[RandomSlot].Occupied);
-            // Debug.Log(RandomCardDisplay.card.Name);
-            // Debug.Log(MyCardSpaces[RandomSlot].gameObject.name);
-            // Debug.Log(MyCardSpaces[RandomSlot].AttemptToPlaceCard(RandomCardDisplay));
             MyCardSpaces[RandomSlot].AttemptToPlaceCard(PickAValidCardForSpace(MyCardSpaces[RandomSlot]));
         }
+        GM.TurnEnd();
+    }
+    public void PlaceRandomCardFromHand(){
+        if(GM.ActionPoints <= 0){
+            return;
+        }
+        int RandomSlot = 0;
+        do {
+            RandomSlot = Random.Range(0,MyCardSpaces.Count);
+        } while (MyCardSpaces[RandomSlot].Occupied);
+        MyCardSpaces[RandomSlot].AttemptToPlaceCard(PickAValidCardForSpace(MyCardSpaces[RandomSlot]), PlaceRandomCardFromHand);
     }
 
-    public CardDisplay PickAValidCardForSpace(CardSpace space){
+    public CardSpace PickRandomAvailableSpace(){
+        int RandomSlot = 0;
+        do {
+            RandomSlot = Random.Range(0,MyCardSpaces.Count);
+        } while (MyCardSpaces[RandomSlot].Occupied);
+        return MyCardSpaces[RandomSlot];
+    }
+
+    public CardDisplay PickAValidCardForSpace(CardSpace space, bool reserve = false){
         List<CardDisplay> ValidCards = new List<CardDisplay>();
+        // Debug.Log("Picking...");
         if(PrioritizesDefendersForDefendingOnly){
             for (int i = 0; i < Profile.Hand.Length; i++){
                 CardDisplay card = Profile.Hand[i].gameObject.GetComponentInChildren<CardDisplay>();
-                if(card != null){
+                if(card != null && !ReservedCards.Contains(card)){
                     if(space.Line == CardLine.Defensive && card.card.Subtypes.Contains(UnitSubtype.Defender)){
                         ValidCards.Add(card); }
                     if(space.Line == CardLine.Backline && !card.card.Subtypes.Contains(UnitSubtype.Defender)){
@@ -116,7 +186,7 @@ public class PlayerAI{
         if(ValidCards.Count == 0 || !PrioritizesDefendersForDefendingOnly){
             for (int i = 0; i < Profile.Hand.Length; i++){
                 CardDisplay card = Profile.Hand[i].gameObject.GetComponentInChildren<CardDisplay>();
-                if(card != null){
+                if(card != null && !ReservedCards.Contains(card)){
                     if(space.Line == CardLine.Trap && card.card.Type == UnitType.Trap){
                         ValidCards.Add(card);
                     }
@@ -129,7 +199,7 @@ public class PlayerAI{
         if(ValidCards.Count == 0){
             return null;
         } else {
-            return ValidCards[Random.Range(0,ValidCards.Count-1)];
+            return ValidCards[Random.Range(0,ValidCards.Count)];
         }
     }
 
@@ -141,7 +211,7 @@ public class PlayerAI{
         foreach (var card in MyCards){
             if(card.attack > 0 && AttackerList.Count < GM.ActionPoints){
                 AttackerList.Add(card);
-                Debug.Log(card.card.Name);
+                // Debug.Log(card.card.Name);
             }
         }
         return AttackerList;
@@ -179,20 +249,47 @@ public class PlayerAI{
                 GM.SetAttacker(attacker);
                 GM.SetAttackTarget(ChosenTarget);
             }
+            GM.TurnEnd();
         } else {
-            RandomlyPlaceCardsInHand();
+            ChosenStrategy = AIActionStrategy.PlaceCards;
+            GenerateActions();
+            StartActions();
+            // RandomlyPlaceCardsInHand();
             return;
         }
     }
 
     public void PlaceStartingComp(){
-        CardSpace ChosenSpace = MyBackline[Random.Range(0,MyBackline.Count-1)];
+        CardSpace ChosenSpace = MyBackline[Random.Range(0,MyBackline.Count)];
         // Debug.Log(ChosenSpace);
         CardDisplay ChosenCard = PickAValidCardForSpace(ChosenSpace);
         ChosenSpace.AttemptToPlaceCard(ChosenCard);
         foreach (var defSpace in ChosenSpace.Defenders){
             defSpace.AttemptToPlaceCard(PickAValidCardForSpace(defSpace));
         }
+    }
+
+    public void SetActionsForStartingComp(){
+        CardSpace ChosenSpace = MyBackline[Random.Range(0,MyBackline.Count)];
+        // Debug.Log(ChosenSpace);
+        CardDisplay ChosenCard = PickAValidCardForSpace(ChosenSpace);
+        ReservedCards.Add(ChosenCard);
+        // ChosenSpace.AttemptToPlaceCard(ChosenCard);
+        
+        int i = 0;
+        foreach (var defSpace in ChosenSpace.Defenders){
+            // Debug.Log(i);
+            // CardDisplay ChosenCard = PickAValidCardForSpace(ChosenSpace);
+            CardDisplay ChosenDefender = PickAValidCardForSpace(defSpace);
+            ReservedCards.Add(ChosenDefender);
+            MyActions[i].Action = ActionType.CardPurchase;
+            MyActions[i].DestinationSlot = defSpace;
+            MyActions[i].BoughtCard = ChosenDefender;
+            i++;
+        }
+        MyActions[i].Action = ActionType.CardPurchase;
+        MyActions[i].DestinationSlot = ChosenSpace;
+        MyActions[i].BoughtCard = ChosenCard;
     }
 
     public void LookAtSpaces(){
@@ -228,4 +325,15 @@ public enum AIActionStrategy{
     Aggresive,
     Defensive,
     SaveGold
+}
+
+/* This has to be different from regular Turn Actions because we don't want the AI to work around them */
+[System.Serializable]
+public class AITurnActions{
+    public ActionType Action;
+    public CardDisplay Attacker;
+    public CardDisplay AttackTarget;
+    public CardDisplay BoughtCard;
+    public CardSpace DestinationSlot;
+    public int PurchasePrice;
 }

@@ -51,10 +51,11 @@ public class GameManager : MonoBehaviour
     public List<TurnAction> TurnActions;
     public TurnAction CurrentAction = new TurnAction();
     public int ActionPoints = 3;
+    public int InitialActionPoints = 3;
     public PlayerProfile Host;
     public PlayerProfile Opponent;
     public PlayerProfile PlayerAtPlay;
-    public PlayerAI OpponentAI = new PlayerAI();
+    [SerializeField] public PlayerAI OpponentAI = new PlayerAI();
 
 
     [SerializeField] private Canvas MainUI;
@@ -141,6 +142,7 @@ public class GameManager : MonoBehaviour
     public void ClearActionPoints(){
         TurnActions.Clear();
         ActionPoints = 3;
+        InitialActionPoints = ActionPoints;
         ActionPointsText.text = ActionPoints.ToString();
     }
 
