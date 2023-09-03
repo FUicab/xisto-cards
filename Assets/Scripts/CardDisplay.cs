@@ -175,6 +175,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
             }
 
         }
+        EventManager.OnClickCard(this);
     }
 
     /* --- Outline functions --------------------------------------------- */

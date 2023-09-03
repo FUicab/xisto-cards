@@ -109,6 +109,7 @@ public class PlayerAI{
         }
     }
     public void PerformNextAction(){
+        currentActionIndex ++;
         PerformAction();
     }
     public void PerformAction(){
@@ -127,7 +128,6 @@ public class PlayerAI{
                 }
             break;
         }
-        currentActionIndex ++;
         if(!Success){ PerformNextAction(); }
     }
 

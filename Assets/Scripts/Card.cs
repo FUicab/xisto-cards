@@ -17,7 +17,7 @@ public class Card : ScriptableObject
     public Sprite Artwork;
     public Faction Origin;
     public int MaxHP;
-    private int HP;
+    public int HP;
     public int Armor;
     public int Attack;
     public List<Skill> SkillSet;
