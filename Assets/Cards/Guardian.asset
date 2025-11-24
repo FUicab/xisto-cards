@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e4e87ef44ac0934298d8773e4605e72, type: 3}
   m_Name: Guardian
   m_EditorClassIdentifier: 
-  Name: Guardian
+  Name: Keranean Guardian
   CardCount: 10
   Type: 0
   Subtypes: 00000000
@@ -20,5 +20,70 @@ MonoBehaviour:
   Artwork: {fileID: 21300000, guid: 0978c04fb7e94e141a857bd2a8fc4133, type: 3}
   Origin: 2
   MaxHP: 4
-  Armor: 3
+  HP: 0
+  Armor: 030000000300000002000000
   Attack: 2
+  SkillSet: []
+  CardActions:
+  - actionType: 2
+    attacks: []
+    buffs:
+    - target: 0
+      Attribute: 2
+      amount: 1
+      specialEffect: 0
+      requirements: []
+      specialBehavior: 
+    - target: 0
+      Attribute: 1
+      amount: 1
+      specialEffect: 0
+      requirements: []
+      specialBehavior: 
+  - actionType: 1
+    attacks: []
+    buffs: []
+  - actionType: 0
+    attacks:
+    - damageType: 0
+      damageMultiplier: 1
+      target: 2
+      attackEffect: []
+      temporaryBuffs:
+      - target: 0
+        Attribute: 0
+        amount: 2
+        specialEffect: 0
+        requirements:
+        - requirement: 4
+          subtypeRequirement: 
+          factionRequirement: 
+          targetIs: 00000000
+        specialBehavior: 
+      requirements: []
+    buffs: []
+  - actionType: 1
+    attacks: []
+    buffs: []
+  - actionType: 1
+    attacks: []
+    buffs: []
+  - actionType: 2
+    attacks: []
+    buffs:
+    - target: 0
+      Attribute: 2
+      amount: 2
+      specialEffect: 0
+      requirements: []
+      specialBehavior: 
+    - target: 6
+      Attribute: 2
+      amount: 0
+      specialEffect: 1
+      requirements:
+      - requirement: 0
+        subtypeRequirement: 00000000
+        factionRequirement: 
+        targetIs: 
+      specialBehavior: 

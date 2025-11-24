@@ -20,6 +20,49 @@ MonoBehaviour:
   Artwork: {fileID: 21300000, guid: f14ed8df6482db442ad6c7ba04655680, type: 3}
   Origin: 3
   MaxHP: 4
-  Armor: 0
+  HP: 0
+  Armor: 010000000000000000000000
   Attack: 5
   SkillSet: []
+  CardActions:
+  - actionType: 0
+    attacks:
+    - damageType: 0
+      damageMultiplier: 1
+      target: 2
+      attackEffect: []
+      temporaryBuffs: []
+      requirements: []
+    buffs: []
+  - actionType: 1
+    attacks: []
+    buffs: []
+  - actionType: 1
+    attacks: []
+    buffs: []
+  - actionType: 1
+    attacks: []
+    buffs: []
+  - actionType: 0
+    attacks:
+    - damageType: 0
+      damageMultiplier: 1
+      target: 2
+      attackEffect:
+      - effectType: 2
+        useAttackValue: 0
+        value: 0
+        buffs:
+        - target: 5
+          Attribute: 2
+          amount: 1
+          requirements: []
+          specialBehavior: 
+        debuffs: []
+        requirements: []
+      temporaryBuffs: []
+      requirements: []
+    buffs: []
+  - actionType: 1
+    attacks: []
+    buffs: []

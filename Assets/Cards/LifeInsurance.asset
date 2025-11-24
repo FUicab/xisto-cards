@@ -20,5 +20,8 @@ MonoBehaviour:
   Artwork: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
   Origin: 5
   MaxHP: 0
-  Armor: 0
+  HP: 0
+  Armor: 000000000000000000000000
   Attack: 0
+  SkillSet: []
+  CardActions: []

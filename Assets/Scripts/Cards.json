@@ -9,7 +9,7 @@
         "subtypes": ["defender","assistant"],
         "stats": {
             "hp": 6,
-            "armor": 2,
+            "armor": [2,0,0],
             "damage": 2
         },
         "skills": []
@@ -23,7 +23,7 @@
         "subtypes": ["assistant"],
         "stats": {
             "hp": 3,
-            "armor": 1,
+            "armor": [1,0,0],
             "damage": 4
         },
         "skills": [
@@ -46,7 +46,7 @@
         "subtypes": ["defender","combo"],
         "stats": {
             "hp": 8,
-            "armor": 2,
+            "armor": [2,0,0],
             "damage": 6
         },
         "skills": []
@@ -60,7 +60,7 @@
         "subtypes": [],
         "stats": {
             "hp": 4,
-            "armor": 8,
+            "armor": [8,0,0],
             "damage": 7
         },
         "skills": [
@@ -83,7 +83,7 @@
         "subtypes": [],
         "stats": {
             "hp": 2,
-            "armor": 8,
+            "armor": [8,0,0],
             "damage": 16
         },
         "skills": []
@@ -97,7 +97,7 @@
         "subtypes": ["mercenary"],
         "stats": {
             "hp": 9,
-            "armor": 2,
+            "armor": [2,0,0],
             "damage": 6
         },
         "skills": [
@@ -127,7 +127,7 @@
         "subtypes": ["assistant"],
         "stats": {
             "hp": 12,
-            "armor": 2,
+            "armor": [2,0,0],
             "damage": 4
         },
         "skills": [
@@ -164,7 +164,7 @@
         "subtypes": ["dual","defender"],
         "stats": {
             "hp": 15,
-            "armor": 3,
+            "armor": [3,0,0],
             "damage": 5
         },
         "skills": [
@@ -187,7 +187,7 @@
         "subtypes": [],
         "stats": {
             "hp": 1,
-            "armor": 3,
+            "armor": [3,0,0],
             "damage": 7
         },
         "skills": [
@@ -217,7 +217,7 @@
         "subtypes": ["assistant"],
         "stats": {
             "hp": 7,
-            "armor": 4,
+            "armor": [4,0,0],
             "damage": 5
         },
         "skills": [
@@ -251,7 +251,7 @@
         "subtypes": ["defender"],
         "stats": {
             "hp": 18,
-            "armor": 2,
+            "armor": [2,0,0],
             "damage": 8
         },
         "skills": [
@@ -285,7 +285,7 @@
         "subtypes": ["defender"],
         "stats": {
             "hp": 16,
-            "armor": 3,
+            "armor": [3,0,0],
             "damage": 7
         },
         "skills": [
@@ -319,7 +319,7 @@
         "subtypes": [],
         "stats": {
             "hp": 14,
-            "armor": 2,
+            "armor": [2,0,0],
             "damage": 8
         },
         "skills": [

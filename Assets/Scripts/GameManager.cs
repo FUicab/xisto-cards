@@ -31,6 +31,7 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI OpponentGoldText;
     public TextMeshProUGUI ActionPointsText;
     public GameObject FloatingMessageObject;
+    public GameObject DeckUI;
 
     public Transform[] Hand;
     // public bool[] AvailableCardSlots;
@@ -58,7 +59,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] public PlayerAI OpponentAI = new PlayerAI();
 
 
-    [SerializeField] private Canvas MainUI;
+    [SerializeField] public Canvas MainUI;
 
     public void DrawCards(PlayerProfile player){
 
@@ -67,6 +68,7 @@ public class GameManager : MonoBehaviour
                 if(player.AvailableCardSlots[i] == true){
                     Card RandomCard = Deck[Random.Range(0, Deck.Count)];
                     GameObject CardInstance = Instantiate(CardObject,player.Hand[i].transform);
+                    // GameObject CardInstance = Instantiate(CardObject,DeckUI.transform);
                     CardInstance.GetComponent<CardDisplay>().card = RandomCard;
                     CardInstance.GetComponent<CardDisplay>().HasBeenPlayed = false;
                     CardInstance.GetComponent<CardDisplay>().HandIndex = i;
@@ -248,7 +250,7 @@ public class GameManager : MonoBehaviour
     public void ConfirmAttack(){
         int damageDealt;
         if(PerformingAttack && AttackTarget!=null && Attacker!=null){
-            damageDealt = Attacker.attack - AttackTarget.armor;
+            damageDealt = Attacker.attack - AttackTarget.armor[0];
             if(damageDealt <= 0){
                 damageDealt = 1;
             }
@@ -294,7 +296,7 @@ public class GameManager : MonoBehaviour
     }
 
     public int GetDamage(CardDisplay attacker, CardDisplay target){
-        int dmg = attacker.attack - target.armor;
+        int dmg = attacker.attack - target.armor[0];
         if(dmg <= 0){
             dmg = 1;
         }

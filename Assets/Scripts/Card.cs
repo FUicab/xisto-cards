@@ -18,9 +18,10 @@ public class Card : ScriptableObject
     public Faction Origin;
     public int MaxHP;
     public int HP;
-    public int Armor;
+    public int[] Armor = new int[3];
     public int Attack;
     public List<Skill> SkillSet;
+    public List<CardAction> CardActions;
 
     private GameManager GM;
 
@@ -51,32 +52,6 @@ public class StatModifier{
     public string originSkill = ""; // The name of the skill that provides the modifier
     public string provider = ""; // The name of the card who gives this modifier
     public int value = 0;
-}
-
-[System.Serializable]
-public class Skill{
-    public bool shared = false;
-    public bool pasive = false;
-    public string title = "";
-    public string description = "";
-    public List<SkillEffect> skillEffects;
-}
-
-[System.Serializable]
-public class SkillEffect{
-    public enum SkillTarget{
-        toSelf
-    }
-    public enum SkillTriggers{
-        onAttack
-    }
-
-    public SkillTarget target;
-    public SkillTriggers trigger;
-    public string[] conditions;
-    public string[] effects;
-    public bool oncePerTurn;
-    public bool oncePerGame;
 }
 
 public enum UnitType {

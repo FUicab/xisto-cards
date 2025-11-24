@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e4e87ef44ac0934298d8773e4605e72, type: 3}
   m_Name: Archer
   m_EditorClassIdentifier: 
-  Name: Archer
+  Name: Voucari bowman
   CardCount: 10
   Type: 0
   Subtypes: 0300000002000000
@@ -20,6 +20,47 @@ MonoBehaviour:
   Artwork: {fileID: 21300000, guid: 431e710e66d0d52469f10e592ef3a4d1, type: 3}
   Origin: 3
   MaxHP: 2
-  Armor: 0
+  HP: 0
+  Armor: 000000000000000000000000
   Attack: 7
   SkillSet: []
+  CardActions:
+  - actionType: 0
+    attacks:
+    - damageType: 1
+      damageMultiplier: 1
+      target: 0
+      attackEffect: []
+      temporaryBuffs:
+      - target: 0
+        Attribute: 0
+        amount: 1
+        requirements: []
+        specialBehavior: 
+      requirements:
+      - requirement: 3
+        subtypeRequirement: 02000000
+        factionRequirement: 05000000
+        targetIs: 
+    buffs: []
+  - actionType: 1
+    attacks: []
+    buffs: []
+  - actionType: 1
+    attacks: []
+    buffs: []
+  - actionType: 0
+    attacks:
+    - damageType: 1
+      damageMultiplier: 1
+      target: 2
+      attackEffect: []
+      temporaryBuffs: []
+      requirements: []
+    buffs: []
+  - actionType: 1
+    attacks: []
+    buffs: []
+  - actionType: 1
+    attacks: []
+    buffs: []

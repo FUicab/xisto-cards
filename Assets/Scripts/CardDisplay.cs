@@ -16,7 +16,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 
     /* Card values calculated after all modifiers and other independent values */
     public int hp;
-    public int armor;
+    public int[] armor = new int[3];
     public int attack;
     public int armorPierce;
     public int cost;
@@ -89,8 +89,13 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
         attack = card.Attack;
         cost = card.Cost;
         HPText.text = hp.ToString();
-        ArmorText.text = armor.ToString();
+        ArmorText.text = $"{armor[0].ToString()}/{armor[1].ToString()}/{armor[2].ToString()}";
         AttackText.text = attack.ToString();
+
+        // rectTransform.anchoredPosition = RectTransformUtility.PixelAdjustRect(GM.DeckUI.GetComponent<RectTransform>(), GM.MainUI).size;
+        // rectTransform.anchoredPosition = GM.DeckUI.transform.position;
+        rectTransform.anchoredPosition = GM.DeckUI.GetComponent<RectTransform>().position;
+        rectTransform.LeanMove(OriginPosition, 0.5f).setEaseOutQuart().setOnComplete(OnDrawAnimationEnd);
     }
 
     void MoveToDiscardPile(){
@@ -210,7 +215,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
         }
         GM.DisplayDamage(dmg, this);
         HPText.text = hp.ToString();
-        ArmorText.text = armor.ToString();
+        ArmorText.text = armor[0].ToString();
         AttackText.text = attack.ToString();
     }
     public void SetLine(CardDisplay target = null){
@@ -226,6 +231,10 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
     }
     public int GetDamageAgainstTarget(CardDisplay target){
         return GM.GetDamage(this, target);
+    }
+
+    public void OnDrawAnimationEnd(){
+        // transform.SetParent(GM.PlayerAtPlay.Hand[HandIndex].transform);
     }
 
 }
