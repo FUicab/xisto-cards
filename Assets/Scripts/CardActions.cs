@@ -7,6 +7,7 @@ public class CardAction{
 
     public ActionTypes actionType;
     public List<AttackAction> attacks;
+    public bool attackCountCanBeAugmented = false;
     public List<BuffAction> buffs;
 
 }
@@ -26,6 +27,7 @@ public class AttackEffect{
     public AttackEffects effectType;
     public bool useAttackValue;
     public int value;
+    public bool valueCanBeAugmented = false;
     public List<BuffAction> buffs;
     public List<BuffAction> debuffs;
     public List<Requirements> requirements;
@@ -36,6 +38,7 @@ public class BuffAction{
     public TargetTypes target;
     public Attributes Attribute;
     public int amount;
+    public bool amountCanBeAugmented = false;
     public BuffSpecialEffects specialEffect;
     public List<Requirements> requirements;
     public List<SpecialBehavior> specialBehavior;

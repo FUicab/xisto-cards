@@ -35,6 +35,8 @@ MonoBehaviour:
       - target: 0
         Attribute: 0
         amount: 1
+        amountCanBeAugmented: 1
+        specialEffect: 0
         requirements: []
         specialBehavior: 
       requirements:
@@ -42,12 +44,15 @@ MonoBehaviour:
         subtypeRequirement: 02000000
         factionRequirement: 05000000
         targetIs: 
+    attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
     attacks: []
+    attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
     attacks: []
+    attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 0
     attacks:
@@ -57,10 +62,13 @@ MonoBehaviour:
       attackEffect: []
       temporaryBuffs: []
       requirements: []
+    attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
     attacks: []
+    attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
     attacks: []
+    attackCountCanBeAugmented: 0
     buffs: []

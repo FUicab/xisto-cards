@@ -27,14 +27,18 @@ MonoBehaviour:
   CardActions:
   - actionType: 2
     attacks: []
+    attackCountCanBeAugmented: 0
     buffs:
     - target: 0
       Attribute: 2
       amount: 2
+      amountCanBeAugmented: 1
+      specialEffect: 0
       requirements: []
       specialBehavior: 
   - actionType: 1
     attacks: []
+    attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 0
     attacks:
@@ -44,18 +48,24 @@ MonoBehaviour:
       attackEffect: []
       temporaryBuffs: []
       requirements: []
+    attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
     attacks: []
+    attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
     attacks: []
+    attackCountCanBeAugmented: 0
     buffs: []
-  - actionType: 0
+  - actionType: 2
     attacks: []
+    attackCountCanBeAugmented: 0
     buffs:
     - target: 1
       Attribute: 3
       amount: 1
+      amountCanBeAugmented: 1
+      specialEffect: 0
       requirements: []
       specialBehavior: 

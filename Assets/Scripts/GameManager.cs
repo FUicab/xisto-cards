@@ -30,6 +30,9 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI GoldText;
     public TextMeshProUGUI OpponentGoldText;
     public TextMeshProUGUI ActionPointsText;
+    public TextMeshProUGUI Dice1UI;
+    public TextMeshProUGUI Dice2UI;
+    public TextMeshProUGUI Dice3UI;
     public GameObject FloatingMessageObject;
     public GameObject DeckUI;
 
@@ -56,6 +59,8 @@ public class GameManager : MonoBehaviour
     public PlayerProfile Host;
     public PlayerProfile Opponent;
     public PlayerProfile PlayerAtPlay;
+    public List<Dice> Dices;
+
     [SerializeField] public PlayerAI OpponentAI = new PlayerAI();
 
 
@@ -114,6 +119,10 @@ public class GameManager : MonoBehaviour
         OpponentAI.Profile = Opponent;
         DrawCards(Host);
         DrawCards(Opponent);
+        Dices.Add(new Dice());
+        Dices.Add(new Dice());
+        Dices.Add(new Dice());
+        RollDices();
         PlayerAtPlay = Host;
     }
 
@@ -369,7 +378,8 @@ public class GameManager : MonoBehaviour
         } else {
             PlayerAtPlay = Host;
         }
-        HealCardsOfPlayer(PlayerAtPlay);
+        // HealCardsOfPlayer(PlayerAtPlay);
+        RollDices();
         if(PlayerAtPlay.useAI){
             OpponentAI.StartAI();
         }
@@ -385,6 +395,23 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void RollDices()
+    {
+        foreach (var dice in Dices)
+        {
+            dice.Reset();
+        }
+        if(Dices[0].value == Dices[1].value && Dices[1].value == Dices[2].value)
+        {
+            Dices[0].wild = true;
+            Dices[1].wild = true;
+            Dices[2].wild = true;
+        }
+        Dice1UI.text = Dices[0].value.ToString();
+        Dice2UI.text = Dices[1].value.ToString();
+        Dice3UI.text = Dices[2].value.ToString();
     }
 
     /* --- Action check functions --------------------------------------------- */
@@ -531,6 +558,31 @@ public class PlayerProfile{
     public int Gold = 0;
     public Transform[] Hand;
     public bool[] AvailableCardSlots;
+}
+
+[System.Serializable]
+public class Dice
+{
+    public int value;
+    public bool used = false;
+    public bool wild = false;
+    
+    public Dice()
+    {
+        
+    }
+
+    public void Roll()
+    {
+        value = Random.Range(1,7);
+    }
+
+    public void Reset()
+    {
+        Roll();
+        used = false;
+        wild = false;
+    }
 }
 
 public enum PlayerRole {

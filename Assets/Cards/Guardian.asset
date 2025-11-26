@@ -27,21 +27,25 @@ MonoBehaviour:
   CardActions:
   - actionType: 2
     attacks: []
+    attackCountCanBeAugmented: 0
     buffs:
     - target: 0
       Attribute: 2
       amount: 1
+      amountCanBeAugmented: 0
       specialEffect: 0
       requirements: []
       specialBehavior: 
     - target: 0
       Attribute: 1
       amount: 1
+      amountCanBeAugmented: 0
       specialEffect: 0
       requirements: []
       specialBehavior: 
   - actionType: 1
     attacks: []
+    attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 0
     attacks:
@@ -53,6 +57,7 @@ MonoBehaviour:
       - target: 0
         Attribute: 0
         amount: 2
+        amountCanBeAugmented: 1
         specialEffect: 0
         requirements:
         - requirement: 4
@@ -61,25 +66,31 @@ MonoBehaviour:
           targetIs: 00000000
         specialBehavior: 
       requirements: []
+    attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
     attacks: []
+    attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
     attacks: []
+    attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 2
     attacks: []
+    attackCountCanBeAugmented: 0
     buffs:
     - target: 0
       Attribute: 2
       amount: 2
+      amountCanBeAugmented: 0
       specialEffect: 0
       requirements: []
       specialBehavior: 
     - target: 6
       Attribute: 2
       amount: 0
+      amountCanBeAugmented: 0
       specialEffect: 1
       requirements:
       - requirement: 0

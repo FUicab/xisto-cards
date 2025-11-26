@@ -44,6 +44,7 @@ MonoBehaviour:
       attackEffect: []
       temporaryBuffs: []
       requirements: []
+    attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 0
     attacks:
@@ -53,9 +54,11 @@ MonoBehaviour:
       attackEffect: []
       temporaryBuffs: []
       requirements: []
+    attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
     attacks: []
+    attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 0
     attacks:
@@ -67,6 +70,7 @@ MonoBehaviour:
       - target: 0
         Attribute: 0
         amount: 2
+        amountCanBeAugmented: 1
         specialEffect: 0
         requirements:
         - requirement: 0
@@ -75,10 +79,13 @@ MonoBehaviour:
           targetIs: 
         specialBehavior: 
       requirements: []
+    attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
     attacks: []
+    attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
     attacks: []
+    attackCountCanBeAugmented: 0
     buffs: []

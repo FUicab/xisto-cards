@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LifeInsurance
   m_EditorClassIdentifier: 
   Name: Life Insurance
-  CardCount: 3
+  CardCount: 0
   Type: 4
   Subtypes: 
   Cost: 0
