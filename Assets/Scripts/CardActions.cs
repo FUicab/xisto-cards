@@ -2,9 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class CardAction{
+public class CardSkill
+{
+    
+}
 
+[System.Serializable]
+public class CardAction : CardSkill
+{
     public ActionTypes actionType;
     public List<AttackAction> attacks;
     public bool attackCountCanBeAugmented = false;
@@ -58,23 +63,27 @@ public class Requirements{
 }
 
 [System.Serializable]
-public class Skill{
-    public bool canBeShared = false;
+public class PassiveSkill : CardSkill{
     public string title = "";
     public string description = "";
-    public List<SkillEffect> skillEffects;
-}
-
-[System.Serializable]
-public class SkillEffect{
-    public TargetTypes target;
     public TriggerTypes trigger;
-    public bool oncePerTurn;
-    public bool oncePerGame;
-    public List<Requirements> requirements;
+    public bool canBeShared = false;
+    public bool oncePerTurn = false;
+    // public bool oncePerGame = false;
     public List<BuffAction> buffs;
     public List<BuffAction> deBuffs;
 }
+
+// [System.Serializable]
+// public class SkillEffect{
+//     public TargetTypes target;
+//     public TriggerTypes trigger;
+//     public bool oncePerTurn;
+//     public bool oncePerGame;
+//     public List<Requirements> requirements;
+//     public List<BuffAction> buffs;
+//     public List<BuffAction> deBuffs;
+// }
 
 public enum Attributes{
     Attack,

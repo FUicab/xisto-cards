@@ -23,18 +23,7 @@ MonoBehaviour:
   HP: 0
   Armor: 010000000300000001000000
   Attack: 4
-  SkillSet:
-  - canBeShared: 0
-    title: Anti-armor
-    description: Deal +2 damage against defending units.
-    skillEffects:
-    - target: 0
-      trigger: 0
-      oncePerTurn: 0
-      oncePerGame: 0
-      requirements: []
-      buffs: []
-      deBuffs: []
+  SkillSet: []
   CardActions:
   - actionType: 0
     attacks:

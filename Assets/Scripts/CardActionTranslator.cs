@@ -21,242 +21,126 @@ public class CardActionMenu
             if(item.actionType != ActionTypes.RepeatFromAbove)
             {
                 if(index != 0){ actionIndex += 1; }
-                actions.Add(new CardActionObject(item));
+                actions.Add(new CardActionObject(item, sourceCard));
                 actions[actionIndex].diceValues.Add(index+1);
             } else {
                 actions[actionIndex].diceValues.Add(index+1);
             }
             index += 1;
         }
+        foreach (var action in actions)
+        {
+            if(action.diceValues.Count == 1)
+            {
+                action.diceAverageValue = action.diceValues[0];
+            } else if (action.diceValues.Count % 2 == 0) {
+                action.diceAverageValue = action.diceValues[action.diceValues.Count/2];
+            } else {
+                action.diceAverageValue = action.diceValues[(action.diceValues.Count-1) / 2];
+            }
+        }
     }
 }
 
 [System.Serializable]
-public class CardActionObject
+public class CardSkillObject
 {
     public List<int> diceValues = new List<int>();
-    public CardAction action;
+    public int diceAverageValue = 0;
     public string description;
     public string shortDescription;
+    public bool isAction;
+    public CardDisplay sourceCard;
 
-    public CardActionObject(CardAction theAction)
+    public CardSkillObject(CardDisplay theCard)
     {
-        action = theAction;
-        description = TranslateActionToText();
+        sourceCard = theCard;
     }
 
-    public string TranslateActionToText(){
+    // Could not find a proper structure for this. May remove later.
+    public string BuildListOfItems(List<object> items, string prefix = "", int value = 0, string content = "", string suffix = "")
+    {
+        string text = "";
+        return text;
+    }
+
+    public string GenerateSkillAttackText(CardAction skill)
+    {
         string text = "";
         int index = 0;
         int subIndex = 0;
-
-        switch (action.actionType)
+        // Checks if all attacks are the same. This is to list each one separately or just display the number of attacks.
+        bool allSameAttackTypes = true;
+        foreach (var attack in skill.attacks)
         {
-            case ActionTypes.Attack:
-
-                // Checks if all attacks are the same. This is to list each one separately or just display the number of attacks.
-                bool allSameAttackTypes = true;
-                foreach (var attack in action.attacks)
+            if(attack.damageType != skill.attacks[0].damageType)
+            {
+                allSameAttackTypes = false;
+            }
+        }
+        if (allSameAttackTypes && skill.attacks.Count > 1) {
+            AttackAction attack = skill.attacks[0];
+            text += TextFormat(skill.attacks.Count.ToString(),null,skill.attackCountCanBeAugmented) + " ";
+            text += DamageTypeDescription(attack.damageType);
+            text += " attacks";
+        } else {
+            index = 0;
+            foreach (var attack in skill.attacks)
+            {
+                if(index == 0)
                 {
-                    if(attack.damageType != action.attacks[0].damageType)
+                    if(skill.attacks.Count > 1)
                     {
-                        allSameAttackTypes = false;
+                        text += "A ";
+                    }
+                    text += DamageTypeDescription(attack.damageType);
+                    text += " attack";
+                } else {
+                    if(skill.attacks.Count-1 == index)
+                    {
+                        text += " and a ";
+                        text += DamageTypeDescription(attack.damageType);
+                        text += " attack";
+                    } else {
+                        text += ", a";
+                        text += DamageTypeDescription(attack.damageType);
+                        text += " attack";
                     }
                 }
-                if (allSameAttackTypes && action.attacks.Count > 1) {
-                    AttackAction attack = action.attacks[0];
-                    text += TextFormat(action.attacks.Count.ToString(),null,action.attackCountCanBeAugmented) + " ";
-                    text += DamageTypeDescription(attack.damageType);
-                    text += " attacks";
-                } else {
-                    index = 0;
-                    foreach (var attack in action.attacks)
+
+                if(attack.damageMultiplier != 1f)
+                {
+                    text += " with <b>"+(attack.damageMultiplier*100)+"%</b> effectivity";
+                }
+
+                // Lists all attack effects
+                subIndex = 0;
+                if (attack.attackEffect.Count > 0)
+                {
+                    text += " and ";
+                    foreach (var effect in attack.attackEffect)
                     {
-                        if(index == 0)
+                        if(subIndex == 0)
                         {
-                            if(action.attacks.Count > 1)
-                            {
-                                text += "A ";
-                            }
-                            text += DamageTypeDescription(attack.damageType);
-                            text += " attack";
+                            text += AttackEffectDescription(effect);
                         } else {
-                            if(action.attacks.Count-1 == index)
+                            if(attack.temporaryBuffs.Count-1 == subIndex)
                             {
-                                text += " and a ";
-                                text += DamageTypeDescription(attack.damageType);
-                                text += " attack";
+                                text += " and ";
+                                text += AttackEffectDescription(effect);
                             } else {
-                                text += ", a";
-                                text += DamageTypeDescription(attack.damageType);
-                                text += " attack";
+                                text += ", ";
+                                text += AttackEffectDescription(effect);
                             }
                         }
 
-                        // Lists all attack effects
-						subIndex = 0;
-						if (attack.attackEffect.Count > 0)
+                        // Lists the requirements for those attack effects
+                        if(effect.requirements.Count > 0)
                         {
-                            text += " and ";
-							foreach (var effect in attack.attackEffect)
-							{
-								if(subIndex == 0)
-								{
-									text += AttackEffectDescription(effect);
-								} else {
-									if(attack.temporaryBuffs.Count-1 == subIndex)
-									{
-										text += " and ";
-										text += AttackEffectDescription(effect);
-									} else {
-										text += ", ";
-										text += AttackEffectDescription(effect);
-									}
-								}
-
-                                // Lists the requirements for those attack effects
-								if(effect.requirements.Count > 0)
-								{
-									Requirements requirement = effect.requirements[0];
-									if(requirement.requirement == RequirementTypes.TargetHasSubtypes || requirement.requirement == RequirementTypes.TargetBelongsToFactions || requirement.requirement == RequirementTypes.TargetHasSubtypesOrFactions)
-									{
-										text += " when targetting ";
-										subIndex = 0;
-										foreach (var subtype in requirement.subtypeRequirement)
-										{
-											if(subIndex == 0)
-											{
-												text += TextFormat(TargetSubtypeDescription(subtype,true),"subtype");
-											} else {
-												if(requirement.subtypeRequirement.Count-1 == index){
-													text += " and ";
-													text += TextFormat(TargetSubtypeDescription(subtype,true),"subtype");
-												} else {
-													text += ", ";
-													text += TextFormat(TargetSubtypeDescription(subtype,true),"subtype");
-												}
-											}
-											subIndex += 1;
-										}
-										if(requirement.requirement == RequirementTypes.TargetHasSubtypesOrFactions)
-										{
-											text += " and ";
-										}
-										subIndex = 0;
-										foreach (var faction in requirement.factionRequirement)
-										{
-											if(subIndex == 0)
-											{
-												text += TextFormat(TargetFactionDescription(faction,true),"faction");
-											} else {
-												if(requirement.factionRequirement.Count-1 == index){
-													text += " and ";
-													text += TextFormat(TargetFactionDescription(faction,true),"faction");
-												} else {
-													text += ", ";
-													text += TextFormat(TargetFactionDescription(faction,true),"faction");
-												}
-											}
-											subIndex += 1;
-										}
-									}
-                                    if(requirement.requirement == RequirementTypes.TargetHasAttackedThisRound)
-                                    {
-                                        text += " if the target has attacked during this round";
-                                    }
-								}
-
-								subIndex += 1;
-							}
-                        }
-
-                        // Lists the temporary buffs of an attack. These buffs only apply while performing the action.
-						subIndex = 0;
-                        if (attack.temporaryBuffs.Count > 0)
-                        {
-                            text += ", with ";
-							foreach (var tempBuff in attack.temporaryBuffs)
-							{
-								if(subIndex == 0)
-								{
-									if(tempBuff.amount < 0){ text += TextFormat(tempBuff.amount.ToString(),null,tempBuff.amountCanBeAugmented)+" "; } else { text += TextFormat("+"+tempBuff.amount.ToString(),null,tempBuff.amountCanBeAugmented)+" "; }
-									text += TextFormat(BuffAttributeDescription(tempBuff.Attribute),tempBuff.Attribute);
-								} else {
-									if(attack.temporaryBuffs.Count-1 == subIndex)
-									{
-										text += " and ";
-										if(tempBuff.amount < 0){ text += TextFormat(tempBuff.amount.ToString(),null,tempBuff.amountCanBeAugmented)+" "; } else { text += TextFormat("+"+tempBuff.amount.ToString(),null,tempBuff.amountCanBeAugmented)+" "; }
-										text += TextFormat(BuffAttributeDescription(tempBuff.Attribute),tempBuff.Attribute);
-									} else {
-										text += ", ";
-										if(tempBuff.amount < 0){ text += TextFormat(tempBuff.amount.ToString(),null,tempBuff.amountCanBeAugmented)+" "; } else { text += TextFormat("+"+tempBuff.amount.ToString(),null,tempBuff.amountCanBeAugmented)+" "; }
-										text += TextFormat(BuffAttributeDescription(tempBuff.Attribute),tempBuff.Attribute);
-									}
-								}
-
-                                // Lists the requirements for the temporary buffs on an attack.
-								if(tempBuff.requirements.Count > 0)
-								{
-									Requirements requirement = tempBuff.requirements[0];
-									if(requirement.requirement == RequirementTypes.TargetHasSubtypes || requirement.requirement == RequirementTypes.TargetBelongsToFactions || requirement.requirement == RequirementTypes.TargetHasSubtypesOrFactions)
-									{
-										text += " when targetting ";
-										subIndex = 0;
-										foreach (var subtype in requirement.subtypeRequirement)
-										{
-											if(subIndex == 0)
-											{
-												text += TextFormat(TargetSubtypeDescription(subtype,true),"subtype");
-											} else {
-												if(requirement.subtypeRequirement.Count-1 == index){
-													text += " and ";
-													text += TextFormat(TargetSubtypeDescription(subtype,true),"subtype");
-												} else {
-													text += ", ";
-													text += TextFormat(TargetSubtypeDescription(subtype,true),"subtype");
-												}
-											}
-											subIndex += 1;
-										}
-										if(requirement.requirement == RequirementTypes.TargetHasSubtypesOrFactions)
-										{
-											text += " and ";
-										}
-										subIndex = 0;
-										foreach (var faction in requirement.factionRequirement)
-										{
-											if(subIndex == 0)
-											{
-												text += TextFormat(TargetFactionDescription(faction,true),"faction");
-											} else {
-												if(requirement.factionRequirement.Count-1 == index){
-													text += " and ";
-													text += TextFormat(TargetFactionDescription(faction,true),"faction");
-												} else {
-													text += ", ";
-													text += TextFormat(TargetFactionDescription(faction,true),"faction");
-												}
-											}
-											subIndex += 1;
-										}
-									}
-                                    if(requirement.requirement == RequirementTypes.TargetHasAttackedThisRound)
-                                    {
-                                        text += " if the target has attacked during this round";
-                                    }
-                                }
-
-								subIndex += 1;
-							}
-                        }
-
-                        // Lists the requirements of an attack.
-                        if (attack.requirements.Count > 0)
-                        {
-                            Requirements requirement = attack.requirements[0];
+                            Requirements requirement = effect.requirements[0];
                             if(requirement.requirement == RequirementTypes.TargetHasSubtypes || requirement.requirement == RequirementTypes.TargetBelongsToFactions || requirement.requirement == RequirementTypes.TargetHasSubtypesOrFactions)
                             {
-                                text += ", but can only target ";
+                                text += " when targetting ";
                                 subIndex = 0;
                                 foreach (var subtype in requirement.subtypeRequirement)
                                 {
@@ -302,115 +186,256 @@ public class CardActionObject
                             }
                         }
 
-                        index += 1;
+                        subIndex += 1;
                     }
                 }
-            break;
-            case ActionTypes.Buff:
-                index = 0;
 
-                // Checks if all the buffs apply to the same target. This is to ensure that each buff describes who gets it.
-                bool allSameTarget = true;
-                foreach (var buff in action.buffs)
+                // Lists the temporary buffs of an attack. These buffs only apply while performing the skill.
+                subIndex = 0;
+                if (attack.temporaryBuffs.Count > 0)
                 {
-                    if(buff.target != action.buffs[0].target)
+                    text += ", with ";
+                    foreach (var tempBuff in attack.temporaryBuffs)
                     {
-                        allSameTarget = false;
-                    }
-                }
-                
-                foreach (var buff in action.buffs)
-                {
-                    if(index == 0){
-						switch (buff.Attribute)
-						{
-							case Attributes.Health: text += "Heals "; break;
-							default: text += "Grants "; break;
-						}
-						if(buff.amount != 0)
+                        if(subIndex == 0)
                         {
-							text += TextFormat("+"+buff.amount,null,buff.amountCanBeAugmented)+" ";
-							text += TextFormat(BuffAttributeDescription(buff.Attribute),buff.Attribute);
-							if (!allSameTarget || action.buffs.Count == 1)
-							{
-								text += " ";
-								text += TargetTypeDescription(buff.target);
-							}
-							text += BuffEffectDescription(buff);
-                        }
-                    } else {
-                        if(action.buffs.Count-1 == index){
-                            text += " and ";
-                            if(buff.Attribute == Attributes.Health)
-                            {
-                                text += "heals ";
-                            }
-							if(buff.amount != 0)
-                        	{
-								text += TextFormat("+"+buff.amount,null,buff.amountCanBeAugmented)+" ";
-								text += TextFormat(BuffAttributeDescription(buff.Attribute),buff.Attribute);
-								text += " ";
-								text += TargetTypeDescription(buff.target);
-							}
-							text += BuffEffectDescription(buff);
+                            if(tempBuff.amount < 0){ text += TextFormat(tempBuff.amount.ToString(),null,tempBuff.amountCanBeAugmented)+" "; } else { text += TextFormat("+"+tempBuff.amount.ToString(),null,tempBuff.amountCanBeAugmented)+" "; }
+                            text += TextFormat(BuffAttributeDescription(tempBuff.Attribute),tempBuff.Attribute);
                         } else {
-                            text += ", ";
-							if(buff.amount != 0)
-                        	{
-                            	text += TextFormat("+"+buff.amount,null,buff.amountCanBeAugmented)+" ";
-                            	text += TextFormat(BuffAttributeDescription(buff.Attribute),buff.Attribute);
-								if (!allSameTarget)
-								{
-									text += " ";
-									text += TargetTypeDescription(buff.target);
-								}
-							}
-							text += BuffEffectDescription(buff);
+                            if(attack.temporaryBuffs.Count-1 == subIndex)
+                            {
+                                text += " and ";
+                                if(tempBuff.amount < 0){ text += TextFormat(tempBuff.amount.ToString(),null,tempBuff.amountCanBeAugmented)+" "; } else { text += TextFormat("+"+tempBuff.amount.ToString(),null,tempBuff.amountCanBeAugmented)+" "; }
+                                text += TextFormat(BuffAttributeDescription(tempBuff.Attribute),tempBuff.Attribute);
+                            } else {
+                                text += ", ";
+                                if(tempBuff.amount < 0){ text += TextFormat(tempBuff.amount.ToString(),null,tempBuff.amountCanBeAugmented)+" "; } else { text += TextFormat("+"+tempBuff.amount.ToString(),null,tempBuff.amountCanBeAugmented)+" "; }
+                                text += TextFormat(BuffAttributeDescription(tempBuff.Attribute),tempBuff.Attribute);
+                            }
+                        }
+
+                        // Lists the requirements for the temporary buffs on an attack.
+                        if(tempBuff.requirements.Count > 0)
+                        {
+                            Requirements requirement = tempBuff.requirements[0];
+                            if(requirement.requirement == RequirementTypes.TargetHasSubtypes || requirement.requirement == RequirementTypes.TargetBelongsToFactions || requirement.requirement == RequirementTypes.TargetHasSubtypesOrFactions)
+                            {
+                                text += " when targetting ";
+                                subIndex = 0;
+                                foreach (var subtype in requirement.subtypeRequirement)
+                                {
+                                    if(subIndex == 0)
+                                    {
+                                        text += TextFormat(TargetSubtypeDescription(subtype,true),"subtype");
+                                    } else {
+                                        if(requirement.subtypeRequirement.Count-1 == index){
+                                            text += " and ";
+                                            text += TextFormat(TargetSubtypeDescription(subtype,true),"subtype");
+                                        } else {
+                                            text += ", ";
+                                            text += TextFormat(TargetSubtypeDescription(subtype,true),"subtype");
+                                        }
+                                    }
+                                    subIndex += 1;
+                                }
+                                if(requirement.requirement == RequirementTypes.TargetHasSubtypesOrFactions)
+                                {
+                                    text += " and ";
+                                }
+                                subIndex = 0;
+                                foreach (var faction in requirement.factionRequirement)
+                                {
+                                    if(subIndex == 0)
+                                    {
+                                        text += TextFormat(TargetFactionDescription(faction,true),"faction");
+                                    } else {
+                                        if(requirement.factionRequirement.Count-1 == index){
+                                            text += " and ";
+                                            text += TextFormat(TargetFactionDescription(faction,true),"faction");
+                                        } else {
+                                            text += ", ";
+                                            text += TextFormat(TargetFactionDescription(faction,true),"faction");
+                                        }
+                                    }
+                                    subIndex += 1;
+                                }
+                            }
+                            if(requirement.requirement == RequirementTypes.TargetHasAttackedThisRound)
+                            {
+                                text += " if the target has attacked during this round";
+                            }
+                        }
+
+                        subIndex += 1;
+                    }
+                }
+
+                // Lists the requirements of an attack.
+                if (attack.requirements.Count > 0)
+                {
+                    Requirements requirement = attack.requirements[0];
+                    if(requirement.requirement == RequirementTypes.TargetHasSubtypes || requirement.requirement == RequirementTypes.TargetBelongsToFactions || requirement.requirement == RequirementTypes.TargetHasSubtypesOrFactions)
+                    {
+                        text += ", but can only target ";
+                        subIndex = 0;
+                        foreach (var subtype in requirement.subtypeRequirement)
+                        {
+                            if(subIndex == 0)
+                            {
+                                text += TextFormat(TargetSubtypeDescription(subtype,true),"subtype");
+                            } else {
+                                if(requirement.subtypeRequirement.Count-1 == index){
+                                    text += " and ";
+                                    text += TextFormat(TargetSubtypeDescription(subtype,true),"subtype");
+                                } else {
+                                    text += ", ";
+                                    text += TextFormat(TargetSubtypeDescription(subtype,true),"subtype");
+                                }
+                            }
+                            subIndex += 1;
+                        }
+                        if(requirement.requirement == RequirementTypes.TargetHasSubtypesOrFactions)
+                        {
+                            text += " and ";
+                        }
+                        subIndex = 0;
+                        foreach (var faction in requirement.factionRequirement)
+                        {
+                            if(subIndex == 0)
+                            {
+                                text += TextFormat(TargetFactionDescription(faction,true),"faction");
+                            } else {
+                                if(requirement.factionRequirement.Count-1 == index){
+                                    text += " and ";
+                                    text += TextFormat(TargetFactionDescription(faction,true),"faction");
+                                } else {
+                                    text += ", ";
+                                    text += TextFormat(TargetFactionDescription(faction,true),"faction");
+                                }
+                            }
+                            subIndex += 1;
                         }
                     }
-                    index += 1;
+                    if(requirement.requirement == RequirementTypes.TargetHasAttackedThisRound)
+                    {
+                        text += " if the target has attacked during this round";
+                    }
                 }
-            break;
+
+                index += 1;
+            }
         }
-
-        text += ".";
-
         return text;
     }
 
-    // Could not find a proper structure for this. May remove later.
-    public string BuildListOfItems(List<object> items, string prefix = "", int value = 0, string content = "", string suffix = "")
+    public string GenerateSkillBuffText(List<BuffAction> buffs)
     {
         string text = "";
-        return text;
-    }
+        int index = 0;
+        int subIndex = 0;
 
-    public string DamageTypeDescription(DamageTypes damageType)
-    {
-        string text = "";
-        switch (damageType){
-            case DamageTypes.Melee:
-                text += "⚔️ Melee";
-            break;
-            case DamageTypes.Ranged:
-                text += "🎯 Ranged";
-            break;
-            case DamageTypes.Energy:
-                text += "✨ Energy";
-            break;
-            case DamageTypes.MeleeOrRanged:
-                text += "⚔️ Melee or 🎯 ranged";
-            break;
-            case DamageTypes.RangedOrEnergy:
-                text += "🎯 Ranged or ✨ energy";
-            break;
-            case DamageTypes.MeleeOrEnergy:
-                text += "⚔️ Melee or ✨ energy";
-            break;
-            case DamageTypes.MeleeOrRangedOrEnergy:
-                text += "⚔️ Melee, 🎯 ranged or ✨ energy";
-            break;
+        // Checks if all the buffs apply to the same target. This is to ensure that each buff describes who gets it.
+        bool allSameTarget = true;
+        foreach (var buff in buffs)
+        {
+            if(buff.target != buffs[0].target)
+            {
+                allSameTarget = false;
+            }
         }
+        
+        foreach (var buff in buffs)
+        {
+            if(index == 0){
+                switch (buff.Attribute)
+                {
+                    case Attributes.Health: text += "Heals "; break;
+                    default: text += "Grants "; break;
+                }
+                if(buff.amount != 0)
+                {
+                    text += TextFormat("+"+buff.amount,null,buff.amountCanBeAugmented)+" ";
+                    text += TextFormat(BuffAttributeDescription(buff.Attribute),buff.Attribute);
+                    if (!allSameTarget || buffs.Count == 1)
+                    {
+                        text += " ";
+                        text += TargetTypeDescription(buff.target);
+                    }
+                    text += BuffEffectDescription(buff);
+                }
+            } else {
+                if(buffs.Count-1 == index){
+                    text += " and ";
+                    if(buff.Attribute == Attributes.Health)
+                    {
+                        text += "heals ";
+                    }
+                    if(buff.amount != 0)
+                    {
+                        text += TextFormat("+"+buff.amount,null,buff.amountCanBeAugmented)+" ";
+                        text += TextFormat(BuffAttributeDescription(buff.Attribute),buff.Attribute);
+                        text += " ";
+                        text += TargetTypeDescription(buff.target);
+                    }
+                    text += BuffEffectDescription(buff);
+                } else {
+                    text += ", ";
+                    if(buff.amount != 0)
+                    {
+                        text += TextFormat("+"+buff.amount,null,buff.amountCanBeAugmented)+" ";
+                        text += TextFormat(BuffAttributeDescription(buff.Attribute),buff.Attribute);
+                        if (!allSameTarget)
+                        {
+                            text += " ";
+                            text += TargetTypeDescription(buff.target);
+                        }
+                    }
+                    text += BuffEffectDescription(buff);
+                }
+            }
+            if(buff.requirements.Count > 0)
+            {
+                text += " if ";
+                foreach (var requirement in buff.requirements)
+                {
+                    if(buff.target == TargetTypes.Self)
+                    {
+                        switch (requirement.requirement)
+                        {
+                            case RequirementTypes.TargetIsNextTo:
+                                text += "I'm next to";
+                                switch (requirement.targetIs[0])
+                                {
+                                    case TargetUnitDefinition.SameAsMyself:
+                                        text += " another <b>"+sourceCard.card.Name+"</b>";
+                                    break;
+                                }
+                            break;
+                            case RequirementTypes.TargetHasAttackedThisRound:
+                                text += "I have attacked before during this round";
+                            break;
+                        }
+                    }
+                    if(buff.target == TargetTypes.AlliesNextToMe)
+                    {
+                        switch (requirement.requirement)
+                        {
+                            case RequirementTypes.TargetHasSubtypes:
+                                text += "they are ";
+                                switch (requirement.subtypeRequirement[0])
+                                {
+                                    case UnitSubtype.Defender:
+                                        text += TextFormat(TargetSubtypeDescription(requirement.subtypeRequirement[0],true),"subtype");
+                                    break;
+                                }
+                            break;
+                        }
+                    }
+                }
+            }
+            index += 1;
+        }
+
         return text;
     }
 
@@ -441,6 +466,35 @@ public class CardActionObject
             }
         }
         text += $">{textToFormat}</color></b>";
+        return text;
+    }
+
+    public string DamageTypeDescription(DamageTypes damageType)
+    {
+        string text = "";
+        switch (damageType){
+            case DamageTypes.Melee:
+                text += "⚔️ Melee";
+            break;
+            case DamageTypes.Ranged:
+                text += "🎯 Ranged";
+            break;
+            case DamageTypes.Energy:
+                text += "✨ Energy";
+            break;
+            case DamageTypes.MeleeOrRanged:
+                text += "⚔️ Melee or 🎯 ranged";
+            break;
+            case DamageTypes.RangedOrEnergy:
+                text += "🎯 Ranged or ✨ energy";
+            break;
+            case DamageTypes.MeleeOrEnergy:
+                text += "⚔️ Melee or ✨ energy";
+            break;
+            case DamageTypes.MeleeOrRangedOrEnergy:
+                text += "⚔️ Melee, 🎯 ranged or ✨ energy";
+            break;
+        }
         return text;
     }
 
@@ -544,28 +598,28 @@ public class CardActionObject
         switch (subtype)
         {
             case UnitSubtype.Defender:
-                if(!plural){ text += "defender"; }else{ text += "defenders"; }
+                if(!plural){ text += "⚓ defender"; }else{ text += "⚓ defenders"; }
             break;
             case UnitSubtype.Mercenary:
-                if(!plural){ text += "mercenary"; }else{ text += "mercenaries"; }
+                if(!plural){ text += "🏴 mercenary"; }else{ text += "🏴 mercenaries"; }
             break;
             case UnitSubtype.Pacifist:
-                if(!plural){ text += "pacifist"; }else{ text += "pacifists"; }
+                if(!plural){ text += "🕊 pacifist"; }else{ text += "🕊 pacifists"; }
             break;
             case UnitSubtype.Combo:
-                text += "combo";
+                text += "⛓ combo";
             break;
             case UnitSubtype.Executioner:
-                if(!plural){ text += "executioner"; }else{ text += "executioners"; }
+                if(!plural){ text += "💀 executioner"; }else{ text += "💀 executioners"; }
             break;
             case UnitSubtype.Noble:
-                if(!plural){ text += "noble"; }else{ text += "nobles"; }
+                if(!plural){ text += "👑 noble"; }else{ text += "👑 nobles"; }
             break;
             case UnitSubtype.Solitary:
-                if(!plural){ text += "solitary"; }else{ text += "solitaries"; }
+                if(!plural){ text += "🕯 solitary"; }else{ text += "🕯 solitaries"; }
             break;
             case UnitSubtype.Inheritor:
-                if(!plural){ text += "inheritor"; }else{ text += "inheritors"; }
+                if(!plural){ text += "🧬 inheritor"; }else{ text += "🧬 inheritors"; }
             break;
         }
         return text;
@@ -629,5 +683,64 @@ public class CardActionObject
 			break;
 		}
 		return text;
+    }
+}
+
+[System.Serializable]
+public class CardActionObject : CardSkillObject
+{
+    public CardAction action;
+    public string description;
+    public bool isAction = true;
+    public CardDisplay sourceCard;
+
+    public CardActionObject(CardAction theSkill, CardDisplay theCard) : base(theCard)
+    {
+        action = theSkill;
+        sourceCard = theCard;
+        description = TranslateActionToText();
+    }
+
+    public string TranslateActionToText(){
+        string text = "";
+        int index = 0;
+        int subIndex = 0;
+
+        switch (action.actionType)
+        {
+            case ActionTypes.Attack:
+                text += GenerateSkillAttackText(action);
+            break;
+            case ActionTypes.Buff:
+                text += GenerateSkillBuffText(action.buffs);
+            break;
+        }
+
+        text += ".";
+
+        return text;
+    }
+}
+
+public class CardPassiveSkillObject : CardSkillObject
+{
+    public PassiveSkill skill;
+    public string description;
+    public bool isAction = false;
+    public CardDisplay sourceCard;
+
+    public CardPassiveSkillObject(PassiveSkill theSkill, CardDisplay theCard) : base(theCard)
+    {
+        skill = theSkill;
+        sourceCard = theCard;
+        description = TranslatePassiveSkillsToText();
+    }
+    public string TranslatePassiveSkillsToText()
+    {
+        string text = "";
+        text += $"<b>{skill.title}</b>: "+GenerateSkillBuffText(skill.buffs);
+        text += ".";
+
+        return text;
     }
 }

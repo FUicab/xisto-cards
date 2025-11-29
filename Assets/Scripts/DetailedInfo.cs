@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 using static CardDisplay;
 using static Card;
+using System.Threading.Tasks;
 
 public class DetailedInfo : MonoBehaviour
 {
@@ -17,8 +18,13 @@ public class DetailedInfo : MonoBehaviour
     public TextMeshProUGUI AttackText;
     public TextMeshProUGUI SubtypesText;
     public TextMeshProUGUI SkillInfoText;
+    public GameObject AbilityContainer;
+    public GameObject ActionBoxPrefab;
+    public List<GameObject> ActionBoxes = new List<GameObject>();
+    private GameManager GM;
     
     void OnEnable(){
+        GM = FindObjectOfType<GameManager>();
         EventManager.ClickCard += DisplayDetailedCardInfo;
     }
 
@@ -26,7 +32,7 @@ public class DetailedInfo : MonoBehaviour
         EventManager.ClickCard -= DisplayDetailedCardInfo;
     }
 
-    public void DisplayDetailedCardInfo(CardDisplay display){
+    public async void DisplayDetailedCardInfo(CardDisplay display){
         Card card = display.card;
         NameText.text = card.Name;
         CostText.text = card.Cost.ToString();
@@ -34,67 +40,152 @@ public class DetailedInfo : MonoBehaviour
         HPText.text = card.MaxHP.ToString();
         ArmorText.text = $"{card.Armor[0].ToString()}/{card.Armor[1].ToString()}/{card.Armor[2].ToString()}";
         AttackText.text = card.Attack.ToString();
-        SubtypesText.text = card.Origin+" - "+SubtypesAsText(card.Subtypes);
+        SubtypesText.text = "<b>"+card.Origin+"</b> - "+SubtypesAsText(card.Subtypes);
         SkillInfoText.text = PrettifiedSkillText(display);
+        CardActionMenu actionMenu = new CardActionMenu(display);
+        foreach (var actionBox in ActionBoxes)
+        {
+            Destroy(actionBox);
+        }
+        ActionBoxes.Clear();
+
+        int index = 0;
+        await Task.Delay(1);
+        foreach (var action in actionMenu.actions)
+        {
+            ActionBoxes.Add(Instantiate(ActionBoxPrefab));
+            ActionBoxes[index].transform.SetParent(AbilityContainer.transform, false);
+
+            Image actionBoxImage = ActionBoxes[index].GetComponent<Image>();
+            switch (action.diceAverageValue)
+            {
+                case 1: actionBoxImage.color = new Color( 0.93f, 0.93f, 0.93f, 0.65f); break;
+                case 2: actionBoxImage.color = new Color( 0.86f, 0.95f, 0.86f, 0.65f); break;
+                case 3: actionBoxImage.color = new Color( 0.86f, 0.89f, 0.95f, 0.65f); break;
+                case 4: actionBoxImage.color = new Color( 0.89f, 0.86f, 0.95f, 0.65f); break;
+                case 5: actionBoxImage.color = new Color( 0.95f, 0.86f, 0.86f, 0.65f); break;
+                case 6: actionBoxImage.color = new Color( 0.95f, 0.94f, 0.86f, 0.65f); break;
+            }
+
+            Transform DiceNumbers = ActionBoxes[index].transform.Find("DiceNumbers");
+            Transform SkillDetail = ActionBoxes[index].transform.Find("SkillDetail");
+            Transform Overlay = ActionBoxes[index].transform.Find("Overlay");
+            DiceNumbers.GetComponent<TextMeshProUGUI>().text = "";
+            bool thereIsDiceForThisAction = false;
+            foreach (var diceValue in action.diceValues)
+            {
+                switch (diceValue)
+                {
+                    case 1: DiceNumbers.GetComponent<TextMeshProUGUI>().text += "1️"; break;
+                    case 2: DiceNumbers.GetComponent<TextMeshProUGUI>().text += "2️"; break;
+                    case 3: DiceNumbers.GetComponent<TextMeshProUGUI>().text += "3️"; break;
+                    case 4: DiceNumbers.GetComponent<TextMeshProUGUI>().text += "4️"; break;
+                    case 5: DiceNumbers.GetComponent<TextMeshProUGUI>().text += "5️"; break;
+                    case 6: DiceNumbers.GetComponent<TextMeshProUGUI>().text += "6️"; break;
+                }
+                foreach (var diceResult in GM.Dices)
+                {
+                    if((diceResult.value == diceValue || diceResult.wild) && !diceResult.used && display.HasBeenPlayed)
+                    {
+                        thereIsDiceForThisAction = true;
+                    }
+                }
+                if (thereIsDiceForThisAction)
+                {
+                    Overlay.gameObject.SetActive(false);
+                }
+            }
+            SkillDetail.GetComponent<TextMeshProUGUI>().text = action.description;
+            float largestHeight = 0;
+            RectTransform DiceNumbersRect = DiceNumbers.GetComponent<RectTransform>();
+            RectTransform SkillDetailRect = SkillDetail.GetComponent<RectTransform>();
+            await Task.Delay(1);
+            if(DiceNumbersRect.rect.height > SkillDetailRect.rect.height)
+            {
+                largestHeight = DiceNumbersRect.rect.height;
+                SkillDetail.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.Unconstrained;
+                SkillDetailRect.sizeDelta = new Vector2(SkillDetailRect.sizeDelta.x,largestHeight);
+            } else {
+                largestHeight = SkillDetailRect.rect.height;
+                DiceNumbers.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.Unconstrained;
+                DiceNumbersRect.sizeDelta = new Vector2(DiceNumbersRect.sizeDelta.x,largestHeight);
+            }
+            await Task.Delay(1);
+            float stackedHeights = 0;
+            for (int i = index-1; i >= 0; i--)
+            {
+                stackedHeights += ActionBoxes[i].GetComponent<RectTransform>().sizeDelta.y;
+            }
+            ActionBoxes[index].GetComponent<RectTransform>().anchoredPosition = new Vector2(5,-5-SkillInfoText.GetComponent<RectTransform>().rect.height-stackedHeights);
+            // ActionBoxes[index].GetComponent<RectTransform>().sizeDelta = new Vector2(420,90);
+            ActionBoxes[index].GetComponent<RectTransform>().sizeDelta = new Vector2(420,largestHeight);
+
+            index ++;
+        }
     }
 
     public string SubtypesAsText(List<UnitSubtype> subtypes){
-        string SubtypeSymbols = "";
+        string text = "";
         foreach (var subtype in subtypes)
         {
             switch (subtype){
                 case UnitSubtype.Defender:
-                    SubtypeSymbols += "Df ";
-                break;
-                case UnitSubtype.Dual:
-                    SubtypeSymbols += "Du ";
+                    text += "⚓ Defender ";
                 break;
                 case UnitSubtype.Mercenary:
-                    SubtypeSymbols += "Mc ";
-                break;
-                case UnitSubtype.Assistant:
-                    SubtypeSymbols += "At ";
+                    text += "🏴 Mercenary ";
                 break;
                 case UnitSubtype.Pacifist:
-                    SubtypeSymbols += "Pc ";
+                    text += "🕊 Pacifist ";
                 break;
                 case UnitSubtype.Combo:
-                    SubtypeSymbols += "Cb ";
+                    text += "⛓ Combo ";
                 break;
                 case UnitSubtype.Executioner:
-                    SubtypeSymbols += "Ex ";
+                    text += "💀 Executioner ";
                 break;
                 case UnitSubtype.Noble:
-                    SubtypeSymbols += "Nb ";
+                    text += "👑 Noble ";
                 break;
                 case UnitSubtype.Solitary:
-                    SubtypeSymbols += "Sl ";
+                    text += "🕯 Solitary ";
                 break;
                 case UnitSubtype.Inheritor:
-                    SubtypeSymbols += "In ";
+                    text += "🧬 Inheritor ";
                 break;
             }   
         }
-        return SubtypeSymbols;
+        return text;
     }
 
     public string PrettifiedSkillText(CardDisplay cardDisplay){
         string SkillText = "";
         List<string> actionList = new List<string>();
-        CardActionMenu actionMenu = new CardActionMenu(cardDisplay);
-        int index = 0;
-        foreach (var action in actionMenu.actions)
+        // CardActionMenu actionMenu = new CardActionMenu(cardDisplay);
+        
+        List<CardPassiveSkillObject> passiveSkills = new List<CardPassiveSkillObject>();
+        foreach (var skill in cardDisplay.card.SkillSet)
         {
-            actionList.Add("");
-            foreach (var diceValue in action.diceValues)
-            {
-                actionList[index] += $"[{diceValue}]";
-            }
-            actionList[index] += " "+action.description;
-            index += 1;
+            passiveSkills.Add(new CardPassiveSkillObject(skill, cardDisplay));
         }
 
-        SkillText += String.Join('\n',actionList);
+        int index = 0;
+        if(passiveSkills.Count > 0)
+        {
+            SkillText += passiveSkills[0].description+"\n\n";
+        }
+        // foreach (var action in actionMenu.actions)
+        // {
+        //     actionList.Add("");
+        //     foreach (var diceValue in action.diceValues)
+        //     {
+        //         actionList[index] += $"[{diceValue}]";
+        //     }
+        //     actionList[index] += " "+action.description;
+        //     index += 1;
+        // }
+
+        // SkillText += String.Join('\n',actionList);
 
         return SkillText;
     }

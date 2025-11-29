@@ -20,7 +20,7 @@ public class Card : ScriptableObject
     public int HP;
     public int[] Armor = new int[3];
     public int Attack;
-    public List<Skill> SkillSet;
+    public List<PassiveSkill> SkillSet;
     public List<CardAction> CardActions;
 
     private GameManager GM;

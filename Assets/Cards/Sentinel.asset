@@ -24,27 +24,24 @@ MonoBehaviour:
   Armor: 010000000200000000000000
   Attack: 5
   SkillSet:
-  - canBeShared: 0
-    title: 
+  - title: Formation
     description: 
-    skillEffects:
+    trigger: 0
+    canBeShared: 0
+    oncePerTurn: 0
+    buffs:
     - target: 0
-      trigger: 1
-      oncePerTurn: 0
-      oncePerGame: 0
-      requirements: []
-      buffs:
-      - target: 0
-        Attribute: 0
-        amount: 2
-        specialEffect: 0
-        requirements:
-        - requirement: 1
-          subtypeRequirement: 
-          factionRequirement: 
-          targetIs: 00000000
-        specialBehavior: 
-      deBuffs: []
+      Attribute: 0
+      amount: 2
+      amountCanBeAugmented: 1
+      specialEffect: 0
+      requirements:
+      - requirement: 1
+        subtypeRequirement: 
+        factionRequirement: 
+        targetIs: 00000000
+      specialBehavior: 
+    deBuffs: []
   CardActions:
   - actionType: 0
     attacks:
@@ -54,9 +51,11 @@ MonoBehaviour:
       attackEffect: []
       temporaryBuffs: []
       requirements: []
+    attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
     attacks: []
+    attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 0
     attacks:
@@ -66,12 +65,15 @@ MonoBehaviour:
       attackEffect: []
       temporaryBuffs: []
       requirements: []
+    attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
     attacks: []
+    attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
     attacks: []
+    attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 0
     attacks:
@@ -81,4 +83,5 @@ MonoBehaviour:
       attackEffect: []
       temporaryBuffs: []
       requirements: []
+    attackCountCanBeAugmented: 0
     buffs: []

@@ -32,14 +32,14 @@ MonoBehaviour:
     - target: 0
       Attribute: 2
       amount: 1
-      amountCanBeAugmented: 0
+      amountCanBeAugmented: 1
       specialEffect: 0
       requirements: []
       specialBehavior: 
     - target: 0
       Attribute: 1
       amount: 1
-      amountCanBeAugmented: 0
+      amountCanBeAugmented: 1
       specialEffect: 0
       requirements: []
       specialBehavior: 
@@ -83,7 +83,7 @@ MonoBehaviour:
     - target: 0
       Attribute: 2
       amount: 2
-      amountCanBeAugmented: 0
+      amountCanBeAugmented: 1
       specialEffect: 0
       requirements: []
       specialBehavior: 

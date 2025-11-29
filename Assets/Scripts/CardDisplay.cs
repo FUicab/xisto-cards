@@ -215,7 +215,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
         }
         GM.DisplayDamage(dmg, this);
         HPText.text = hp.ToString();
-        ArmorText.text = armor[0].ToString();
+        ArmorText.text = $"{armor[0].ToString()}/{armor[1].ToString()}/{armor[2].ToString()}";
         AttackText.text = attack.ToString();
     }
     public void SetLine(CardDisplay target = null){
