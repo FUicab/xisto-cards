@@ -55,6 +55,7 @@ public class DetailedInfo : MonoBehaviour
         {
             ActionBoxes.Add(Instantiate(ActionBoxPrefab));
             ActionBoxes[index].transform.SetParent(AbilityContainer.transform, false);
+            ActionBoxes[index].GetComponent<ActionBoxScript>().action = action;
 
             Image actionBoxImage = ActionBoxes[index].GetComponent<Image>();
             switch (action.diceAverageValue)
@@ -85,14 +86,19 @@ public class DetailedInfo : MonoBehaviour
                 }
                 foreach (var diceResult in GM.Dices)
                 {
-                    if((diceResult.value == diceValue || diceResult.wild) && !diceResult.used && display.HasBeenPlayed)
+                    if((diceResult.value == diceValue || diceResult.wild) && !diceResult.used)
                     {
                         thereIsDiceForThisAction = true;
                     }
                 }
-                if (thereIsDiceForThisAction)
+                if(thereIsDiceForThisAction && display.HasBeenPlayed &&
+                    display.mySpace != null && display.mySpace.Owner == GM.PlayerAtPlay)
                 {
+                    action.canBeUsed = true;
                     Overlay.gameObject.SetActive(false);
+                } else {
+                    action.canBeUsed = false;
+                    Overlay.gameObject.SetActive(true);
                 }
             }
             SkillDetail.GetComponent<TextMeshProUGUI>().text = action.description;

@@ -27,6 +27,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
     public TextMeshProUGUI HPText;
     public TextMeshProUGUI ArmorText;
     public TextMeshProUGUI AttackText;
+    public Image DefenderBarrier;
 
     private GameManager GM;
     public RectTransform rectTransform;
@@ -42,6 +43,18 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 
     public GameObject UndoButtonObject;
     public TurnAction PurchaseAction;
+
+
+    void OnEnable(){
+        EventManager.BoardUpdate += UpdateDefenderStatus;
+        EventManager.TurnActionChange += UpdateClickabilityStatus;
+    }
+
+    void OnDisable(){
+        EventManager.BoardUpdate -= UpdateDefenderStatus;
+        EventManager.TurnActionChange -= UpdateClickabilityStatus;
+    }
+
     public void SetPurchaseAction(TurnAction Action){
         PurchaseAction = Action;
         UndoButtonObject.SetActive(true);
@@ -99,7 +112,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
     }
 
     void MoveToDiscardPile(){
-        GM.DiscardPile.Add(card);
+        // GM.DiscardPile.Add(card);
         gameObject.SetActive(false);
     }
 
@@ -162,23 +175,19 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
     }
 
     public void OnPointerDown(PointerEventData eventData){
-        if(HasBeenPlayed){
-            // mySpace.Occupied = false;
-            // GM.Deck.Add(card);
-            // Destroy(gameObject);
-            // if(GM.CurrentAction.Attacker == null || GM.CurrentAction.Attacker != this){
-            //     GM.SetAttacker(this);
-            // } else if(GM.CurrentAction.Attacker == this){
-            //     GM.SetAttacker(null);
-            // }
-            if(mySpace.Owner.Role == PlayerRole.Host){
-                GM.SetAttacker(this);
-            }
+        // if(HasBeenPlayed){
+        //     if(mySpace.Owner.Role == PlayerRole.Host){
+        //         GM.SetAttacker(this);
+        //     }
 
-            if(mySpace.Owner.Role == PlayerRole.Opponent){
-                GM.SetAttackTarget(this);
-            }
+        //     if(mySpace.Owner.Role == PlayerRole.Opponent){
+        //         GM.SetAttackTarget(this);
+        //     }
 
+        // }
+        if(GM.turnStatus == TurnStatus.SelectingTargets)
+        {
+            GM.SelectCardAsTargetOfAction(this);
         }
         EventManager.OnClickCard(this);
     }
@@ -218,11 +227,25 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
         ArmorText.text = $"{armor[0].ToString()}/{armor[1].ToString()}/{armor[2].ToString()}";
         AttackText.text = attack.ToString();
     }
-    public void SetLine(CardDisplay target = null){
-        if(target == null){ line.enabled = false; return; } else {
-            Vector3[] points = {transform.position,target.transform.position};
-            line.SetPositions(points);
+    public void SetLine(List<CardDisplay> targets = null){
+        if(targets == null){
+            Debug.Log("When drawing lines the targets were found to be null!");
+            line.positionCount = 0;
+            line.SetPositions(new Vector3[]{});
+            line.enabled = false; return;
+        } else {
             line.enabled = true;
+            List<Vector3> points = new List<Vector3>();
+            foreach (CardDisplay target in targets)
+            {
+                if(target != null) {
+                    points.Add(transform.position);
+                    points.Add(target.transform.position);
+                }
+            }
+            // Vector3[] points = {transform.position,target.transform.position};
+            line.positionCount = points.Count;
+            line.SetPositions(points.ToArray());
         }
     }
     public void ResetHP(){
@@ -230,7 +253,31 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
         HPText.text = hp.ToString();
     }
     public int GetDamageAgainstTarget(CardDisplay target){
-        return GM.GetDamage(this, target);
+        return GM.CalculateDamage(this, target);
+    }
+
+    public void UpdateDefenderStatus()
+    {
+        /* Check for defending status */
+        bool isDefended = false;
+        if (HasBeenPlayed)
+        {
+            foreach (var defendingSpace in mySpace.Defenders){
+                if(defendingSpace.PlayingCard != null){
+                    isDefended = true;
+                }
+            }
+            if(isDefended){
+                DefenderBarrier.gameObject.SetActive(true);
+            } else {
+                DefenderBarrier.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    public void UpdateClickabilityStatus(TurnAction currentTurn)
+    {
+        
     }
 
     public void OnDrawAnimationEnd(){

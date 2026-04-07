@@ -29,7 +29,7 @@ MonoBehaviour:
     attacks:
     - damageType: 1
       damageMultiplier: 1
-      target: 0
+      target: 2
       attackEffect: []
       temporaryBuffs:
       - target: 0

@@ -690,12 +690,14 @@ public class CardSkillObject
 public class CardActionObject : CardSkillObject
 {
     public CardAction action;
-    public string description;
-    public bool isAction = true;
-    public CardDisplay sourceCard;
+    public bool canBeUsed = false;
+    // public string description;
+    // public bool isAction = true;
+    // public CardDisplay sourceCard;
 
     public CardActionObject(CardAction theSkill, CardDisplay theCard) : base(theCard)
     {
+        isAction = true;
         action = theSkill;
         sourceCard = theCard;
         description = TranslateActionToText();
@@ -726,13 +728,13 @@ public class CardPassiveSkillObject : CardSkillObject
 {
     public PassiveSkill skill;
     public string description;
-    public bool isAction = false;
-    public CardDisplay sourceCard;
+    // public bool isAction = false;
+    // public CardDisplay sourceCard;
 
     public CardPassiveSkillObject(PassiveSkill theSkill, CardDisplay theCard) : base(theCard)
     {
         skill = theSkill;
-        sourceCard = theCard;
+        // sourceCard = theCard;
         description = TranslatePassiveSkillsToText();
     }
     public string TranslatePassiveSkillsToText()

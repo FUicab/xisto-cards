@@ -5,9 +5,10 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using static System.DateTime;
 using static Card;
-using static ActionType;
+using static TurnMovementType;
 using static PlayerProfile;
 
+[System.Serializable]
 public class CardSpace : MonoBehaviour, IDropHandler {
 
     public bool Occupied = false;
@@ -28,6 +29,7 @@ public class CardSpace : MonoBehaviour, IDropHandler {
     private GameManager GM;
     private Image CardSocketImage;
     public Outline outline;
+    public Image DefenderBarrier;
 
     public void OnDrop(PointerEventData eventData){
         // Debug.Log("OnDrop");
@@ -54,7 +56,7 @@ public class CardSpace : MonoBehaviour, IDropHandler {
                     if(OnAnimEnd == null){ PlaceCard(CDisplay); } else
                                          { PlaceCard(CDisplay, OnAnimEnd); }
                     GM.CurrentAction.Clean();
-                    GM.CurrentAction.Action = ActionType.CardPurchase;
+                    GM.CurrentAction.movementType = TurnMovementType.CardPurchase;
                     GM.CurrentAction.BoughtCard = CDisplay;
                     GM.CurrentAction.PurchasePrice = CDisplay.card.Cost;
                     GM.CurrentAction.HandIndexOrigin = CDisplay.HandIndex;
@@ -73,8 +75,8 @@ public class CardSpace : MonoBehaviour, IDropHandler {
     }
 
     public bool CanPlaceCard(Card card){
-        return (Owner == GM.PlayerAtPlay) &&
-               (CardPlacingIsValid(card));
+        return Owner == GM.PlayerAtPlay;
+                // && CardPlacingIsValid(card); As of the new version, there are no longer trap cards and defender slots are no longer restricted to that subtype.
     }
 
     private bool CardPlacingIsValid(Card card){
@@ -110,6 +112,7 @@ public class CardSpace : MonoBehaviour, IDropHandler {
             card.mySpace.Occupied = false;
         }
         card.mySpace = this;
+        EventManager.OnBoardUpdate();
     }
     public void UndoPlaceCard(){
         PlayingCard.HasBeenPlayed = false;
@@ -166,6 +169,12 @@ public class CardSpace : MonoBehaviour, IDropHandler {
         // Occupied = false;
     }
 
+}
+
+[System.Serializable]
+public class BoardRow
+{
+    public List<CardSpace> BoardSpaces = new List<CardSpace>();
 }
 
 public enum CardLine {

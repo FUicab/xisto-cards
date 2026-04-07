@@ -34,7 +34,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -57,9 +56,19 @@ MonoBehaviour:
   Line: 1
   CardObject: {fileID: 0}
   PlayingCard: {fileID: 0}
-  Owner: 0
+  Defenders: []
+  AttachedTrap: {fileID: 0}
+  OwnerRole: 0
+  Owner:
+    Role: 0
+    useAI: 0
+    Gold: 0
+    Hand: []
+    AvailableCardSlots: 
   AutoDrawCards: 0
   PreGeneratedCard: {fileID: 0}
+  outline: {fileID: 0}
+  DefenderBarrier: {fileID: 0}
 --- !u!222 &5320343544017814394
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -106,11 +115,32 @@ BoxCollider2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5320343544017814393}
   m_Enabled: 1
+  serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_UsedByComposite: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
   m_Offset: {x: -1.4679031, y: 1.4678802}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
@@ -121,7 +151,6 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  serializedVersion: 2
   m_Size: {x: 168.41179, y: 203.25565}
   m_EdgeRadius: 0
 --- !u!114 &7333013561885410103

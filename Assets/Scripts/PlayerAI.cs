@@ -7,7 +7,7 @@ using static CardSpace;
 using static CardLine;
 using static UnitType;
 using static UnitSubtype;
-using static ActionType;
+using static TurnMovementType;
 
 [System.Serializable]
 public class PlayerAI{
@@ -99,7 +99,7 @@ public class PlayerAI{
         switch (ChosenStrategy){
             case AIActionStrategy.PlaceCards:
                 foreach (var action in MyActions){
-                    action.Action = ActionType.CardPurchase;
+                    action.Action = TurnMovementType.CardPurchase;
                     action.DestinationSlot = PickRandomAvailableSpace();
                     CardDisplay ChosenCard = PickAValidCardForSpace(action.DestinationSlot);
                     ReservedCards.Add(ChosenCard);
@@ -120,7 +120,7 @@ public class PlayerAI{
         }
         AITurnActions CurrentAction = MyActions[currentActionIndex];
         switch (CurrentAction.Action){
-            case ActionType.CardPurchase:
+            case TurnMovementType.CardPurchase:
                 if(CurrentAction.BoughtCard != null){
                     CurrentAction.DestinationSlot.AttemptToPlaceCard(CurrentAction.BoughtCard, PerformNextAction);
                 } else {
@@ -140,7 +140,7 @@ public class PlayerAI{
         int RandomSlot = 0;
         for (int i = 0; i < 3; i++)
         {
-            RandomIndex = Random.Range(0,Profile.Hand.Length);
+            RandomIndex = Random.Range(0,Profile.Hand.Count);
             do {
                 RandomSlot = Random.Range(0,MyCardSpaces.Count);
             } while (MyCardSpaces[RandomSlot].Occupied);
@@ -171,7 +171,7 @@ public class PlayerAI{
         List<CardDisplay> ValidCards = new List<CardDisplay>();
         // Debug.Log("Picking...");
         if(PrioritizesDefendersForDefendingOnly){
-            for (int i = 0; i < Profile.Hand.Length; i++){
+            for (int i = 0; i < Profile.Hand.Count; i++){
                 CardDisplay card = Profile.Hand[i].gameObject.GetComponentInChildren<CardDisplay>();
                 if(card != null && !ReservedCards.Contains(card)){
                     if(space.Line == CardLine.Defensive && card.card.Subtypes.Contains(UnitSubtype.Defender)){
@@ -184,7 +184,7 @@ public class PlayerAI{
             }
         }
         if(ValidCards.Count == 0 || !PrioritizesDefendersForDefendingOnly){
-            for (int i = 0; i < Profile.Hand.Length; i++){
+            for (int i = 0; i < Profile.Hand.Count; i++){
                 CardDisplay card = Profile.Hand[i].gameObject.GetComponentInChildren<CardDisplay>();
                 if(card != null && !ReservedCards.Contains(card)){
                     if(space.Line == CardLine.Trap && card.card.Type == UnitType.Trap){
@@ -244,10 +244,8 @@ public class PlayerAI{
         }
         if(ChosenTarget != null){
             foreach (var attacker in Attackers){
-                // Debug.Log(attacker.card.Name);
-                // Debug.Log(ChosenTarget.card.Name);
-                GM.SetAttacker(attacker);
-                GM.SetAttackTarget(ChosenTarget);
+                // GM.SetAttacker(attacker);
+                // GM.SetAttackTarget(ChosenTarget);
             }
             GM.TurnEnd();
         } else {
@@ -282,12 +280,12 @@ public class PlayerAI{
             // CardDisplay ChosenCard = PickAValidCardForSpace(ChosenSpace);
             CardDisplay ChosenDefender = PickAValidCardForSpace(defSpace);
             ReservedCards.Add(ChosenDefender);
-            MyActions[i].Action = ActionType.CardPurchase;
+            MyActions[i].Action = TurnMovementType.CardPurchase;
             MyActions[i].DestinationSlot = defSpace;
             MyActions[i].BoughtCard = ChosenDefender;
             i++;
         }
-        MyActions[i].Action = ActionType.CardPurchase;
+        MyActions[i].Action = TurnMovementType.CardPurchase;
         MyActions[i].DestinationSlot = ChosenSpace;
         MyActions[i].BoughtCard = ChosenCard;
     }
@@ -330,7 +328,7 @@ public enum AIActionStrategy{
 /* This has to be different from regular Turn Actions because we don't want the AI to work around them */
 [System.Serializable]
 public class AITurnActions{
-    public ActionType Action;
+    public TurnMovementType Action;
     public CardDisplay Attacker;
     public CardDisplay AttackTarget;
     public CardDisplay BoughtCard;
