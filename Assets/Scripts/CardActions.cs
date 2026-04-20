@@ -25,6 +25,8 @@ public class AttackAction{
     public List<AttackEffect> attackEffect;
     public List<BuffAction> temporaryBuffs; //Temporary buffs are applied during the attack
     public List<Requirements> requirements;
+    [HideInInspector] public CardDisplay source;
+    [HideInInspector] public CardDisplay receiver;
 }
 
 [System.Serializable]
@@ -47,6 +49,21 @@ public class BuffAction{
     public BuffSpecialEffects specialEffect;
     public List<Requirements> requirements;
     public List<SpecialBehavior> specialBehavior;
+    public CardDisplay source;
+    public CardDisplay receiver;
+
+    public BuffAction(BuffAction values)
+    {
+        target = values.target;
+        Attribute = values.Attribute;
+        amount = values.amount;
+        amountCanBeAugmented = values.amountCanBeAugmented;
+        specialEffect = values.specialEffect;
+        requirements = values.requirements;
+        specialBehavior = values.specialBehavior;
+        source = values.source;
+        receiver = values.receiver;
+    }
 }
 
 public enum BuffSpecialEffects{
@@ -95,7 +112,8 @@ public enum Attributes{
     ArmorPierce,
     DamageReductionBeforeArmor,
     DamageReductionAfterArmor,
-    MaxHealth
+    MaxHealth,
+    Cost
 }
 public enum ActionTypes{
     Attack,
@@ -126,15 +144,14 @@ public enum TargetTypes{
     LineOfEnemies,
     AllAllies,
     SameTarget,
-    AlliesNextToMe
+    AlliesNextToMe,
+    SingleAlly
 }
 public enum SpecialBehavior{
     OnlyActivatesOnce
 }
 public enum RequirementTypes{
-    TargetHasSubtypes,
     TargetIsNextTo,
-    TargetBelongsToFactions,
     TargetHasSubtypesOrFactions,
     TargetHasAttackedThisRound
 }

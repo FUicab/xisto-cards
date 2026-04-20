@@ -15,9 +15,9 @@ public class Card : ScriptableObject
     public List<UnitSubtype> Subtypes;
     public int Cost;
     public Sprite Artwork;
-    public Faction Origin;
+    public List<Faction> Origin;
     public int MaxHP;
-    public int HP;
+    // [HideInInspector] public int HP;
     public int[] Armor = new int[3];
     public int Attack;
     public List<PassiveSkill> SkillSet;
@@ -26,7 +26,7 @@ public class Card : ScriptableObject
     private GameManager GM;
 
     void Start(){
-        HP = MaxHP;
+        // HP = MaxHP;
         // GM = FindObjectOfType<GameManager>();
     }
 
@@ -79,5 +79,6 @@ public enum UnitSubtype {
     Executioner,
     Noble,
     Solitary,
-    Inheritor
+    Inheritor,
+    Opportunist
 }

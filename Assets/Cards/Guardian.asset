@@ -18,9 +18,8 @@ MonoBehaviour:
   Subtypes: 00000000
   Cost: 1
   Artwork: {fileID: 21300000, guid: 0978c04fb7e94e141a857bd2a8fc4133, type: 3}
-  Origin: 2
+  Origin: 02000000
   MaxHP: 4
-  HP: 0
   Armor: 030000000300000002000000
   Attack: 2
   SkillSet: []
@@ -36,6 +35,7 @@ MonoBehaviour:
       specialEffect: 0
       requirements: []
       specialBehavior: 
+      source: {fileID: 0}
     - target: 0
       Attribute: 1
       amount: 1
@@ -43,6 +43,7 @@ MonoBehaviour:
       specialEffect: 0
       requirements: []
       specialBehavior: 
+      source: {fileID: 0}
   - actionType: 1
     attacks: []
     attackCountCanBeAugmented: 0
@@ -65,6 +66,7 @@ MonoBehaviour:
           factionRequirement: 
           targetIs: 00000000
         specialBehavior: 
+        source: {fileID: 0}
       requirements: []
     attackCountCanBeAugmented: 0
     buffs: []
@@ -87,14 +89,16 @@ MonoBehaviour:
       specialEffect: 0
       requirements: []
       specialBehavior: 
+      source: {fileID: 0}
     - target: 6
       Attribute: 2
       amount: 0
       amountCanBeAugmented: 0
       specialEffect: 1
       requirements:
-      - requirement: 0
+      - requirement: 1
         subtypeRequirement: 00000000
         factionRequirement: 
         targetIs: 
       specialBehavior: 
+      source: {fileID: 0}

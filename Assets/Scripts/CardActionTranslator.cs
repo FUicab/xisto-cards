@@ -63,8 +63,11 @@ public class CardSkillObject
         string text = "";
         return text;
     }
+}
 
-    public string GenerateSkillAttackText(CardAction skill)
+public static class CardTranslator
+{
+    public static string GenerateSkillAttackText(CardAction skill)
     {
         string text = "";
         int index = 0;
@@ -138,7 +141,7 @@ public class CardSkillObject
                         if(effect.requirements.Count > 0)
                         {
                             Requirements requirement = effect.requirements[0];
-                            if(requirement.requirement == RequirementTypes.TargetHasSubtypes || requirement.requirement == RequirementTypes.TargetBelongsToFactions || requirement.requirement == RequirementTypes.TargetHasSubtypesOrFactions)
+                            if(requirement.requirement == RequirementTypes.TargetHasSubtypesOrFactions)
                             {
                                 text += " when targetting ";
                                 subIndex = 0;
@@ -158,7 +161,7 @@ public class CardSkillObject
                                     }
                                     subIndex += 1;
                                 }
-                                if(requirement.requirement == RequirementTypes.TargetHasSubtypesOrFactions)
+                                if(requirement.factionRequirement.Count > 0 && requirement.subtypeRequirement.Count > 0)
                                 {
                                     text += " and ";
                                 }
@@ -218,7 +221,7 @@ public class CardSkillObject
                         if(tempBuff.requirements.Count > 0)
                         {
                             Requirements requirement = tempBuff.requirements[0];
-                            if(requirement.requirement == RequirementTypes.TargetHasSubtypes || requirement.requirement == RequirementTypes.TargetBelongsToFactions || requirement.requirement == RequirementTypes.TargetHasSubtypesOrFactions)
+                            if(requirement.requirement == RequirementTypes.TargetHasSubtypesOrFactions)
                             {
                                 text += " when targetting ";
                                 subIndex = 0;
@@ -238,7 +241,7 @@ public class CardSkillObject
                                     }
                                     subIndex += 1;
                                 }
-                                if(requirement.requirement == RequirementTypes.TargetHasSubtypesOrFactions)
+                                if(requirement.factionRequirement.Count > 0 && requirement.subtypeRequirement.Count > 0)
                                 {
                                     text += " and ";
                                 }
@@ -274,7 +277,7 @@ public class CardSkillObject
                 if (attack.requirements.Count > 0)
                 {
                     Requirements requirement = attack.requirements[0];
-                    if(requirement.requirement == RequirementTypes.TargetHasSubtypes || requirement.requirement == RequirementTypes.TargetBelongsToFactions || requirement.requirement == RequirementTypes.TargetHasSubtypesOrFactions)
+                    if(requirement.requirement == RequirementTypes.TargetHasSubtypesOrFactions)
                     {
                         text += ", but can only target ";
                         subIndex = 0;
@@ -294,7 +297,7 @@ public class CardSkillObject
                             }
                             subIndex += 1;
                         }
-                        if(requirement.requirement == RequirementTypes.TargetHasSubtypesOrFactions)
+                        if(requirement.factionRequirement.Count > 0 && requirement.subtypeRequirement.Count > 0)
                         {
                             text += " and ";
                         }
@@ -328,7 +331,7 @@ public class CardSkillObject
         return text;
     }
 
-    public string GenerateSkillBuffText(List<BuffAction> buffs)
+    public static string GenerateSkillBuffText(List<BuffAction> buffs)
     {
         string text = "";
         int index = 0;
@@ -407,7 +410,7 @@ public class CardSkillObject
                                 switch (requirement.targetIs[0])
                                 {
                                     case TargetUnitDefinition.SameAsMyself:
-                                        text += " another <b>"+sourceCard.card.Name+"</b>";
+                                        text += " another <b>"+buff.source.card.Name+"</b>";
                                     break;
                                 }
                             break;
@@ -420,7 +423,7 @@ public class CardSkillObject
                     {
                         switch (requirement.requirement)
                         {
-                            case RequirementTypes.TargetHasSubtypes:
+                            case RequirementTypes.TargetHasSubtypesOrFactions:
                                 text += "they are ";
                                 switch (requirement.subtypeRequirement[0])
                                 {
@@ -439,7 +442,7 @@ public class CardSkillObject
         return text;
     }
 
-    public string TextFormat(string textToFormat = "", object colorTag = null, bool canBeAugmented = false)
+    public static string TextFormat(string textToFormat = "", object colorTag = null, bool canBeAugmented = false)
     {
         string text = "<b><color=#";
         if (canBeAugmented)
@@ -469,7 +472,7 @@ public class CardSkillObject
         return text;
     }
 
-    public string DamageTypeDescription(DamageTypes damageType)
+    public static string DamageTypeDescription(DamageTypes damageType)
     {
         string text = "";
         switch (damageType){
@@ -498,7 +501,7 @@ public class CardSkillObject
         return text;
     }
 
-    public string BuffAttributeDescription(Attributes attribute)
+    public static string BuffAttributeDescription(Attributes attribute)
     {
         string text = "";
         switch (attribute){
@@ -536,7 +539,7 @@ public class CardSkillObject
         return text;
     }
 
-    public string TargetTypeDescription(TargetTypes targetType)
+    public static string TargetTypeDescription(TargetTypes targetType)
     {
         string text = "";
         switch (targetType){
@@ -565,7 +568,7 @@ public class CardSkillObject
         return text;
     }
 
-    public string TargetFactionDescription(Faction faction, bool plural = false)
+    public static string TargetFactionDescription(Faction faction, bool plural = false)
     {
         string text = "";
         switch (faction)
@@ -592,7 +595,7 @@ public class CardSkillObject
         return text;
     }
 
-    public string TargetSubtypeDescription(UnitSubtype subtype, bool plural = false)
+    public static string TargetSubtypeDescription(UnitSubtype subtype, bool plural = false)
     {
         string text = "";
         switch (subtype)
@@ -625,7 +628,7 @@ public class CardSkillObject
         return text;
     }
 
-	public string AttackEffectDescription(AttackEffect effect)
+	public static string AttackEffectDescription(AttackEffect effect)
     {
         string text = "";
 		int index = 0;
@@ -672,14 +675,51 @@ public class CardSkillObject
         return text;
     }
 
-	public string BuffEffectDescription(BuffAction buffAction)
+	public static string BuffEffectDescription(BuffAction buffAction)
     {
         string text = "";
         switch (buffAction.specialEffect){
 			case BuffSpecialEffects.RedirectAttacksTowardsMe:
 				text += "redirects all attacks ";
-				text += TargetTypeDescription(buffAction.target);
+				text += CardTranslator.TargetTypeDescription(buffAction.target);
                 text += " towards me";
+			break;
+		}
+		return text;
+    }
+
+    public static string AppliedBuffDescription(List<BuffAction> buffs)
+    {
+        string text = "";
+        string numberSign = "";
+
+        for (int i = 0; i < buffs.Count; i++)
+        {
+            if(buffs[i].amount > 0){ numberSign = "+"; }
+
+            if(buffs[i].specialEffect == BuffSpecialEffects.None){
+                text += TextFormat(numberSign+buffs[i].amount,null,buffs[i].amountCanBeAugmented)+" "+TextFormat(BuffAttributeDescription(buffs[i].Attribute),buffs[i].Attribute)+" from ";
+                if(buffs[i].source == buffs[i].receiver)
+                {
+                    text += "myself";
+                } else {
+                    text += "<b>"+buffs[i].source.card.Name+"</b>";
+                }
+            } else {
+                text += BuffEffectDescriptionAsTarget(buffs[i]);
+            }
+
+            text += "\n";
+        }
+        return text;
+    }
+
+    public static string BuffEffectDescriptionAsTarget(BuffAction buffAction)
+    {
+        string text = "";
+        switch (buffAction.specialEffect){
+			case BuffSpecialEffects.RedirectAttacksTowardsMe:
+				text += "Redirect all attacks I receive towards <b>"+buffAction.source.card.Name+"</b>";
 			break;
 		}
 		return text;
@@ -691,9 +731,6 @@ public class CardActionObject : CardSkillObject
 {
     public CardAction action;
     public bool canBeUsed = false;
-    // public string description;
-    // public bool isAction = true;
-    // public CardDisplay sourceCard;
 
     public CardActionObject(CardAction theSkill, CardDisplay theCard) : base(theCard)
     {
@@ -711,10 +748,10 @@ public class CardActionObject : CardSkillObject
         switch (action.actionType)
         {
             case ActionTypes.Attack:
-                text += GenerateSkillAttackText(action);
+                text += CardTranslator.GenerateSkillAttackText(action);
             break;
             case ActionTypes.Buff:
-                text += GenerateSkillBuffText(action.buffs);
+                text += CardTranslator.GenerateSkillBuffText(action.buffs);
             break;
         }
 
@@ -740,7 +777,7 @@ public class CardPassiveSkillObject : CardSkillObject
     public string TranslatePassiveSkillsToText()
     {
         string text = "";
-        text += $"<b>{skill.title}</b>: "+GenerateSkillBuffText(skill.buffs);
+        text += $"<b>{skill.title}</b>: "+CardTranslator.GenerateSkillBuffText(skill.buffs);
         text += ".";
 
         return text;

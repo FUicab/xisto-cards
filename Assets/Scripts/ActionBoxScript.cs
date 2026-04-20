@@ -22,9 +22,7 @@ public class ActionBoxScript : MonoBehaviour, IPointerDownHandler
     {
         if (action.canBeUsed)
         {
-            Debug.Log("Action was started.");
             GM.StartAction(action);
         }
-        // Debug.Log(action);
     }
 }

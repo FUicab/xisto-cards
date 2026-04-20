@@ -16,18 +16,8 @@ public enum TurnMovementType{
 
 public class GameManager : MonoBehaviour
 {
-    // public List<CardTest> Deck = new List<CardTest>();
-    // public List<CardTest> DiscardPile = new List<CardTest>();
-    // public TextAsset CardsJSON;
-    // public CardList CardDeck;
-
-    // public Text DeckSizeText;
-    // public Text DiscardPileSizeText;
 
     public GameObject CardObject;
-    // public TextMeshProUGUI DeckSizeText;
-    // public TextMeshProUGUI DiscardPileSizeText;
-    // public GameObject ConfirmButtonObject;
     public TextMeshProUGUI GoldText;
     public TextMeshProUGUI OpponentGoldText;
     public TextMeshProUGUI ActionPointsText;
@@ -48,13 +38,9 @@ public class GameManager : MonoBehaviour
     /* >>>> The list of the individual cards that will be available */
     public List<Card> CardList = new List<Card>();
     public List<Card> Deck = new List<Card>();
-    // public List<Card> DiscardPile = new List<Card>();
 
     /* >>>> Player turns and combat management */
     public List<PlayerProfile> Players;
-    // public CardDisplay Attacker;
-    // public CardDisplay AttackTarget;
-    // public bool PerformingAttack = false;
     public List<TurnAction> TurnActions;
     public TurnAction CurrentAction = new TurnAction();
     public int ActionPoints = 3;
@@ -77,7 +63,6 @@ public class GameManager : MonoBehaviour
                 if(player.AvailableCardSlots[i] == true){
                     Card RandomCard = Deck[Random.Range(0, Deck.Count)];
                     GameObject CardInstance = Instantiate(CardObject,player.Hand[i].transform);
-                    // GameObject CardInstance = Instantiate(CardObject,DeckUI.transform);
                     CardInstance.GetComponent<CardDisplay>().card = RandomCard;
                     CardInstance.GetComponent<CardDisplay>().HasBeenPlayed = false;
                     CardInstance.GetComponent<CardDisplay>().HandIndex = i;
@@ -96,17 +81,14 @@ public class GameManager : MonoBehaviour
             }
         }
         EventManager.OnDeckReady();
-        // Debug.Log(GameObject.FindObjectsOfType<CardSpace>());
         CardSpaces = GameObject.FindObjectsOfType<CardSpace>();
         foreach(CardSpace slot in CardSpaces){
-            // CardSlot newSlot = new CardSlot();
-            // newSlot.Line = slot.Line;
-            // PlayingCards.Add(newSlot);
             if(slot.OwnerRole == PlayerRole.Host){
                 slot.Owner = Host;
             } else if(slot.OwnerRole == PlayerRole.Opponent){
                 slot.Owner = Opponent;
             }
+            slot.SetRowPositionData();
         }
         // ConfirmButtonObject.SetActive(false);
         MainUI = GameObject.Find("MainUI").GetComponent<Canvas>();
@@ -163,15 +145,6 @@ public class GameManager : MonoBehaviour
         ActionPointsText.text = ActionPoints.ToString();
     }
 
-    // public void Shuffle(){
-    //     if(DiscardPile.Count >= 1){
-    //         foreach(Card card in DiscardPile){
-    //             Deck.Add(card);
-    //         }
-    //         DiscardPile.Clear();
-    //     }
-    // }
-
     public void UpdateDebugInfo()
     {
         string info = "";
@@ -204,6 +177,21 @@ public class GameManager : MonoBehaviour
                                 // }
                                 info += "\n";
                             break;
+                            case ActionTypes.Buff:
+                                info += "<b>"+tuAc.CardInAction.card.Name+"</b> applies buffs: ";
+                                for (int i = 0; i < tuAc.targets.Count; i++)
+                                {
+                                    if(tuAc.actionObject.action.buffs[i].amount > 0){ info += "+"; }
+                                    info += tuAc.actionObject.action.buffs[i].amount+" "+CardTranslator.BuffAttributeDescription(tuAc.actionObject.action.buffs[i].Attribute);
+                                    switch (tuAc.actionObject.action.buffs[i].target)
+                                    {
+                                        default: info += " "+CardTranslator.TargetTypeDescription(tuAc.actionObject.action.buffs[i].target); break;
+                                    }
+                                    // info += "<b>· "+tuAc.targets[i].card.name+"</b> "+CardTranslator.BuffAttributeDescription(tuAc.actionObject.action.buffs[i].Attribute)+" <i>("+tuAc.actionObject.action.buffs[i].amount+")</i> ";
+                                    if(i+1 < tuAc.targets.Count){ info += ", "; }
+                                }
+                                info += "\n";
+                            break;
                         }
                     break;
                     
@@ -216,82 +204,6 @@ public class GameManager : MonoBehaviour
     }
 
     /* --- Attack management functions --------------------------------------------- */
-    // public void SetAttacker(CardDisplay attacker){
-        
-    //     // Debug.Log(attacker.mySpace.gameObject.name);
-    //     // We check if this is a proper "attacker" overall
-    //     if(attacker == null || (attacker != null && attacker.mySpace.Owner != PlayerAtPlay)){
-    //         return;
-    //     }
-
-    //     /* We check if this attacker has already an action in queue.
-    //        If that's the case we remove the action from the list.
-    //     */
-    //     TurnAction AttackerAction = ActionOfCard(attacker);
-    //     if(AttackerAction != null){
-    //         attacker.ClearAllDisplay();
-    //         ClearAttackActions(attacker);
-    //         return;
-    //     }
-
-    //     if(CurrentAction.CardInAction == attacker){
-    //         CurrentAction.CardInAction.ClearAllDisplay();
-    //         CurrentAction.CardInAction = null;
-    //     }
-
-    //     // Are there Action Points left to perform this action?
-    //     if(!CheckActionPoints()){ return; }
-
-    //     // We procceed to give the attacker the proper display for its action
-    //     if(CurrentAction.CardInAction != null){
-    //         /* If there's an attacker already set, then we remove it from the current action */
-    //         CurrentAction.CardInAction.ClearAllDisplay();
-    //         CurrentAction.Clean();
-    //     }
-    //     CurrentAction.CardInAction = attacker;
-    //     CurrentAction.CardInAction.SetOutline("orange");
-    //     CurrentAction.movementType = TurnMovementType.PerformAction;
-    // }
-    // public void SetAttackTarget(CardDisplay attackTarget){
-    //     CurrentAction.movementType = TurnMovementType.PerformAction;
-    //     if(attackTarget == null || (attackTarget != null  && attackTarget.mySpace.Owner == PlayerAtPlay) || CurrentAction.CardInAction == null || ActionPoints <= 0){
-    //         return;
-    //     }
-    //     if(!CheckValidAttack(attackTarget)){
-    //         return;
-    //     }
-
-    //     if(CurrentAction.AttackTarget != null){
-    //         CurrentAction.AttackTarget.SetOutline();
-    //         CurrentAction.AttackTarget = null;
-    //     }
-
-    //     CurrentAction.AttackTarget = attackTarget;
-
-    //     if(CurrentAction.AttackTarget != null && CurrentAction.CardInAction != null){
-    //         CurrentAction.CardInAction.SetLine(CurrentAction.AttackTarget);
-    //         CurrentAction.AttackTarget.SetOutline("red");
-    //         RegisterCurrentAction();
-    //     }
-    // }
-    // public void ConfirmAttack(){
-    //     int damageDealt;
-    //     if(PerformingAttack && AttackTarget!=null && Attacker!=null){
-    //         damageDealt = Attacker.attack - AttackTarget.armor[0];
-    //         if(damageDealt <= 0){
-    //             damageDealt = 1;
-    //         }
-    //         AttackTarget.ReceiveDamage(damageDealt);
-    //         DisplayDamage(damageDealt, AttackTarget);
-
-    //         AttackTarget.SetOutline();
-    //         AttackTarget = null;
-    //         Attacker.SetOutline();
-    //         Attacker.SetLine();
-    //         Attacker = null;
-    //         PerformingAttack = false;
-    //     }
-    // }
     public void ClearAttackActions(CardDisplay attacker){
         for (int i = TurnActions.Count-1; i >= 0; i--)
         {
@@ -308,48 +220,77 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void PerformAttackAction(TurnAction ActionData){
+    public void PerformConfirmedAction(TurnAction ActionData){
         if(ActionData.CardInAction != null)
         {
             ActionData.CardInAction.SetOutline();
             ActionData.CardInAction.SetLine();
         }
-        // if(ActionData.AttackTarget!=null && ActionData.CardInAction!=null){
-        //     ActionData.AttackTarget.ReceiveDamage(CalculateDamage(ActionData.CardInAction, ActionData.AttackTarget));
-        //     ActionData.AttackTarget = null;
-        //     ActionData.CardInAction = null;
-        // }
-        for (int i = 0; i < ActionData.targets.Count; i++)
+        switch (ActionData.actionObject.action.actionType)
         {
-            if(ActionData.targets[i] != null)
-            {
-                ActionData.targets[i].SetOutline();
-            }
-            if(ActionData.targets[i]!=null && ActionData.CardInAction!=null){
-                ActionData.targets[i].ReceiveDamage(CalculateDamage(ActionData.CardInAction, ActionData.targets[i], ActionData.actionObject.action.attacks[i]));
-                // ActionData.targets[i] = null;
-                // ActionData.CardInAction = null;
-            }
+            case ActionTypes.Attack:
+                for (int i = 0; i < ActionData.targets.Count; i++)
+                {
+                    if(ActionData.targets[i] != null)
+                    {
+                        ActionData.targets[i].SetOutline();
+                    }
+                    if(ActionData.targets[i]!=null && ActionData.CardInAction!=null){
+                        if(ActionData.targets[i].attackSponge != null)
+                        {
+                            ActionData.targets[i].attackSponge.ReceiveDamage(CalculateDamage(ActionData.CardInAction, ActionData.targets[i], ActionData.actionObject.action.attacks[i]));
+                        } else {
+                            ActionData.targets[i].ReceiveDamage(CalculateDamage(ActionData.CardInAction, ActionData.targets[i], ActionData.actionObject.action.attacks[i]));
+                        }
+                    }
+                }
+            break;
+            case ActionTypes.Buff:
+                for (int i = 0; i < ActionData.targets.Count; i++)
+                {
+                    // if(ActionData.targets[i]!=null && ActionData.CardInAction!=null){
+                    //     ActionData.actionObject.action.buffs[i].source = ActionData.CardInAction;
+                    // }
+                    switch (ActionData.actionObject.action.buffs[i].target)
+                    {
+                        case TargetTypes.AllAllies:
+                            foreach(BoardRow row in ActionData.targets[i].mySpace.Owner.MyBoardRows)
+                            {
+                                foreach (CardSpace cardSpace in row.BoardSpaces)
+                                {
+                                    cardSpace.PlayingCard?.ReceiveBuff(ActionData.actionObject.action.buffs[i], ActionData.CardInAction);
+                                }
+                            }
+                        break;
+                        case TargetTypes.AlliesInSameLine:
+                            foreach(CardSpace cardSpace in ActionData.targets[i].mySpace.myRow.BoardSpaces)
+                            {
+                                cardSpace.PlayingCard?.ReceiveBuff(ActionData.actionObject.action.buffs[i], ActionData.CardInAction);
+                            }
+                        break;
+                        case TargetTypes.AlliesNextToMe:
+                            foreach(CardSpace cardSpace in ActionData.targets[i].mySpace.myRow.BoardSpaces)
+                            {
+                                if (cardSpace.PlayingCard != null && ActionData.targets[i].mySpace.IsNextToMe(cardSpace))
+                                {
+                                    cardSpace.PlayingCard.ReceiveBuff(ActionData.actionObject.action.buffs[i], ActionData.CardInAction);
+                                }
+                            }
+                        break;
+                        default:
+                            ActionData.targets[i].ReceiveBuff(ActionData.actionObject.action.buffs[i], ActionData.CardInAction);
+                        break;
+                    }
+                    if(ActionData.targets[i] != null)
+                    {
+                        ActionData.targets[i].SetOutline();
+                    }
+                }
+            break;
         }
-        // foreach (CardDisplay targetCard in ActionData.targets)
-        // {
-        //     if(targetCard != null)
-        //     {
-        //         targetCard.SetOutline();
-        //     }
-        //     if(targetCard!=null && ActionData.CardInAction!=null){
-        //         targetCard.ReceiveDamage(CalculateDamage(ActionData.CardInAction, targetCard));
-        //         targetCard = null;
-        //         ActionData.CardInAction = null;
-        //     }
-        // }        
     }
 
     public int CalculateDamage(CardDisplay attacker, CardDisplay target){
-        // if((CurrentAction.movementType != TurnMovementType.PerformAction) || (CurrentAction.actionObject.action.actionType != ActionTypes.Attack)){
-        //     return 0;
-        // }
-        
         int dmg = attacker.attack - target.armor[0];
         if(dmg <= 0){
             dmg = 1;
@@ -467,14 +408,12 @@ public class GameManager : MonoBehaviour
         switch (action.action.actionType)
         {
             case ActionTypes.Attack:
-                CurrentAction.RegisterAction(action);
-            break;
             case ActionTypes.Buff:
                 CurrentAction.RegisterAction(action);
             break;
         }
-        EventManager.OnTurnActionChange(CurrentAction);
         UpdateTargetSelectionStatus();
+        EventManager.OnTurnActionChange(CurrentAction);
     }
 
     public void SelectCardAsTargetOfAction(CardDisplay card)
@@ -500,25 +439,34 @@ public class GameManager : MonoBehaviour
                         switch (actionObject.action.attacks[CurrentAction.nextNullIndex].target)
                         {
                             case TargetTypes.SingleEnemy:
-                                tooltipMessage += " Select 1 enemy for a "+actionObject.DamageTypeDescription(actionObject.action.attacks[CurrentAction.nextNullIndex].damageType)+" attack.";
+                                tooltipMessage += " Select 1 enemy for a "+CardTranslator.DamageTypeDescription(actionObject.action.attacks[CurrentAction.nextNullIndex].damageType)+" attack.";
+                            break;
+                        }
+                    }
+                break;
+                case ActionTypes.Buff:
+                    if(CurrentAction.nextNullIndex >= 0)
+                    {
+                        switch (actionObject.action.buffs[CurrentAction.nextNullIndex].target)
+                        {
+                            case TargetTypes.Self:
+                                // SelectCardAsTargetOfAction(CurrentAction.CardInAction);
+                                // UpdateTargetSelectionStatus();
+                                // return;
+                                // tooltipMessage += " Select 1 enemy for a "+actionObject.DamageTypeDescription(actionObject.action.attacks[CurrentAction.nextNullIndex].damageType)+" attack.";
                             break;
                         }
                     }
                 break;
                 default: tooltipMessage += " Oh no, this action type doesn't seem to be supported yet."; break;
             }
-            // foreach (CardDisplay target in CurrentAction.targets)
-            // {
-            //     CurrentAction.CardInAction.SetLine(target);
-            //     if(target != null) { target.SetOutline("red"); }
-            // }
             CurrentAction.CardInAction.SetLine(CurrentAction.targets);
             SetMainTooltipText(tooltipMessage);
         } else {
             RegisterCurrentAction();
             foreach (TurnAction tuAc in TurnActions)
             {
-                tuAc.CardInAction.SetLine(tuAc.targets);
+                tuAc.CardInAction?.SetLine(tuAc.targets);
             }
             turnStatus = TurnStatus.Waiting;
             SetMainTooltipText("");
@@ -549,10 +497,7 @@ public class GameManager : MonoBehaviour
     public void RefundCard(TurnAction PurchaseAction){
         if(PurchaseAction != null){
             PlayerAtPlay.Gold += PurchaseAction.PurchasePrice;
-            // PurchaseAction.BoughtCard.HasBeenPlayed = false;
-            // PurchaseAction.BoughtCard.rectTransform.anchoredPosition = PurchaseAction.BoughtCard.OriginPosition;
             PlayerAtPlay.AvailableCardSlots[PurchaseAction.HandIndexOrigin] = false;
-            // PurchaseAction.BoughtCard.OriginParent = Hand[PurchaseAction.HandIndexOrigin];
             if(CurrentAction.CardInAction != null){
                 CurrentAction.CardInAction.ClearAllDisplay();
                 CurrentAction.CardInAction = null;
@@ -568,7 +513,6 @@ public class GameManager : MonoBehaviour
             if(Action.movementType == TurnMovementType.PerformAction){
                 Action.CardInAction.SetLine();
                 Action.CardInAction.SetOutline();
-                // Action.AttackTarget.SetOutline();
             }
             TurnActions.RemoveAt(TurnActions.Count - 1);
         }
@@ -592,7 +536,7 @@ public class GameManager : MonoBehaviour
                     {
                         await Task.Delay(200);
                     }
-                    PerformAttackAction(action);
+                    PerformConfirmedAction(action);
                 break;
             }
         }
@@ -640,9 +584,6 @@ public class GameManager : MonoBehaviour
             Dices[1].MakeWild();
             Dices[2].MakeWild();
         }
-        // Dice1UI.text = Dices[0].value.ToString();
-        // Dice2UI.text = Dices[1].value.ToString();
-        // Dice3UI.text = Dices[2].value.ToString();
     }
 
     /** Checks if the attacked target can be attacked */
@@ -711,8 +652,6 @@ public class GameManager : MonoBehaviour
 public class CardSlot{
     public bool Occupied = false;
     public CardLine Line = CardLine.Backline;
-    // public bool IsDefensive = false;
-    // public bool IsTrap = false;
     public CardDisplay PlayingCard;
     public Transform SlotObject;
 }
@@ -722,7 +661,6 @@ public class TurnAction{
     
     public TurnMovementType movementType;
     public CardDisplay CardInAction;
-    // public CardDisplay AttackTarget;
     public CardDisplay BoughtCard;
     public CardActionObject actionObject;
     public List<CardDisplay> targets = new List<CardDisplay>();
@@ -735,7 +673,6 @@ public class TurnAction{
         if(Origin != null){
             movementType = Origin.movementType;
             CardInAction = Origin.CardInAction;
-            // AttackTarget = Origin.AttackTarget;
             BoughtCard = Origin.BoughtCard;
             PurchasePrice = Origin.PurchasePrice;
             HandIndexOrigin = Origin.HandIndexOrigin;
@@ -761,13 +698,32 @@ public class TurnAction{
                         case TargetTypes.SingleEnemy: targets.Add(null); break;
                         case TargetTypes.LineOfEnemies: targets.Add(null); break;
                         case TargetTypes.Self: targets.Add(actionObject.sourceCard); break;
+                        case TargetTypes.AllAllies: targets.Add(actionObject.sourceCard); break;
+                        case TargetTypes.AlliesNextToMe: targets.Add(actionObject.sourceCard); break;
+                        case TargetTypes.AlliesInSameLine: targets.Add(actionObject.sourceCard); break;
+                        case TargetTypes.SingleAlly: targets.Add(null); break;
+                        default: targets.Add(actionObject.sourceCard); break;
+                    }
+                }
+            break;
+            case ActionTypes.Buff:
+                foreach (var buff in actionObject.action.buffs)
+                {
+                    switch (buff.target)
+                    {
+                        case TargetTypes.SingleEnemy: targets.Add(null); break;
+                        case TargetTypes.LineOfEnemies: targets.Add(null); break;
+                        case TargetTypes.Self: targets.Add(actionObject.sourceCard); break;
+                        case TargetTypes.AllAllies: targets.Add(actionObject.sourceCard); break;
+                        case TargetTypes.AlliesNextToMe: targets.Add(actionObject.sourceCard); break;
+                        case TargetTypes.AlliesInSameLine: targets.Add(actionObject.sourceCard); break;
+                        case TargetTypes.SingleAlly: targets.Add(null); break;
                         default: targets.Add(actionObject.sourceCard); break;
                     }
                 }
             break;
         }
         UpdateTargetCountAndIndex();
-        // Debug.Log("This action requires the selection of "+remainingTargets+" targets.");
     }
 
     private void UpdateTargetCountAndIndex()
@@ -810,16 +766,7 @@ public class TurnAction{
     }
 
     public void Clean(){
-        // if(CardInAction != null)
-        // {
-        //     CardInAction.ClearAllDisplay();
-        // }
-        // foreach (var target in targets)
-        // {
-        //     if(target != null) { target.ClearAllDisplay(); }
-        // }
         CardInAction = null;
-        // AttackTarget = null;
         BoughtCard = null;
         HandIndexOrigin = 0;
         PurchasePrice = 0;

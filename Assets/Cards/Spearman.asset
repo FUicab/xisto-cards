@@ -18,7 +18,7 @@ MonoBehaviour:
   Subtypes: 0000000003000000
   Cost: 1
   Artwork: {fileID: 21300000, guid: c903c67151c4b9a44a2de1ac171fb9ad, type: 3}
-  Origin: 0
+  Origin: 00000000
   MaxHP: 6
   HP: 0
   Armor: 040000000200000000000000

@@ -30,6 +30,8 @@ public class CardSpace : MonoBehaviour, IDropHandler {
     private Image CardSocketImage;
     public Outline outline;
     public Image DefenderBarrier;
+    public int myIndexInRow = 0;
+    public BoardRow myRow;
 
     public void OnDrop(PointerEventData eventData){
         // Debug.Log("OnDrop");
@@ -83,6 +85,32 @@ public class CardSpace : MonoBehaviour, IDropHandler {
         return (card.Subtypes.Contains(UnitSubtype.Defender) && Line==CardLine.Defensive) ||
                (card.Type != UnitType.Trap && Line==CardLine.Backline) ||
                (card.Type == UnitType.Trap && Line==CardLine.Trap);
+    }
+
+    private bool IsInSameLine(CardSpace otherSpace)
+    {
+        bool itIs = false;
+        if (myRow.BoardSpaces.Contains(otherSpace))
+        {
+            itIs = true;
+        }
+        return itIs;
+    }
+
+    public bool IsNextToMe(CardSpace otherSpace)
+    {
+        bool itIs = false;
+        if (IsInSameLine(otherSpace))
+        {
+            for (int i = 0; i < myRow.BoardSpaces.Count; i++)
+            {
+                if (myRow.BoardSpaces[i] == otherSpace && (i == myIndexInRow-1 || i == myIndexInRow+1 ))
+                {
+                    itIs = true;
+                }
+            }
+        }
+        return itIs;
     }
 
     // public delegate void VoidCallback();
@@ -169,6 +197,23 @@ public class CardSpace : MonoBehaviour, IDropHandler {
         // Occupied = false;
     }
 
+    public void SetRowPositionData()
+    {
+        foreach (BoardRow row in Owner.MyBoardRows)
+        {
+            if (row.BoardSpaces.Contains(this))
+            {
+                myRow = row;
+                for (int i = 0; i < row.BoardSpaces.Count; i++)
+                {
+                    if(row.BoardSpaces[i] == this)
+                    {
+                        myIndexInRow = i;
+                    }
+                }
+            }
+        }
+    }
 }
 
 [System.Serializable]

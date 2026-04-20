@@ -18,6 +18,7 @@ public class DetailedInfo : MonoBehaviour
     public TextMeshProUGUI AttackText;
     public TextMeshProUGUI SubtypesText;
     public TextMeshProUGUI SkillInfoText;
+    public TextMeshProUGUI BuffInfoText;
     public GameObject AbilityContainer;
     public GameObject ActionBoxPrefab;
     public List<GameObject> ActionBoxes = new List<GameObject>();
@@ -32,17 +33,17 @@ public class DetailedInfo : MonoBehaviour
         EventManager.ClickCard -= DisplayDetailedCardInfo;
     }
 
-    public async void DisplayDetailedCardInfo(CardDisplay display){
-        Card card = display.card;
+    public async void DisplayDetailedCardInfo(CardDisplay cardDisplay){
+        Card card = cardDisplay.card;
         NameText.text = card.Name;
         CostText.text = card.Cost.ToString();
         ArtworkImage.sprite = card.Artwork;
         HPText.text = card.MaxHP.ToString();
         ArmorText.text = $"{card.Armor[0].ToString()}/{card.Armor[1].ToString()}/{card.Armor[2].ToString()}";
         AttackText.text = card.Attack.ToString();
-        SubtypesText.text = "<b>"+card.Origin+"</b> - "+SubtypesAsText(card.Subtypes);
-        SkillInfoText.text = PrettifiedSkillText(display);
-        CardActionMenu actionMenu = new CardActionMenu(display);
+        SubtypesText.text = "<b>"+card.Origin[0]+"</b> - "+SubtypesAsText(card.Subtypes);
+        SkillInfoText.text = PrettifiedSkillText(cardDisplay);
+        CardActionMenu actionMenu = new CardActionMenu(cardDisplay);
         foreach (var actionBox in ActionBoxes)
         {
             Destroy(actionBox);
@@ -91,8 +92,8 @@ public class DetailedInfo : MonoBehaviour
                         thereIsDiceForThisAction = true;
                     }
                 }
-                if(thereIsDiceForThisAction && display.HasBeenPlayed &&
-                    display.mySpace != null && display.mySpace.Owner == GM.PlayerAtPlay)
+                if(thereIsDiceForThisAction && cardDisplay.HasBeenPlayed &&
+                    cardDisplay.mySpace != null && cardDisplay.mySpace.Owner == GM.PlayerAtPlay)
                 {
                     action.canBeUsed = true;
                     Overlay.gameObject.SetActive(false);
@@ -128,6 +129,9 @@ public class DetailedInfo : MonoBehaviour
 
             index ++;
         }
+
+        BuffInfoText.text = CardTranslator.AppliedBuffDescription(cardDisplay.appliedBuffs);
+
     }
 
     public string SubtypesAsText(List<UnitSubtype> subtypes){
@@ -167,7 +171,6 @@ public class DetailedInfo : MonoBehaviour
     public string PrettifiedSkillText(CardDisplay cardDisplay){
         string SkillText = "";
         List<string> actionList = new List<string>();
-        // CardActionMenu actionMenu = new CardActionMenu(cardDisplay);
         
         List<CardPassiveSkillObject> passiveSkills = new List<CardPassiveSkillObject>();
         foreach (var skill in cardDisplay.card.SkillSet)
@@ -180,18 +183,6 @@ public class DetailedInfo : MonoBehaviour
         {
             SkillText += passiveSkills[0].description+"\n\n";
         }
-        // foreach (var action in actionMenu.actions)
-        // {
-        //     actionList.Add("");
-        //     foreach (var diceValue in action.diceValues)
-        //     {
-        //         actionList[index] += $"[{diceValue}]";
-        //     }
-        //     actionList[index] += " "+action.description;
-        //     index += 1;
-        // }
-
-        // SkillText += String.Join('\n',actionList);
 
         return SkillText;
     }

@@ -18,9 +18,8 @@ MonoBehaviour:
   Subtypes: 0300000002000000
   Cost: 1
   Artwork: {fileID: 21300000, guid: 431e710e66d0d52469f10e592ef3a4d1, type: 3}
-  Origin: 3
+  Origin: 03000000
   MaxHP: 2
-  HP: 0
   Armor: 000000000000000000000000
   Attack: 7
   SkillSet: []
@@ -39,8 +38,9 @@ MonoBehaviour:
         specialEffect: 0
         requirements: []
         specialBehavior: 
+        source: {fileID: 0}
       requirements:
-      - requirement: 3
+      - requirement: 1
         subtypeRequirement: 02000000
         factionRequirement: 05000000
         targetIs: 
