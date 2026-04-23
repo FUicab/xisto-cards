@@ -16,7 +16,7 @@ public class CardActionMenu
         int index = 0;
         int actionIndex = 0;
         sourceCard = cardDisplay;
-        foreach (var item in cardDisplay.card.CardActions)
+        foreach (var item in cardDisplay.cardActions)
         {
             if(item.actionType != ActionTypes.RepeatFromAbove)
             {
@@ -410,7 +410,7 @@ public static class CardTranslator
                                 switch (requirement.targetIs[0])
                                 {
                                     case TargetUnitDefinition.SameAsMyself:
-                                        text += " another <b>"+buff.source.card.Name+"</b>";
+                                        text += " another <b>"+buff.source?.card.Name+"</b>";
                                     break;
                                 }
                             break;
@@ -771,6 +771,12 @@ public class CardPassiveSkillObject : CardSkillObject
     public CardPassiveSkillObject(PassiveSkill theSkill, CardDisplay theCard) : base(theCard)
     {
         skill = theSkill;
+        List<BuffAction> buffs = new List<BuffAction>();
+        foreach (BuffAction buff in skill.buffs)
+        {
+            buffs.Add(new BuffAction(buff){ source = theCard });
+        }
+        skill.buffs = buffs;
         // sourceCard = theCard;
         description = TranslatePassiveSkillsToText();
     }

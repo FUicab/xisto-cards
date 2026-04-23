@@ -16,11 +16,12 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 
     /* Card values calculated after all modifiers and other independent values */
     public int hp;
-    private bool ProtectedByDefender = false;
+    public bool ProtectedByDefender = false;
 
     /* Some cards allow to redirect attacks towards them. This variable defines who's doing it for this card. This works differently from defenders in the sense that attacks can be redirected regardless of the position, and affected cards can still be targetted.*/
     public CardDisplay attackSponge = null;
     public List<BuffAction> appliedBuffs = new List<BuffAction>();
+    public List<CardAction> cardActions;
 
     /* Get functions. They apply buffs to properties and make the calculation before hand. These values cannot be changed by code and should only be manipulated by buffs or by modifying the card itself. */
     public int maxHP
@@ -227,6 +228,24 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
         NameText.text = card.Name;
         ArtworkImage.sprite = card.Artwork;
         hp = card.MaxHP;
+
+        for (int i = 0; i < card.CardActions.Count; i++)
+        {
+            cardActions.Add(new CardAction(card.CardActions[i]));
+            List<AttackAction> newAttacks = new List<AttackAction>();
+            List<BuffAction> newBuffs = new List<BuffAction>();
+            foreach (AttackAction attack in cardActions[i].attacks)
+            {
+                newAttacks.Add(new AttackAction(attack){ source = this });
+            }
+            cardActions[i].attacks = newAttacks;
+            foreach (BuffAction buff in cardActions[i].buffs)
+            {
+                newBuffs.Add(new BuffAction(buff){ source = this });
+            }
+            cardActions[i].buffs = newBuffs;
+        }
+
         UpdateCardUI();
 
         rectTransform.anchoredPosition = GM.DeckUI.GetComponent<RectTransform>().position;
@@ -397,7 +416,6 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
     {
         BuffAction buff = new BuffAction(newBuff)
         {
-            source = source,
             receiver = this
         };
         switch (buff.Attribute)
@@ -443,10 +461,6 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
     {
         hp = card.MaxHP;
         HPText.text = hp.ToString();
-    }
-    public int GetDamageAgainstTarget(CardDisplay target)
-    {
-        return GM.CalculateDamage(this, target);
     }
 
     public void UpdateBuffStatus()
@@ -500,24 +514,6 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 
         // UpdateBuffListUI();
     }
-
-    // public void UpdateBuffListUI()
-    // {
-    //     string buffText = "";
-    //     string numberSign = "";
-
-    //     for (int i = 0; i < appliedBuffs.Count; i++)
-    //     {
-    //         if(appliedBuffs[i].amount > 0){ numberSign = "+"; }
-    //         buffText += CardTranslator.TextFormat(numberSign+appliedBuffs[i].amount,null,appliedBuffs[i].amountCanBeAugmented)+" "+CardTranslator.TextFormat(CardTranslator.BuffAttributeDescription(appliedBuffs[i].Attribute),appliedBuffs[i].Attribute);
-    //         switch (appliedBuffs[i].target)
-    //         {
-    //             default: buffText += " "+CardTranslator.TargetTypeDescription(appliedBuffs[i].target)+" from <b>"+appliedBuffs[i].source.card.Name+"</b>"; break;
-    //         }
-    //         buffText += "\n";
-    //     }
-    //     BuffListText.text = buffText;
-    // }
 
     public void UpdateClickabilityStatus(TurnAction currentTurn)
     {

@@ -169,7 +169,7 @@ public class GameManager : MonoBehaviour
                                 info += "<b>"+tuAc.CardInAction.card.Name+"</b> attacks ";
                                 for (int i = 0; i < tuAc.targets.Count; i++)
                                 {
-                                    info += "<b>· "+tuAc.targets[i].card.name+"</b> <i>("+CalculateDamage(tuAc.CardInAction, tuAc.targets[i], tuAc.actionObject.action.attacks[i])+")</i> ";
+                                    info += "<b>· "+tuAc.targets[i].card.name+"</b> <i>("+CalculateDamage(tuAc.targets[i], tuAc.actionObject.action.attacks[i])+")</i> ";
                                 }
                                 // foreach (var tgt in tuAc.targets)
                                 // {
@@ -220,6 +220,84 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public CardDisplay GetActualTarget(CardDisplay target)
+    {
+        // AttackAction attack = ActionData.actionObject.action.attacks[i];
+        CardDisplay actualTarget;
+        if(target.ProtectedByDefender)
+        {
+            actualTarget = target.mySpace.Defenders[0].PlayingCard;
+        } else {
+            if(target.attackSponge != null){
+                actualTarget = target.attackSponge;
+            } else {
+                actualTarget = target;
+            }
+        }
+        return actualTarget;
+        // actualTarget.ReceiveDamage(CalculateDamage(ActionData.CardInAction, target, attack));
+    }
+
+    public void PerformAttackAction(CardDisplay target, TurnAction ActionData, int i  = 0)
+    {
+        AttackAction attack = ActionData.actionObject.action.attacks[i];
+        GetActualTarget(target).ReceiveDamage(CalculateDamage(GetActualTarget(target), attack));
+
+        foreach (AttackEffect effect in attack.attackEffect)
+        {
+            switch (effect.effectType)
+            {
+                case AttackEffects.SplashDamage:
+                    List<CardDisplay> affectedTargets = new List<CardDisplay>();
+                    AttackAction splashAttack = new AttackAction(attack){
+                        requirements = new List<Requirements>(),
+                        attackEffect = new List<AttackEffect>(),
+                    };
+                    if (!effect.useAttackValue){
+                        splashAttack.flatDamageOverwrite = effect.value;
+                    }
+                    int myIndex = target.mySpace.myIndexInRow;
+                    if(myIndex != 0)
+                    {
+                        affectedTargets.Add(target.mySpace.myRow.BoardSpaces[myIndex-1].PlayingCard);
+                    }
+                    if(myIndex < target.mySpace.myRow.BoardSpaces.Count-1)
+                    {
+                        affectedTargets.Add(target.mySpace.myRow.BoardSpaces[myIndex+1].PlayingCard);
+                    }
+
+                    foreach (CardDisplay affectedTarget in affectedTargets)
+                    {
+                        if (affectedTarget != null)
+                        {
+                            GetActualTarget(affectedTarget).ReceiveDamage(CalculateDamage(GetActualTarget(affectedTarget), splashAttack));
+                        }
+                    }
+                break;
+                case AttackEffects.SelfDamage:
+                    AttackAction selfAttack = new AttackAction(attack){
+                        requirements = new List<Requirements>(),
+                        attackEffect = new List<AttackEffect>(),
+                        damageType = DamageTypes.SelfDamage
+                    };
+                    if (!effect.useAttackValue){
+                        selfAttack.flatDamageOverwrite = effect.value;
+                    }
+                    attack.source.ReceiveDamage(CalculateDamage(attack.source, selfAttack));
+                break;
+                case AttackEffects.ApplyDebuff:
+                    foreach (BuffAction debuff in effect.buffs)
+                    {
+                        BuffAction debuffAction = new BuffAction(debuff){
+                            requirements = new List<Requirements>()
+                        };
+                        GetActualTarget(target).ReceiveBuff(debuffAction);
+                    }
+                break;
+            }
+        }
+    }
+
     public void PerformConfirmedAction(TurnAction ActionData){
         if(ActionData.CardInAction != null)
         {
@@ -236,12 +314,7 @@ public class GameManager : MonoBehaviour
                         ActionData.targets[i].SetOutline();
                     }
                     if(ActionData.targets[i]!=null && ActionData.CardInAction!=null){
-                        if(ActionData.targets[i].attackSponge != null)
-                        {
-                            ActionData.targets[i].attackSponge.ReceiveDamage(CalculateDamage(ActionData.CardInAction, ActionData.targets[i], ActionData.actionObject.action.attacks[i]));
-                        } else {
-                            ActionData.targets[i].ReceiveDamage(CalculateDamage(ActionData.CardInAction, ActionData.targets[i], ActionData.actionObject.action.attacks[i]));
-                        }
+                        PerformAttackAction(ActionData.targets[i], ActionData, i);
                     }
                 }
             break;
@@ -290,17 +363,19 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public int CalculateDamage(CardDisplay attacker, CardDisplay target){
-        int dmg = attacker.attack - target.armor[0];
-        if(dmg <= 0){
-            dmg = 1;
-        }
+    // public int CalculateDamage(CardDisplay attacker, CardDisplay target){
+    //     int dmg = attacker.attack - target.armor[0];
+    //     if(dmg <= 0){
+    //         dmg = 1;
+    //     }
 
-        return dmg;
-    }
+    //     return dmg;
+    // }
 
-    public int CalculateDamage(CardDisplay attacker, CardDisplay target, AttackAction attackAction){
+    public int CalculateDamage(CardDisplay target, AttackAction attackAction){
         
+        CardDisplay attacker = attackAction.source;
+
         /* Calculation of temporary buffs and debuffs */
         var attackerTempModifiers = (
             Attack: 0,
@@ -392,6 +467,14 @@ public class GameManager : MonoBehaviour
         if(targetArmor < 0){ targetArmor = 0; }
 
         int dmg = Mathf.FloorToInt((attacker.attack + attackerTempModifiers.Attack) * attackAction.damageMultiplier) - targetArmor;
+        if(attackAction.damageType == DamageTypes.SelfDamage)
+        {
+            targetArmor = 0;
+        }
+        if(attackAction.flatDamageOverwrite > 0)
+        {
+            dmg = attackAction.flatDamageOverwrite - targetArmor;
+        }
         if(dmg <= 0){
             dmg = 1;
         }

@@ -15,18 +15,38 @@ public class CardAction : CardSkill
     public bool attackCountCanBeAugmented = false;
     public List<BuffAction> buffs;
 
+    public CardAction(CardAction values)
+    {
+        actionType = values.actionType;
+        attacks = values.attacks;
+        attackCountCanBeAugmented = values.attackCountCanBeAugmented;
+        buffs = values.buffs;
+    }
 }
 
 [System.Serializable]
 public class AttackAction{
     public DamageTypes damageType;
     public float damageMultiplier = 1;
+    public int flatDamageOverwrite = 0; //This overwrite will make attacks deal a given amount of damage without taking into account the attack value of the card nor any modifiers
     public TargetTypes target = TargetTypes.SingleEnemy;
     public List<AttackEffect> attackEffect;
     public List<BuffAction> temporaryBuffs; //Temporary buffs are applied during the attack
     public List<Requirements> requirements;
-    [HideInInspector] public CardDisplay source;
+    public CardDisplay source;
     [HideInInspector] public CardDisplay receiver;
+
+    public AttackAction(AttackAction values)
+    {
+        damageType = values.damageType;
+        damageMultiplier = values.damageMultiplier;
+        target = values.target; 
+        attackEffect = values.attackEffect;
+        temporaryBuffs = values.temporaryBuffs;
+        requirements = values.requirements;
+        source = values.source;
+        receiver = values.receiver;
+    }
 }
 
 [System.Serializable]

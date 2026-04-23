@@ -4719,8 +4719,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1074808398}
+  m_Children: []
   m_Father: {fileID: 1258608643}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -5502,6 +5501,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e549e3fea25119f4d8c565c31bf940d6, type: 2}
   - {fileID: 11400000, guid: ea233cf0f1829b34ab8db33414cbfce2, type: 2}
   - {fileID: 11400000, guid: ed86a422f2227304f97b1a1a99f4484c, type: 2}
+  - {fileID: 11400000, guid: 8ddf57af089bcfd45922f3c7a61632f6, type: 2}
   - {fileID: 11400000, guid: a968466772dd038438c075d310a5743f, type: 2}
   - {fileID: 11400000, guid: 50bb0ed52ead427489da53ef4762099c, type: 2}
   - {fileID: 11400000, guid: 78d1cc2387a1cff4e85c6c7deae9106a, type: 2}
@@ -5635,7 +5635,7 @@ MonoBehaviour:
   turnStatus: 0
   OpponentAI:
     Profile:
-      Role: 1
+      Role: 0
       useAI: 0
       Gold: 0
       Hand: []
@@ -6885,15 +6885,15 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1074808397}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.0005493164}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 725208659}
+  m_Father: {fileID: 1258608643}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -535.7799, y: -1.5900351}
   m_SizeDelta: {x: 171.48, y: 203.52}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1074808399
@@ -8204,6 +8204,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 725208659}
+  - {fileID: 1074808398}
   - {fileID: 136029493}
   - {fileID: 1309977296}
   - {fileID: 2106075321}

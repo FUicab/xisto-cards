@@ -236,7 +236,7 @@ public class PlayerAI{
         foreach (var target in AttackableTargets){
             int health = target.hp;
             foreach (var attacker in Attackers){
-                health -= attacker.GetDamageAgainstTarget(target);
+                // health -= attacker.GetDamageAgainstTarget(target);
             }
             if(health <= 0){
                 ChosenTarget = target;
