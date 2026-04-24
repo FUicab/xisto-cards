@@ -6162,7 +6162,6 @@ MonoBehaviour:
     DiceUI_3: {fileID: 0}
     Dices: []
   turnStatus: 0
-  TurnConfirmationButton: {fileID: 710178417}
   availableActionsForThisTurn: 0
   turnIndex: 0
   roundIndex: 0
@@ -6191,6 +6190,7 @@ MonoBehaviour:
     ChosenStrategy: 3
     MyActions: []
     currentActionIndex: 0
+    allCardSpacesOccupied: 0
     MyCardSpaces: []
     MyBackline: []
     MyTrapline: []

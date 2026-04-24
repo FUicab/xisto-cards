@@ -1069,8 +1069,10 @@ MonoBehaviour:
   HasBeenPlayed: 0
   HandIndex: 0
   hp: 0
+  ProtectedByDefender: 0
   attackSponge: {fileID: 0}
   appliedBuffs: []
+  cardActions: []
   NameText: {fileID: 8186447421412845353}
   CostText: {fileID: 8186447421088593238}
   ArtworkImage: {fileID: 8186447420582462907}
@@ -1078,8 +1080,7 @@ MonoBehaviour:
   ArmorText: {fileID: 8186447420361549119}
   AttackText: {fileID: 8186447420963284897}
   DefenderBarrier: {fileID: 4990955454186044427}
-  BuffListText: {fileID: 0}
-  rectTransform: {fileID: 0}
+  rectTransform: {fileID: 8186447420902396248}
   MainUI: {fileID: 0}
   SlotGroup: {fileID: 0}
   OriginPosition: {x: 0, y: 0, z: 0}
@@ -1090,7 +1091,6 @@ MonoBehaviour:
   PurchaseAction:
     movementType: 0
     CardInAction: {fileID: 0}
-    BoughtCard: {fileID: 0}
     actionObject:
       diceValues: 
       diceAverageValue: 0

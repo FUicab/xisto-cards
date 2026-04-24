@@ -7,6 +7,8 @@ using static CardSpace;
 using static UnitType;
 using static PlayerAI;
 using System.Threading.Tasks;
+//using UnityEngine.UIElements;
+//using UnityEngine.UI;
 
 public enum TurnMovementType{
     CardPurchase,
@@ -21,13 +23,18 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI GoldText;
     public TextMeshProUGUI OpponentGoldText;
     public TextMeshProUGUI ActionPointsText;
+    public TextMeshProUGUI OpponentActionPointsText;
     public TextMeshProUGUI MainTooltip;
-    public GameObject Dice1UI;
-    public GameObject Dice2UI;
-    public GameObject Dice3UI;
+    public GameObject Dice1UI_Host;
+    public GameObject Dice2UI_Host;
+    public GameObject Dice3UI_Host;
+    public GameObject Dice1UI_Opponent;
+    public GameObject Dice2UI_Opponent;
+    public GameObject Dice3UI_Opponent;
     public GameObject FloatingMessageObject;
     public GameObject DeckUI;
     public TextMeshProUGUI DebugText;
+    public TextMeshProUGUI SmallTurnEndText;
 
     public Transform[] Hand;
     // public bool[] AvailableCardSlots;
@@ -45,11 +52,24 @@ public class GameManager : MonoBehaviour
     public TurnAction CurrentAction = new TurnAction();
     public int ActionPoints = 3;
     public int InitialActionPoints = 3;
-    public PlayerProfile Host;
-    public PlayerProfile Opponent;
+    public PlayerProfile Host = new PlayerProfile();
+    public PlayerProfile Opponent = new PlayerProfile();
     public PlayerProfile PlayerAtPlay;
-    public List<Dice> Dices;
+    //public List<Dice> Dices;
     public TurnStatus turnStatus = TurnStatus.Idle;
+
+    public GameObject TurnConfirmationButton;
+    public Image ConfirmationButtonImage;
+    public Button ConfirmationButton;
+    public TextMeshProUGUI ConfirmationButtonText;
+    public TextMeshProUGUI ConfirmationButtonSmallText;
+    public string EndTurnText = "End turn";
+    public string EndRoundText = "End round";
+    public string GoldOnPassTip = "Passing on a turn rewards <b>+1 Gold</b> at the end of the round.";
+    public string WaitingForOpponentText = "Waiting for opponent turn...";
+    public int availableActionsForThisTurn = 0;
+    public int turnIndex = 0;
+    public int roundIndex = 0;
 
     [SerializeField] public PlayerAI OpponentAI = new PlayerAI();
 
@@ -90,27 +110,12 @@ public class GameManager : MonoBehaviour
             }
             slot.SetRowPositionData();
         }
-        // ConfirmButtonObject.SetActive(false);
         MainUI = GameObject.Find("MainUI").GetComponent<Canvas>();
-        // CardDeck = JsonUtility.FromJson<CardList>(CardsJSON.text);
-        Host.Role = PlayerRole.Host;
-        Host.Gold = 5;
-        ActionPointsText.text = ActionPoints.ToString();
-        Opponent.Role = PlayerRole.Opponent;
-        Opponent.Gold = 5;
-        UpdateDisplayGoldValues();
-        Players.Add(Host);
-        Players.Add(Opponent);
-        OpponentAI.GM = this;
-        OpponentAI.Profile = Opponent;
-        DrawCards(Host);
-        DrawCards(Opponent);
-        Dices.Add(new Dice(Dice1UI));
-        Dices.Add(new Dice(Dice2UI));
-        Dices.Add(new Dice(Dice3UI));
-        RollDices();
-        MainTooltip.text = "";
-        PlayerAtPlay = Host;
+        ConfirmationButton = TurnConfirmationButton.GetComponent<Button>();
+        ConfirmationButtonImage = TurnConfirmationButton.GetComponent<Image>();
+        ConfirmationButtonText = GameObject.Find(ConfirmationButton.name+"/Main text").GetComponent<TextMeshProUGUI>();
+        ConfirmationButtonSmallText = GameObject.Find(ConfirmationButton.name+"/Small text").GetComponent<TextMeshProUGUI>();
+        SetupStartingRound();
     }
 
     private void Update(){
@@ -122,44 +127,51 @@ public class GameManager : MonoBehaviour
     public void UpdateDisplayGoldValues(){
         GoldText.text = Host.Gold.ToString();
         OpponentGoldText.text = Opponent.Gold.ToString();
+        ActionPointsText.text = Host.actionPoints.ToString();
+        OpponentActionPointsText.text = Opponent.actionPoints.ToString();
     }
 
     public TurnAction RegisterCurrentAction(){
         TurnActions.Add(new TurnAction(CurrentAction));
         CurrentAction.Clean();
-        ActionPoints -= 1;
-        ActionPointsText.text = ActionPoints.ToString();
+        //PlayerAtPlay.actionPoints -= 1;
+        availableActionsForThisTurn -= 1;
+        //ActionPointsText.text = Host.actionPoints.ToString();
+        //OpponentActionPointsText.text = Opponent.actionPoints.ToString();
+        SetConfirmationButton("");
         return TurnActions[TurnActions.Count - 1];
     }
 
     public void RemoveAction(TurnAction Action){
         TurnActions.Remove(Action);
-        ActionPoints += 1;
-        ActionPointsText.text = ActionPoints.ToString();
+        PlayerAtPlay.actionPoints += 1;
+        //ActionPointsText.text = Host.actionPoints.ToString();
+        //OpponentActionPointsText.text = Opponent.actionPoints.ToString();
     }
 
     public void ClearActionPoints(){
         TurnActions.Clear();
-        ActionPoints = 3;
-        InitialActionPoints = ActionPoints;
-        ActionPointsText.text = ActionPoints.ToString();
+        //ActionPoints = 3;
+        //InitialActionPoints = ActionPoints; 
+        //ActionPointsText.text = Host.actionPoints.ToString();
+        //OpponentActionPointsText.text = Opponent.actionPoints.ToString();
     }
 
     public void UpdateDebugInfo()
     {
         string info = "";
-        info += "Current player: <b>"+PlayerAtPlay.Role+"</b>\n";
-        info += "Card in action: <b>"+(CurrentAction.CardInAction?.card?.Name)+"</b>\n";
-        info += "\n";
-        info += "<i>Registered actions</i>\n";
+        info += $"Current player: <b>{PlayerAtPlay.Role}</b>\n" +
+                $"Card in action: <b>{CurrentAction.CardInAction?.card?.Name}</b>\n" +
+                $"Turn: {turnIndex+1} | Round: {roundIndex+1} \n\n" +
+                $"<i>Registered actions</i>\n";
         foreach (TurnAction tuAc in TurnActions)
         {
-            if(tuAc.BoughtCard != null || tuAc.CardInAction != null)
+            if(tuAc.CardInAction != null)
             {
                 switch (tuAc.movementType)
                 {
                     case TurnMovementType.CardPurchase:
-                        info += "Bought <b>"+tuAc.BoughtCard.card.name+"</b> for <b>"+tuAc.PurchasePrice+"</b> gold.\n";
+                        info += "Bought <b>"+tuAc.CardInAction.card.name+"</b> for <b>"+tuAc.PurchasePrice+"</b> gold.\n";
                     break;
 
                     case TurnMovementType.PerformAction:
@@ -486,7 +498,7 @@ public class GameManager : MonoBehaviour
     /** Starts an action event */
     public void StartAction(CardActionObject action)
     {
-        if(!CheckActionPoints()){ return; }
+        if(!CheckAvailableActions()){ return; }
         CurrentAction.movementType = TurnMovementType.PerformAction;
         switch (action.action.actionType)
         {
@@ -570,7 +582,7 @@ public class GameManager : MonoBehaviour
     /* --- Turn management functions --------------------------------------------- */
     public bool CanBuyCard(CardDisplay card){
         bool CardCanBeBought = false;
-        if(CheckGold(card.cost) && CheckActionPoints()){
+        if(CheckGold(card.cost) && CheckAvailableActions()){
             PlayerAtPlay.Gold -= card.cost;
             CardCanBeBought = true;
         }
@@ -585,7 +597,7 @@ public class GameManager : MonoBehaviour
                 CurrentAction.CardInAction.ClearAllDisplay();
                 CurrentAction.CardInAction = null;
             }
-            ClearAttackActions(PurchaseAction.BoughtCard);
+            ClearAttackActions(PurchaseAction.CardInAction);
             RemoveAction(PurchaseAction);
             UpdateDisplayGoldValues();
         }
@@ -601,47 +613,140 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    /* --- Turn End functions --------------------------------------------- */
+    /* --- Round and Turn management functions --------------------------------------------- */
+
+    public void SetupStartingRound()
+    {
+        Host.Role = PlayerRole.Host;
+        Host.Gold = 5;
+        //ActionPointsText.text = Host.actionPoints.ToString();
+        //OpponentActionPointsText.text = Opponent.actionPoints.ToString();
+        Opponent.Role = PlayerRole.Opponent;
+        Opponent.Gold = 5;
+        UpdateDisplayGoldValues();
+        Players.Add(Host);
+        Players.Add(Opponent);
+        OpponentAI.GM = this;
+        OpponentAI.Profile = Opponent;
+        DrawCards(Opponent);
+        DrawCards(Host);
+        MainTooltip.text = "";
+        PlayerAtPlay = Host;
+        Host.Dices.Add(new Dice(Dice1UI_Host));
+        Host.Dices.Add(new Dice(Dice2UI_Host));
+        Host.Dices.Add(new Dice(Dice3UI_Host));
+        Opponent.Dices.Add(new Dice(Dice1UI_Opponent));
+        Opponent.Dices.Add(new Dice(Dice2UI_Opponent));
+        Opponent.Dices.Add(new Dice(Dice3UI_Opponent));
+        PlayerAtPlay.actionPoints -= 1;
+        availableActionsForThisTurn = 1;
+        RollAllDices();
+        SetConfirmationButton(EndTurnText, GoldOnPassTip, true);
+    }
     public async void TurnEnd(){
         foreach (var action in TurnActions)
         {
             switch (action.movementType)
             {
                 case TurnMovementType.CardPurchase:
-                    if(action.BoughtCard != null)
+                    if(action.CardInAction != null)
                     {
-                        action.BoughtCard.DisableUndoPurchase();
+                        action.CardInAction.DisableUndoPurchase();
                     }
                 break;
 
                 case TurnMovementType.PerformAction:
                     if (PlayerAtPlay.useAI)
                     {
-                        await Task.Delay(200);
+                        await Task.Delay(400);
                     }
                     PerformConfirmedAction(action);
                 break;
             }
         }
-        PlayerAtPlay.Gold += ActionPoints;
-        PlayerAtPlay.Gold += 1;
-        DrawCards(PlayerAtPlay);
+        if(availableActionsForThisTurn > 0)
+        {
+            PlayerAtPlay.actionPointsTurnedToGold += availableActionsForThisTurn;
+        }
+        //PlayerAtPlay.Gold += ActionPoints;
+        //PlayerAtPlay.Gold += 1;
+        //DrawCards(PlayerAtPlay);
         UpdateDisplayGoldValues();
-        ClearActionPoints();
+        //ClearActionPoints();
         SwitchTurns();
     }
-    public void SwitchTurns(){
-        if(PlayerAtPlay == Host){
-            PlayerAtPlay = Opponent;
-        } else {
-            PlayerAtPlay = Host;
+
+    public async void RoundEnd()
+    {
+        RollAllDices();
+        foreach (PlayerProfile player in Players)
+        {
+            player.Gold += 1;
+            player.Gold += player.actionPointsTurnedToGold;
+            player.actionPointsTurnedToGold = 0;
+            player.actionPoints = player.maxActionPoints;
+            DrawCards(player);
         }
-        // HealCardsOfPlayer(PlayerAtPlay);
-        RollDices();
+        turnIndex = 0;
+        PlayerAtPlay.actionPoints--;
+        SetConfirmationButton(EndTurnText, GoldOnPassTip, true);
+        roundIndex++;
+        UpdateDisplayGoldValues();
+        ClearActionPoints();
+    }
+
+    public void SwitchTurns(){
+        bool newRound = false;
+        if((PlayerAtPlay == Host || Host.actionPoints <= 0) && Opponent.actionPoints > 0){
+            PlayerAtPlay = Opponent;
+            SetConfirmationButton(EndTurnText, WaitingForOpponentText, false);
+        } else if(Host.actionPoints > 0) {
+            PlayerAtPlay = Host;
+            SetConfirmationButton(EndTurnText, GoldOnPassTip, true);
+        } else
+        {
+            newRound = true;
+            RoundEnd();
+        }
+        Debug.Log($"Host: {Host.actionPoints} | Opponent: {Opponent.actionPoints} | {PlayerAtPlay.Role} will play now.");
+        if (!newRound)
+        {
+            PlayerAtPlay.actionPoints -= 1;
+            turnIndex++;
+            if(Host.actionPoints <= 0 && Opponent.actionPoints <= 0)
+            {
+                SetConfirmationButton(EndRoundText, GoldOnPassTip, true);
+            }
+        }
+        availableActionsForThisTurn = 1;
         if(PlayerAtPlay.useAI){
             OpponentAI.StartAI();
         }
-        
+    }
+
+    public void SetConfirmationButton(string bigText = "", string smallText = "", bool enabled = true){
+        ConfirmationButtonText.text = bigText;
+        ConfirmationButtonSmallText.text = smallText;
+        ConfirmationButton.interactable = enabled;
+        switch (bigText) {
+            case "End turn":
+                ConfirmationButtonImage.color = new Color(1f, 0.8f, 0.74f);
+            break;
+            case "End round":
+                ConfirmationButtonImage.color = new Color(0.97f, 0.64f, 0.98f);
+            break;
+            default:
+                ConfirmationButtonImage.color = new Color(0.94f, 0.85f, 0.74f);
+            break;
+        }
+    }
+    public void SetConfirmationButton(bool enabled = true)
+    {
+        SetConfirmationButton(ConfirmationButtonText.text, ConfirmationButtonSmallText.text, enabled);
+    }
+    public void SetConfirmationButton(string smallText = "")
+    {
+        SetConfirmationButton(ConfirmationButtonText.text, smallText, true);
     }
 
     public void HealCardsOfPlayer(PlayerProfile player){
@@ -655,17 +760,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void RollDices()
+    public void RollAllDices()
     {
-        foreach (var dice in Dices)
+        foreach (PlayerProfile player in Players)
         {
-            dice.Reset();
-        }
-        if(Dices[0].value == Dices[1].value && Dices[1].value == Dices[2].value)
-        {
-            Dices[0].MakeWild();
-            Dices[1].MakeWild();
-            Dices[2].MakeWild();
+            player.RollDices();
         }
     }
 
@@ -700,21 +799,23 @@ public class GameManager : MonoBehaviour
         }
         return isOk;
     }
-    public bool CheckActionPoints(int requirement = 1){
+    public bool CheckAvailableActions(int requirement = 1){
         bool isOk = false;
-        if(ActionPoints >= requirement){
+        if(availableActionsForThisTurn >= requirement){
             isOk = true;
         } else {
-            DisplayFloatingMessage("No more action points\nEnd your turn to continue", Camera.main.ScreenToWorldPoint(Input.mousePosition), "green");
+            DisplayFloatingMessage("No more actions available\nEnd your turn to continue", Camera.main.ScreenToWorldPoint(Input.mousePosition), "green");
         }
         return isOk;
     }
 
     /* --- Floating messages --------------------------------------------- */
-    public void DisplayDamage(int damage, CardDisplay target){
+    public async void DisplayDamage(int damage, CardDisplay target){
         GameObject MessageObject = Instantiate(FloatingMessageObject);
         MessageObject.GetComponent<FloatingMessage>().SetMessage(damage.ToString());
-        MessageObject.transform.Find("Canvas").GetComponent<RectTransform>().anchoredPosition = target.transform.position;
+        Vector3 position = new Vector3(Random.Range(-50,50)+target.transform.position.x, Random.Range(-50, 50) + target.transform.position.z, target.transform.position.z);
+        MessageObject.transform.Find("Canvas").GetComponent<RectTransform>().anchoredPosition = position;
+        await Task.Delay(200);
     }
     public void DisplayFloatingMessage(string message, Vector3 location, string colorName = ""){
         GameObject MessageObject = Instantiate(FloatingMessageObject);
@@ -744,7 +845,7 @@ public class TurnAction{
     
     public TurnMovementType movementType;
     public CardDisplay CardInAction;
-    public CardDisplay BoughtCard;
+    //public CardDisplay BoughtCard;
     public CardActionObject actionObject;
     public List<CardDisplay> targets = new List<CardDisplay>();
     public int nextNullIndex = -1;
@@ -756,7 +857,7 @@ public class TurnAction{
         if(Origin != null){
             movementType = Origin.movementType;
             CardInAction = Origin.CardInAction;
-            BoughtCard = Origin.BoughtCard;
+            //BoughtCard = Origin.BoughtCard;
             PurchasePrice = Origin.PurchasePrice;
             HandIndexOrigin = Origin.HandIndexOrigin;
             actionObject = Origin.actionObject;
@@ -850,7 +951,7 @@ public class TurnAction{
 
     public void Clean(){
         CardInAction = null;
-        BoughtCard = null;
+        //BoughtCard = null;
         HandIndexOrigin = 0;
         PurchasePrice = 0;
         remainingTargets = 0;
@@ -865,9 +966,30 @@ public class PlayerProfile{
     public PlayerRole Role;
     public bool useAI = false;
     public int Gold = 0;
+    [HideInInspector] public int maxActionPoints = 3;
+    [HideInInspector] public int actionPoints = 3;
+    [HideInInspector] public int actionPointsTurnedToGold = 0;
     public List<Transform> Hand = new List<Transform>();
     public List<bool> AvailableCardSlots = new List<bool>();
     public List<BoardRow> MyBoardRows = new List<BoardRow>();
+    public List<BuffAction> buffs = new List<BuffAction>();
+    public GameObject DiceUI_1;
+    public GameObject DiceUI_2;
+    public GameObject DiceUI_3;
+    public List<Dice> Dices = new List<Dice>() {};
+    public void RollDices()
+    {
+        foreach (var dice in Dices)
+        {
+            dice.Reset();
+        }
+        if (Dices[0].value == Dices[1].value && Dices[1].value == Dices[2].value)
+        {
+            Dices[0].MakeWild();
+            Dices[1].MakeWild();
+            Dices[2].MakeWild();
+        }
+    }
 }
 
 [System.Serializable]

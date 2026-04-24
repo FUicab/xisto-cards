@@ -85,7 +85,7 @@ public class DetailedInfo : MonoBehaviour
                     case 5: DiceNumbers.GetComponent<TextMeshProUGUI>().text += "5️"; break;
                     case 6: DiceNumbers.GetComponent<TextMeshProUGUI>().text += "6️"; break;
                 }
-                foreach (var diceResult in GM.Dices)
+                foreach (var diceResult in GM.PlayerAtPlay.Dices)
                 {
                     if((diceResult.value == diceValue || diceResult.wild) && !diceResult.used)
                     {
