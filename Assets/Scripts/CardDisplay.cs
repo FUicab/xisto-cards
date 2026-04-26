@@ -211,47 +211,47 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		UndoButtonObject.SetActive(false);
 	}
 
-	void Start()
+	void Awake()
 	{
 		GM = FindObjectOfType<GameManager>();
 		canvasGroup = GetComponent<CanvasGroup>();
 		MainUI = GameObject.Find("MainUI").GetComponent<Canvas>();
 		SlotGroup = GameObject.Find("CardSlots").GetComponent<Transform>();
-		// BuffListText = GameObject.Find("BuffListUIText").GetComponent<TextMeshProUGUI>();
-		//rectTransform = GetComponent<RectTransform>();
 		outline = GetComponent<Outline>();
 		line = GetComponent<LineRenderer>();
+	}
+
+	void Start()
+	{
 		line.enabled = false;
 		UndoButtonObject.SetActive(false);
 		OriginParent = transform.parent;
 		OriginPosition = rectTransform.anchoredPosition;
+        NameText.text = card.Name;
+        ArtworkImage.sprite = card.Artwork;
+        hp = card.MaxHP;
 
-		NameText.text = card.Name;
-		ArtworkImage.sprite = card.Artwork;
-		hp = card.MaxHP;
+        for (int i = 0; i < card.CardActions.Count; i++)
+        {
+            cardActions.Add(new CardAction(card.CardActions[i]));
+            List<AttackAction> newAttacks = new List<AttackAction>();
+            List<BuffAction> newBuffs = new List<BuffAction>();
+            foreach (AttackAction attack in cardActions[i].attacks)
+            {
+                newAttacks.Add(new AttackAction(attack) { source = this });
+            }
+            cardActions[i].attacks = newAttacks;
+            foreach (BuffAction buff in cardActions[i].buffs)
+            {
+                newBuffs.Add(new BuffAction(buff) { source = this });
+            }
+            cardActions[i].buffs = newBuffs;
+        }
+        UpdateCardUI();
 
-		for (int i = 0; i < card.CardActions.Count; i++)
-		{
-			cardActions.Add(new CardAction(card.CardActions[i]));
-			List<AttackAction> newAttacks = new List<AttackAction>();
-			List<BuffAction> newBuffs = new List<BuffAction>();
-			foreach (AttackAction attack in cardActions[i].attacks)
-			{
-				newAttacks.Add(new AttackAction(attack){ source = this });
-			}
-			cardActions[i].attacks = newAttacks;
-			foreach (BuffAction buff in cardActions[i].buffs)
-			{
-				newBuffs.Add(new BuffAction(buff){ source = this });
-			}
-			cardActions[i].buffs = newBuffs;
-		}
-
-		UpdateCardUI();
-
-		rectTransform.anchoredPosition = GM.DeckUI.GetComponent<RectTransform>().position;
-		rectTransform.LeanMove(OriginPosition, 0.5f).setEaseOutQuart().setOnComplete(OnDrawAnimationEnd);
-	}
+        rectTransform.anchoredPosition = GM.DeckUI.GetComponent<RectTransform>().position;
+        rectTransform.LeanMove(OriginPosition, 0.5f).setEaseOutQuart().setOnComplete(OnDrawAnimationEnd);
+    }
 
 	void MoveToDiscardPile()
 	{
@@ -528,6 +528,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 			if (ProtectedByDefender) { clickable = false; }
 			if (!CanBeTargetOfAction(currentTurn)) { clickable = false; }
 		}
+		//if (GM.availableActionsForThisTurn <= 0) {  clickable = false; }
 
 		if (clickable)
 		{

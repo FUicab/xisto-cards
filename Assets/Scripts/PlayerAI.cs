@@ -50,10 +50,6 @@ public class PlayerAI{
 	/* --- Other variables --------------------------------------------- */
 	public GameManager GM; // GM is designated during instatiation
 	public int TurnCount = 1;
-
-	void Start(){
-		// GM = FindObjectOfType<GameManager>();
-	}
 	
 	public void StartAI(){
 		if(Profile == null){ return; }

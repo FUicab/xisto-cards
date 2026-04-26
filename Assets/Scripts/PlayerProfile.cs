@@ -1,0 +1,88 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+[System.Serializable]
+public class PlayerProfile
+{
+	public PlayerRole Role;
+	public bool useAI = false;
+	public int Gold = 0;
+	[HideInInspector] public int maxActionPoints = 3;
+	[HideInInspector] public int actionPoints = 3;
+	[HideInInspector] public int actionPointsTurnedToGold = 0;
+	public List<Transform> Hand = new List<Transform>();
+	public List<bool> AvailableCardSlots = new List<bool>();
+	public List<BoardRow> MyBoardRows = new List<BoardRow>();
+	public List<BuffAction> buffs = new List<BuffAction>();
+	//public GameObject DiceUI_1;
+	//public GameObject DiceUI_2;
+	//public GameObject DiceUI_3;
+	public List<Dice> Dices = new List<Dice>() { };
+	public Dice selectedDice = null;
+	public GameManager GM;
+
+	public PlayerProfile()
+	{
+        EventManager.TurnActionChange += UpdateDiceSelectionStatus;
+    }
+
+    private void UpdateDiceSelectionStatus(TurnAction turnAction)
+    {
+        if(turnAction.CardInAction == null || GM?.PlayerAtPlay.Role != Role)
+		{
+			SelectDice(null);
+			return;
+		}
+        foreach (Dice dice in Dices)
+        {
+			if (!dice.used && turnAction.actionObject.diceValues.Contains(dice.value)) {
+				MakeDiceSelectable(dice);
+			} else {
+				dice.UpdateDiceSelectionStatus(false, false);
+			}
+        }
+    }
+
+    public void RollDices()
+	{
+		foreach (var dice in Dices)
+		{
+			dice.Reset();
+		}
+		if (Dices[0].value == Dices[1].value && Dices[1].value == Dices[2].value)
+		{
+			Dices[0].MakeWild();
+			Dices[1].MakeWild();
+			Dices[2].MakeWild();
+		}
+	}
+
+	public void MakeDiceSelectable(Dice theDice)
+	{
+		if(selectedDice == null)
+		{
+			theDice.UpdateDiceSelectionStatus(true, true);
+			selectedDice = theDice;
+		} else {
+            theDice.UpdateDiceSelectionStatus(true, false);
+        }
+    }
+
+	public void SelectDice(Dice theDice)
+	{
+		foreach (Dice dice in Dices)
+		{
+			if(theDice == null)
+			{
+				dice.UpdateDiceSelectionStatus(false, false);
+				selectedDice = null;
+			} else if(dice == theDice) {
+				dice.UpdateDiceSelectionStatus(true, true);
+				selectedDice = dice;
+			} else {
+				dice.UpdateDiceSelectionStatus(dice.selectable, false);
+			}
+		}
+	}
+
+}

@@ -7,7 +7,7 @@ public class ActionBoxScript : MonoBehaviour, IPointerDownHandler
     public CardActionObject action;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
         GM = FindObjectOfType<GameManager>(); 
     }
