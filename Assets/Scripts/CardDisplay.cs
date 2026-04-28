@@ -432,6 +432,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 			GM.Deck.Add(card);
 			Destroy(gameObject);
 			EventManager.OnTurnActionChange(GM.CurrentAction);
+			RemovePassiveBuffsFromMe();
 			return;
 		}
 		//await Task.Delay(200);
@@ -555,30 +556,53 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 	public void UpdatePassiveBuffStatus()
 	{
 		if (!HasBeenPlayed) { return; }
-		passiveBuffs.Clear();
+		//passiveBuffs.Clear();
 		foreach (PassiveSkill passive in cardPassives)
 		{
-			//Debug.Log($"Passive \"{passive.title}\" is being analyzed.");
 			if(passive.trigger == TriggerTypes.OnBoardChange) /* These passives activate only by having the card there. */
 			{
-                //Debug.Log($"Passive \"{passive.title}\" passed the trigger filter.");
-                //Debug.Log($"Passive \"{passive.title}\" seems to contain a buff which grants {passive.buffs[0].amount} {passive.buffs[0].Attribute}.");
                 foreach (BuffAction buff in passive.buffs)
 				{
-                    //Debug.Log($"Passive \"{passive.title}\" seems to contain a buff which grants {buff.amount} {buff.Attribute}.");
                     if (buff.isTargetImplicit) /* Passive skills can only provide buffs to implicit targets as none should be selected, otherwise the passive buff is invalid. */
 					{
-                        //Debug.Log($"Passive \"{passive.title}\" has implicit targets, fortunately.");
                         foreach (CardDisplay target in buff.GetImplicitTargetsOfAction())
 						{
-                            //Debug.Log($"Passive \"{passive.title}\" was successfully applied to {card.Name}.");
-                            target.ReceivePassiveBuff(buff);
+							if(!target.passiveBuffs.Exists(x => x.originPassive.title == passive.title && x.originPassive.source == passive.source)) { 
+								target.ReceivePassiveBuff(buff);
+							}
+                        }
+						foreach (CardSpace cardSpace in mySpace.Owner.mySpaces.Where(x => x.PlayingCard != null)) /* Check if my buffs change their status related to others */
+						{
+							for (int i = cardSpace.PlayingCard.passiveBuffs.Count-1; i >= 0; i--)
+							{
+								BuffAction theirBuff = cardSpace.PlayingCard.passiveBuffs[i];
+								if (theirBuff.originPassive.source == this && !buff.TargetMeetsRequirements(cardSpace.PlayingCard))
+								{
+									cardSpace.PlayingCard.passiveBuffs.RemoveAt(i);
+								}
+							}
 						}
 					}
 				}
 			}
 		}
 	}
+
+	public void RemovePassiveBuffsFromMe()
+	{
+        foreach (CardSpace cardSpace in mySpace.Owner.mySpaces.Where(x => x.PlayingCard != null && x.PlayingCard.passiveBuffs.Count > 0))
+        {
+			//Debug.Log($"When removing buffs we found that {cardSpace.PlayingCard.card.Name} has buffs whose origin is a passive skill.");
+            for (int i = cardSpace.PlayingCard.passiveBuffs.Count-1; i >= 0; i--)
+            {
+				BuffAction buff = cardSpace.PlayingCard.passiveBuffs[i];
+                if (buff.originPassive.source == this)
+				{
+                    cardSpace.PlayingCard.passiveBuffs.RemoveAt(i);
+                }
+            }
+        }
+    }
 
 	public void UpdateClickabilityStatus(TurnAction currentTurn)
 	{

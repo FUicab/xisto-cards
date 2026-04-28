@@ -109,7 +109,6 @@ public class GameManager : MonoBehaviour
 				Deck.Add(card);
 			}
 		}
-		EventManager.OnDeckReady();
 		foreach(CardSpace slot in CardSpaces){
 			if(slot.OwnerRole == PlayerRole.Host){
 				slot.Owner = Host;
@@ -118,6 +117,7 @@ public class GameManager : MonoBehaviour
 			}
 			slot.SetRowPositionData();
 		}
+		EventManager.OnDeckReady();
 		SetupStartingRound();
 	}
 

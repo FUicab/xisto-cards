@@ -20,6 +20,20 @@ public class PlayerProfile
 	public List<Dice> Dices = new List<Dice>() { };
 	public Dice selectedDice = null;
 	public GameManager GM;
+	public List<CardSpace> mySpaces {
+		get
+		{
+			List<CardSpace> spaces = new();
+			foreach (BoardRow row in MyBoardRows)
+			{
+				foreach (CardSpace space in row.BoardSpaces)
+				{
+					spaces.Add(space);
+				}
+			}
+			return spaces;
+		}
+	}
 
 	public PlayerProfile()
 	{
