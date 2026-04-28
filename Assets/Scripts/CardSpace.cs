@@ -113,6 +113,19 @@ public class CardSpace : MonoBehaviour, IDropHandler {
 		return itIs;
 	}
 
+	public List<CardSpace> SpacesNextToMe()
+	{
+		List<CardSpace> spacesNextToMe = new List<CardSpace>();
+        for (int i = 0; i < myRow.BoardSpaces.Count; i++)
+        {
+            if (i == myIndexInRow - 1 || i == myIndexInRow + 1)
+            {
+                spacesNextToMe.Add(myRow.BoardSpaces[i]);
+            }
+        }
+		return spacesNextToMe;
+    }
+
 	// public delegate void VoidCallback();
 	// private void AnimEnd(System.DateTime? time = null){
 	//     Debug.Log("Animation ended");

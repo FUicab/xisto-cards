@@ -699,11 +699,23 @@ public static class CardTranslator
 
             if(buffs[i].specialEffect == BuffSpecialEffects.None){
                 text += TextFormat(numberSign+buffs[i].amount,null,buffs[i].amountCanBeAugmented)+" "+TextFormat(BuffAttributeDescription(buffs[i].Attribute),buffs[i].Attribute)+" from ";
-                if(buffs[i].source == buffs[i].receiver)
+                if (buffs[i].originPassive == null)
                 {
-                    text += "myself";
+                    if(buffs[i].source == buffs[i].receiver)
+                    {
+                        text += "myself";
+                    } else {
+                        text += $"<b>{buffs[i].source.card.Name}</b>";
+                    }
                 } else {
-                    text += "<b>"+buffs[i].source.card.Name+"</b>";
+                    if (buffs[i].source == buffs[i].receiver)
+                    {
+                        text += $"my passive <b>{buffs[i].originPassive.title}</b>";
+                    }
+                    else
+                    {
+                        text += $"<b>{buffs[i].source.card.Name}</b>'s <b>{buffs[i].originPassive.title}</b>";
+                    }
                 }
             } else {
                 text += BuffEffectDescriptionAsTarget(buffs[i]);

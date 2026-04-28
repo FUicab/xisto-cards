@@ -173,9 +173,9 @@ public class DetailedInfo : MonoBehaviour
         List<string> actionList = new List<string>();
         
         List<CardPassiveSkillObject> passiveSkills = new List<CardPassiveSkillObject>();
-        foreach (var skill in cardDisplay.card.SkillSet)
+        foreach (PassiveSkill passive in cardDisplay.card.Passives)
         {
-            passiveSkills.Add(new CardPassiveSkillObject(skill, cardDisplay));
+            passiveSkills.Add(new CardPassiveSkillObject(passive, cardDisplay));
         }
 
         int index = 0;

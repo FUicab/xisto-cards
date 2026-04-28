@@ -20,19 +20,22 @@ MonoBehaviour:
   Artwork: {fileID: 21300000, guid: fa301ade7c243c84980b7e90613d5b4f, type: 3}
   Origin: 02000000
   MaxHP: 2
-  HP: 0
   Armor: 000000000100000002000000
   Attack: 6
-  SkillSet: []
+  Passives: []
   CardActions:
   - actionType: 0
     attacks:
-    - damageType: 4
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 4
       damageMultiplier: 1
+      flatDamageOverwrite: 0
       target: 2
       attackEffect: []
       temporaryBuffs: []
-      requirements: []
     attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
@@ -45,73 +48,109 @@ MonoBehaviour:
     buffs: []
   - actionType: 0
     attacks:
-    - damageType: 4
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 4
       damageMultiplier: 1
+      flatDamageOverwrite: 0
       target: 2
       attackEffect: []
       temporaryBuffs:
       - target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        target: 0
         Attribute: 0
         amount: -1
+        isDebuff: 0
         amountCanBeAugmented: 0
         specialEffect: 0
-        requirements: []
         specialBehavior: 
       - target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        target: 0
         Attribute: 6
         amount: 2
+        isDebuff: 0
         amountCanBeAugmented: 1
         specialEffect: 0
-        requirements: []
         specialBehavior: 
-      requirements: []
     attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
     attacks:
-    - damageType: 4
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 4
       damageMultiplier: 1
+      flatDamageOverwrite: 0
       target: 2
       attackEffect: []
       temporaryBuffs:
       - target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        target: 0
         Attribute: 0
         amount: -1
+        isDebuff: 0
         amountCanBeAugmented: 0
         specialEffect: 0
-        requirements: []
         specialBehavior: 
       - target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        target: 0
         Attribute: 6
         amount: 2
+        isDebuff: 0
         amountCanBeAugmented: 0
         specialEffect: 0
-        requirements: []
         specialBehavior: 
-      requirements: []
     attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
     attacks:
-    - damageType: 4
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 4
       damageMultiplier: 1
+      flatDamageOverwrite: 0
       target: 2
       attackEffect: []
       temporaryBuffs:
       - target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        target: 0
         Attribute: 0
         amount: -1
+        isDebuff: 0
         amountCanBeAugmented: 0
         specialEffect: 0
-        requirements: []
         specialBehavior: 
       - target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        target: 0
         Attribute: 6
         amount: 2
+        isDebuff: 0
         amountCanBeAugmented: 0
         specialEffect: 0
-        requirements: []
         specialBehavior: 
-      requirements: []
     attackCountCanBeAugmented: 0
     buffs: []

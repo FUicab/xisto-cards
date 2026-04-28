@@ -7,6 +7,7 @@ using TMPro;
 using static CardSpace;
 using static TurnAction;
 using System.Threading.Tasks;
+using System.Linq;
 
 public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler
 {
@@ -21,8 +22,18 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 
 	/* Some cards allow to redirect attacks towards them. This variable defines who's doing it for this card. This works differently from defenders in the sense that attacks can be redirected regardless of the position, and affected cards can still be targetted.*/
 	public CardDisplay attackSponge = null;
-	public List<BuffAction> appliedBuffs = new List<BuffAction>();
+	public List<BuffAction> activeBuffs = new List<BuffAction>();
+	public List<BuffAction> passiveBuffs = new List<BuffAction>();
+	public List<BuffAction> appliedBuffs{
+		get {
+			List<BuffAction> buffs = new List<BuffAction>();
+			buffs.AddRange(passiveBuffs);
+			buffs.AddRange(activeBuffs);
+			return buffs;
+		}
+	}
 	public List<CardAction> cardActions;
+	public List<PassiveSkill> cardPassives;
 
 	/* Get functions. They apply buffs to properties and make the calculation before hand. These values cannot be changed by code and should only be manipulated by buffs or by modifying the card itself. */
 	public int maxHP
@@ -174,14 +185,18 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 
 	void OnEnable()
 	{
-		EventManager.BoardUpdate += UpdateBuffStatus;
+		EventManager.BoardUpdate += UpdateActiveBuffStatus;
+		EventManager.BoardUpdate += UpdatePassiveBuffStatus;
 		EventManager.TurnActionChange += UpdateClickabilityStatus;
+		EventManager.RoundEnd += RoundEndCleanUp;
 	}
 
 	void OnDisable()
 	{
-		EventManager.BoardUpdate -= UpdateBuffStatus;
+		EventManager.BoardUpdate -= UpdateActiveBuffStatus;
+		EventManager.BoardUpdate -= UpdatePassiveBuffStatus;
 		EventManager.TurnActionChange -= UpdateClickabilityStatus;
+		EventManager.RoundEnd -= RoundEndCleanUp;
 	}
 
 	public void SetPurchaseAction(TurnAction Action)
@@ -227,31 +242,41 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		UndoButtonObject.SetActive(false);
 		OriginParent = transform.parent;
 		OriginPosition = rectTransform.anchoredPosition;
-        NameText.text = card.Name;
-        ArtworkImage.sprite = card.Artwork;
-        hp = card.MaxHP;
+		NameText.text = card.Name;
+		ArtworkImage.sprite = card.Artwork;
+		hp = card.MaxHP;
 
-        for (int i = 0; i < card.CardActions.Count; i++)
-        {
-            cardActions.Add(new CardAction(card.CardActions[i]));
-            List<AttackAction> newAttacks = new List<AttackAction>();
-            List<BuffAction> newBuffs = new List<BuffAction>();
-            foreach (AttackAction attack in cardActions[i].attacks)
-            {
-                newAttacks.Add(new AttackAction(attack) { source = this });
-            }
-            cardActions[i].attacks = newAttacks;
-            foreach (BuffAction buff in cardActions[i].buffs)
-            {
-                newBuffs.Add(new BuffAction(buff) { source = this });
-            }
-            cardActions[i].buffs = newBuffs;
-        }
-        UpdateCardUI();
+		for (int i = 0; i < card.CardActions.Count; i++)
+		{
+			cardActions.Add(new CardAction(card.CardActions[i]));
+			List<AttackAction> newAttacks = new List<AttackAction>();
+			List<BuffAction> newBuffs = new List<BuffAction>();
+			foreach (AttackAction attack in cardActions[i].attacks)
+			{
+				newAttacks.Add(new AttackAction(attack) { source = this });
+			}
+			cardActions[i].attacks = newAttacks;
+			foreach (BuffAction buff in cardActions[i].buffs)
+			{
+				newBuffs.Add(new BuffAction(buff) { source = this });
+			}
+			cardActions[i].buffs = newBuffs;
+		}
+		for (int i = 0; i < card.Passives.Count; i++)
+		{
+			cardPassives.Add(new PassiveSkill(card.Passives[i]) { source = this });
+			List<BuffAction> newBuffs = new List<BuffAction>();
+			foreach (BuffAction buff in card.Passives[i].buffs)
+			{
+				newBuffs.Add(new BuffAction(buff) { source = this, originPassive = cardPassives[i] });
+			}
+			cardPassives[i].buffs = newBuffs;
+		}
+		UpdateCardUI();
 
-        rectTransform.anchoredPosition = GM.DeckUI.GetComponent<RectTransform>().position;
-        rectTransform.LeanMove(OriginPosition, 0.5f).setEaseOutQuart().setOnComplete(OnDrawAnimationEnd);
-    }
+		rectTransform.anchoredPosition = GM.DeckUI.GetComponent<RectTransform>().position;
+		rectTransform.LeanMove(OriginPosition, 0.5f).setEaseOutQuart().setOnComplete(OnDrawAnimationEnd);
+	}
 
 	void MoveToDiscardPile()
 	{
@@ -414,7 +439,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		UpdateCardUI();
 	}
 
-	public void ReceiveBuff(BuffAction newBuff, CardDisplay source = null)
+	public void ReceiveActiveBuff(BuffAction newBuff)
 	{
 		BuffAction buff = new BuffAction(newBuff)
 		{
@@ -422,14 +447,24 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		};
 		switch (buff.Attribute)
 		{
-			case Attributes.Health: // Health buffs are actually healing effects
+			case Attributes.Health: // Health buffs are actually just healing effects
 				hp += buff.amount;
 				if (hp > maxHP) { hp = maxHP; }
 			break;
 			default:
-				appliedBuffs.Add(buff);
+				activeBuffs.Add(buff);
 			break;
 		}
+		UpdateCardUI();
+	}
+
+	public void ReceivePassiveBuff(BuffAction newBuff)
+	{
+		BuffAction buff = new BuffAction(newBuff)
+		{
+			receiver = this
+		};
+		passiveBuffs.Add(buff);
 		UpdateCardUI();
 	}
 
@@ -465,7 +500,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		HPText.text = hp.ToString();
 	}
 
-	public void UpdateBuffStatus()
+	public void UpdateActiveBuffStatus()
 	{
 		/* Check for defending status */
 		bool isDefended = false;
@@ -491,13 +526,13 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		}
 
 		/* Check for buff source status */
-		if(appliedBuffs.Count > 0)
+		if(activeBuffs.Count > 0)
 		{
-			for (int i = appliedBuffs.Count-1; i >= 0; i--)
+			for (int i = activeBuffs.Count-1; i >= 0; i--)
 			{
-				if(appliedBuffs[i].source == null)
+				if(activeBuffs[i].source == null)
 				{
-					appliedBuffs.RemoveAt(i);
+					activeBuffs.RemoveAt(i);
 				}
 			}
 		}
@@ -514,13 +549,40 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 			}
 		}
 
-		// UpdateBuffListUI();
+		UpdateCardUI();
+	}
+
+	public void UpdatePassiveBuffStatus()
+	{
+		if (!HasBeenPlayed) { return; }
+		passiveBuffs.Clear();
+		foreach (PassiveSkill passive in cardPassives)
+		{
+			//Debug.Log($"Passive \"{passive.title}\" is being analyzed.");
+			if(passive.trigger == TriggerTypes.OnBoardChange) /* These passives activate only by having the card there. */
+			{
+                //Debug.Log($"Passive \"{passive.title}\" passed the trigger filter.");
+                //Debug.Log($"Passive \"{passive.title}\" seems to contain a buff which grants {passive.buffs[0].amount} {passive.buffs[0].Attribute}.");
+                foreach (BuffAction buff in passive.buffs)
+				{
+                    //Debug.Log($"Passive \"{passive.title}\" seems to contain a buff which grants {buff.amount} {buff.Attribute}.");
+                    if (buff.isTargetImplicit) /* Passive skills can only provide buffs to implicit targets as none should be selected, otherwise the passive buff is invalid. */
+					{
+                        //Debug.Log($"Passive \"{passive.title}\" has implicit targets, fortunately.");
+                        foreach (CardDisplay target in buff.GetImplicitTargetsOfAction())
+						{
+                            //Debug.Log($"Passive \"{passive.title}\" was successfully applied to {card.Name}.");
+                            target.ReceivePassiveBuff(buff);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	public void UpdateClickabilityStatus(TurnAction currentTurn)
 	{
 		bool clickable = true;
-		// if(!HasBeenPlayed && mySpace.Owner != GM.PlayerAtPlay){ clickable = false; }
 
 		if (currentTurn.CardInAction != null && GM.turnStatus == TurnStatus.SelectingTargets)
 		{
@@ -528,7 +590,6 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 			if (ProtectedByDefender) { clickable = false; }
 			if (!CanBeTargetOfAction(currentTurn)) { clickable = false; }
 		}
-		//if (GM.availableActionsForThisTurn <= 0) {  clickable = false; }
 
 		if (clickable)
 		{
@@ -542,75 +603,24 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 
 	public bool CanBeTargetOfAction(TurnAction turnAction)
 	{
-		bool itCan = true;
+		bool itCan = false;
 		int i = turnAction.nextNullIndex;
+
 		if (turnAction.movementType == TurnMovementType.PerformAction)
 		{
 			switch (turnAction.actionObject.action.actionType)
 			{
 				case ActionTypes.Attack:
-					if (turnAction.actionObject.action.attacks[i].requirements.Count > 0) // Check attack requirements
+					AttackAction attack = turnAction.actionObject.action.attacks[i];
+					if (attack.TargetMeetsRequirements(this) && attack.TargetCanBeReached(this))
 					{
-						itCan = false;
-						foreach (Requirements requirement in turnAction.actionObject.action.attacks[i].requirements)
-						{
-							foreach (UnitSubtype subtype in card.Subtypes)
-							{
-								if (requirement.subtypeRequirement.Contains(subtype))
-								{
-									itCan = true;
-								}
-							}
-							foreach (Faction faction in card.Origin)
-							{
-								if (requirement.factionRequirement.Contains(faction))
-								{
-									itCan = true;
-								}
-							}
-						}
+						itCan = true;
 					}
-
-					if (itCan)
-					{
-						bool targetIsDefended = false;
-						bool targetIsCovered = false;
-						if (mySpace != null)
-						{
-							foreach (CardSpace defenderSpace in mySpace.Defenders)
-							{
-								if (defenderSpace.PlayingCard != null)
-								{
-									targetIsCovered = true;
-									if (defenderSpace.PlayingCard.card.Subtypes.Contains(UnitSubtype.Defender))
-									{
-										targetIsDefended = true;
-										Debug.Log(card.Name + " is covered AND defended.");
-									}
-									else
-									{
-										Debug.Log(card.Name + " is covered.");
-									}
-								}
-							}
-							switch (turnAction.actionObject.action.attacks[i].damageType)
-							{
-								case DamageTypes.Melee: if (targetIsCovered) { itCan = false; } break;
-								case DamageTypes.Ranged: if (targetIsDefended) { itCan = false; } break;
-								case DamageTypes.Energy: if (targetIsCovered) { itCan = false; } break;
-								case DamageTypes.MeleeOrRanged: if (targetIsDefended) { itCan = false; } break;
-								case DamageTypes.RangedOrEnergy: if (targetIsDefended) { itCan = false; } break;
-								case DamageTypes.MeleeOrEnergy: if (targetIsCovered) { itCan = false; } break;
-								case DamageTypes.MeleeOrRangedOrEnergy: if (targetIsDefended) { itCan = false; } break;
-							}
-						}
-					}
-
-
 					break;
 				case ActionTypes.Buff:
-
-				break;
+					BuffAction buff = turnAction.actionObject.action.buffs[i];
+					itCan = buff.TargetMeetsRequirements(this);
+					break;
 			}
 		}
 
@@ -620,6 +630,12 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 	public void OnDrawAnimationEnd()
 	{
 		// transform.SetParent(GM.PlayerAtPlay.Hand[HandIndex].transform);
+	}
+
+	public void RoundEndCleanUp()
+	{
+		activeBuffs.Clear();
+		UpdateActiveBuffStatus();
 	}
 
 }

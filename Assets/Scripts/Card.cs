@@ -20,7 +20,8 @@ public class Card : ScriptableObject
     // [HideInInspector] public int HP;
     public int[] Armor = new int[3];
     public int Attack;
-    public List<PassiveSkill> SkillSet;
+    //public List<PassiveSkill> SkillSet;
+    public List<PassiveSkill> Passives;
     public List<CardAction> CardActions;
 
     private GameManager GM;

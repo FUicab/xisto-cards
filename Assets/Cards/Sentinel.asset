@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Sentinel
   m_EditorClassIdentifier: 
   Name: Sentinel
-  CardCount: 10
+  CardCount: 100
   Type: 0
   Subtypes: 0300000009000000
   Cost: 1
@@ -22,39 +22,77 @@ MonoBehaviour:
   MaxHP: 3
   Armor: 010000000200000000000000
   Attack: 5
-  SkillSet:
+  Passives:
   - title: Formation
     description: 
-    trigger: 0
+    trigger: 1
     canBeShared: 0
     oncePerTurn: 0
     buffs:
     - target: 0
-      Attribute: 0
-      amount: 2
-      amountCanBeAugmented: 1
-      specialEffect: 0
       requirements:
       - requirement: 0
         subtypeRequirement: 
         factionRequirement: 
         targetIs: 00000000
-      specialBehavior: 
       source: {fileID: 0}
       receiver: {fileID: 0}
-    deBuffs: []
+      Attribute: 0
+      amount: 2
+      isDebuff: 0
+      amountCanBeAugmented: 1
+      specialEffect: 0
+      specialBehavior: 
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerTurn: 0
+        buffs: []
+        source: {fileID: 0}
+    source: {fileID: 0}
+  - title: Being a good lad
+    description: 
+    trigger: 1
+    canBeShared: 0
+    oncePerTurn: 0
+    buffs:
+    - target: 1
+      requirements:
+      - requirement: 0
+        subtypeRequirement: 
+        factionRequirement: 
+        targetIs: 00000000
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      Attribute: 0
+      amount: 5
+      isDebuff: 0
+      amountCanBeAugmented: 1
+      specialEffect: 0
+      specialBehavior: 
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerTurn: 0
+        buffs: []
+        source: {fileID: 0}
+    source: {fileID: 0}
   CardActions:
   - actionType: 0
     attacks:
-    - damageType: 0
-      damageMultiplier: 1
-      flatDamageOverwrite: 0
-      target: 2
-      attackEffect: []
-      temporaryBuffs: []
+    - target: 2
       requirements: []
       source: {fileID: 0}
       receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
     attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
@@ -63,15 +101,15 @@ MonoBehaviour:
     buffs: []
   - actionType: 0
     attacks:
-    - damageType: 1
-      damageMultiplier: 1
-      flatDamageOverwrite: 0
-      target: 2
-      attackEffect: []
-      temporaryBuffs: []
+    - target: 2
       requirements: []
       source: {fileID: 0}
       receiver: {fileID: 0}
+      damageType: 1
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
     attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
@@ -84,14 +122,14 @@ MonoBehaviour:
     buffs: []
   - actionType: 0
     attacks:
-    - damageType: 3
-      damageMultiplier: 1
-      flatDamageOverwrite: 0
-      target: 2
-      attackEffect: []
-      temporaryBuffs: []
+    - target: 2
       requirements: []
       source: {fileID: 0}
       receiver: {fileID: 0}
+      damageType: 3
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
     attackCountCanBeAugmented: 0
     buffs: []

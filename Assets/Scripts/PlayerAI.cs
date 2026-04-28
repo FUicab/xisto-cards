@@ -78,11 +78,15 @@ public class PlayerAI{
 					PlayAggresive();
 				break;
 
-				case AIActionStrategy.Defensive:
-				break;
+				//case AIActionStrategy.Defensive:
+				//break;
 
-				case AIActionStrategy.SaveGold:
-					// By saving gold the AI does nothing and ends its turn
+				//case AIActionStrategy.SaveGold:
+				//	// By saving gold the AI does nothing and ends its turn
+				//break;
+
+				default:
+					GM.TurnEnd();
 				break;
 			}
 
@@ -92,7 +96,7 @@ public class PlayerAI{
 	}
 
 	public void RandomizeStrategy(){
-		switch (Random.Range(0,2)){
+		switch (Random.Range(0,4)){
 			case 0: ChosenStrategy = AIActionStrategy.PlaceCards; break;
 			case 1: ChosenStrategy = AIActionStrategy.Aggresive; break;
 			case 2: ChosenStrategy = AIActionStrategy.Defensive; break;
@@ -111,11 +115,11 @@ public class PlayerAI{
 				if (!allCardSpacesOccupied)
 				{
 					foreach (var action in MyActions){
-						action.Action = TurnMovementType.CardPurchase;
+						action.actionType = TurnMovementType.CardPurchase;
 						action.DestinationSlot = PickRandomAvailableSpace();
 						CardDisplay ChosenCard = PickAValidCardForSpace(action.DestinationSlot);
 						ReservedCards.Add(ChosenCard);
-						action.BoughtCard = ChosenCard;
+						action.CardInAction = ChosenCard;
 					}
 				}
 			break;
@@ -133,10 +137,10 @@ public class PlayerAI{
 			return;
 		}
 		AITurnActions CurrentAction = MyActions[currentActionIndex];
-		switch (CurrentAction.Action){
+		switch (CurrentAction.actionType){
 			case TurnMovementType.CardPurchase:
-				if(CurrentAction.BoughtCard != null){
-					CurrentAction.DestinationSlot.AttemptToPlaceCard(CurrentAction.BoughtCard, PerformNextAction);
+				if(CurrentAction.CardInAction != null){
+					CurrentAction.DestinationSlot.AttemptToPlaceCard(CurrentAction.CardInAction, PerformNextAction);
 				} else {
 					Success = false;
 				}
@@ -225,15 +229,15 @@ public class PlayerAI{
 
 	public List<CardDisplay> PickBestAttackers(){
 		List<CardDisplay> AttackerList = new List<CardDisplay>();
-		AttackerList.Sort((a,b) => {
-			return b.attack.CompareTo(a.attack);
-		});
 		foreach (var card in MyCards){
 			if(card.attack > 0 && AttackerList.Count < GM.availableActionsForThisTurn){
 				AttackerList.Add(card);
 				// Debug.Log(card.card.Name);
 			}
 		}
+		AttackerList.Sort((a,b) => {
+			return b.attack.CompareTo(a.attack);
+		});
 		return AttackerList;
 	}
 
@@ -295,14 +299,14 @@ public class PlayerAI{
 		// ChosenSpace.AttemptToPlaceCard(ChosenCard);
 		
 		int i = 0;
-		foreach (var defSpace in ChosenSpace.Defenders){
+		foreach (CardSpace defSpace in ChosenSpace.Defenders){
 			// Debug.Log(i);
 			// CardDisplay ChosenCard = PickAValidCardForSpace(ChosenSpace);
 			CardDisplay ChosenDefender = PickAValidCardForSpace(defSpace);
 			ReservedCards.Add(ChosenDefender);
-			MyActions[i].Action = TurnMovementType.CardPurchase;
+			MyActions[i].actionType = TurnMovementType.CardPurchase;
 			MyActions[i].DestinationSlot = defSpace;
-			MyActions[i].BoughtCard = ChosenDefender;
+			MyActions[i].CardInAction = ChosenDefender;
 			i++;
 		}
 		//MyActions[i].Action = TurnMovementType.CardPurchase;
@@ -348,10 +352,9 @@ public enum AIActionStrategy{
 /* This has to be different from regular Turn Actions because we don't want the AI to work around them */
 [System.Serializable]
 public class AITurnActions{
-	public TurnMovementType Action;
-	public CardDisplay Attacker;
+	public TurnMovementType actionType;
 	public CardDisplay AttackTarget;
-	public CardDisplay BoughtCard;
+	public CardDisplay CardInAction;
 	public CardSpace DestinationSlot;
 	public int PurchasePrice;
 }

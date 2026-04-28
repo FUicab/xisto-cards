@@ -182,7 +182,7 @@ public class GameManager : MonoBehaviour
 								info += $"<b>{tuAc.CardInAction.mySpace.Owner.Role}</b>'s <b>{tuAc.CardInAction.card.Name}</b> attacks ";
 								for (int i = 0; i < tuAc.targets.Count; i++)
 								{
-									info += "<b>· "+tuAc.targets[i].card.name+"</b> <i>("+CalculateDamage(tuAc.targets[i], tuAc.actionObject.action.attacks[i])+")</i> ";
+									info += "<b>· "+tuAc.targets[i].card.name+"</b> <i>("+ tuAc.actionObject.action.attacks[i].CalculateDamage(tuAc.targets[i])+")</i> ";
 								}
 								info += "\n";
 							break;
@@ -227,259 +227,6 @@ public class GameManager : MonoBehaviour
 				RemoveAction(RoundActions[i]);
 			}
 		}
-	}
-
-	public CardDisplay GetActualTarget(CardDisplay target)
-	{
-		// AttackAction attack = ActionData.actionObject.action.attacks[i];
-		CardDisplay actualTarget;
-		if(target.ProtectedByDefender)
-		{
-			actualTarget = target.mySpace.Defenders[0].PlayingCard;
-		} else {
-			if(target.attackSponge != null){
-				actualTarget = target.attackSponge;
-			} else {
-				actualTarget = target;
-			}
-		}
-		return actualTarget;
-		// actualTarget.ReceiveDamage(CalculateDamage(ActionData.CardInAction, target, attack));
-	}
-
-	public void PerformAttackAction(CardDisplay target, TurnAction ActionData, int i  = 0)
-	{
-		AttackAction attack = ActionData.actionObject.action.attacks[i];
-		GetActualTarget(target).ReceiveDamage(CalculateDamage(GetActualTarget(target), attack));
-
-		foreach (AttackEffect effect in attack.attackEffect)
-		{
-			switch (effect.effectType)
-			{
-				case AttackEffects.SplashDamage:
-					List<CardDisplay> affectedTargets = new List<CardDisplay>();
-					AttackAction splashAttack = new AttackAction(attack){
-						requirements = new List<Requirements>(),
-						attackEffect = new List<AttackEffect>(),
-					};
-					if (!effect.useAttackValue){
-						splashAttack.flatDamageOverwrite = effect.value;
-					}
-					int myIndex = target.mySpace.myIndexInRow;
-					if(myIndex != 0)
-					{
-						affectedTargets.Add(target.mySpace.myRow.BoardSpaces[myIndex-1].PlayingCard);
-					}
-					if(myIndex < target.mySpace.myRow.BoardSpaces.Count-1)
-					{
-						affectedTargets.Add(target.mySpace.myRow.BoardSpaces[myIndex+1].PlayingCard);
-					}
-
-					foreach (CardDisplay affectedTarget in affectedTargets)
-					{
-						if (affectedTarget != null)
-						{
-							GetActualTarget(affectedTarget).ReceiveDamage(CalculateDamage(GetActualTarget(affectedTarget), splashAttack));
-						}
-					}
-				break;
-				case AttackEffects.SelfDamage:
-					AttackAction selfAttack = new AttackAction(attack){
-						requirements = new List<Requirements>(),
-						attackEffect = new List<AttackEffect>(),
-						damageType = DamageTypes.SelfDamage
-					};
-					if (!effect.useAttackValue){
-						selfAttack.flatDamageOverwrite = effect.value;
-					}
-					attack.source.ReceiveDamage(CalculateDamage(attack.source, selfAttack));
-				break;
-				case AttackEffects.ApplyDebuff:
-					foreach (BuffAction debuff in effect.buffs)
-					{
-						BuffAction debuffAction = new BuffAction(debuff){
-							requirements = new List<Requirements>()
-						};
-						GetActualTarget(target).ReceiveBuff(debuffAction);
-					}
-				break;
-			}
-		}
-	}
-
-	public void PerformConfirmedAction(TurnAction ActionData){
-		if(ActionData.CardInAction != null)
-		{
-			ActionData.CardInAction.SetOutline();
-			ActionData.CardInAction.SetLine();
-		}
-		switch (ActionData.actionObject.action.actionType)
-		{
-			case ActionTypes.Attack:
-				for (int i = 0; i < ActionData.targets.Count; i++)
-				{
-					if(ActionData.targets[i] != null)
-					{
-						ActionData.targets[i].SetOutline();
-					}
-					if(ActionData.targets[i]!=null && ActionData.CardInAction!=null){
-						PerformAttackAction(ActionData.targets[i], ActionData, i);
-					}
-				}
-			break;
-			case ActionTypes.Buff:
-				for (int i = 0; i < ActionData.targets.Count; i++)
-				{
-					// if(ActionData.targets[i]!=null && ActionData.CardInAction!=null){
-					//     ActionData.actionObject.action.buffs[i].source = ActionData.CardInAction;
-					// }
-					switch (ActionData.actionObject.action.buffs[i].target)
-					{
-						case TargetTypes.AllAllies:
-							foreach(BoardRow row in ActionData.targets[i].mySpace.Owner.MyBoardRows)
-							{
-								foreach (CardSpace cardSpace in row.BoardSpaces)
-								{
-									cardSpace.PlayingCard?.ReceiveBuff(ActionData.actionObject.action.buffs[i], ActionData.CardInAction);
-								}
-							}
-						break;
-						case TargetTypes.AlliesInSameLine:
-							foreach(CardSpace cardSpace in ActionData.targets[i].mySpace.myRow.BoardSpaces)
-							{
-								cardSpace.PlayingCard?.ReceiveBuff(ActionData.actionObject.action.buffs[i], ActionData.CardInAction);
-							}
-						break;
-						case TargetTypes.AlliesNextToMe:
-							foreach(CardSpace cardSpace in ActionData.targets[i].mySpace.myRow.BoardSpaces)
-							{
-								if (cardSpace.PlayingCard != null && ActionData.targets[i].mySpace.IsNextToMe(cardSpace))
-								{
-									cardSpace.PlayingCard.ReceiveBuff(ActionData.actionObject.action.buffs[i], ActionData.CardInAction);
-								}
-							}
-						break;
-						default:
-							ActionData.targets[i].ReceiveBuff(ActionData.actionObject.action.buffs[i], ActionData.CardInAction);
-						break;
-					}
-					if(ActionData.targets[i] != null)
-					{
-						ActionData.targets[i].SetOutline();
-					}
-				}
-			break;
-		}
-	}
-
-	public int CalculateDamage(CardDisplay target, AttackAction attackAction){
-		
-		CardDisplay attacker = attackAction.source;
-
-		/* Calculation of temporary buffs and debuffs */
-		var attackerTempModifiers = (
-			Attack: 0,
-			Health: 0,
-			MaxHealth: 0,
-			Defense: 0,
-			Armor: new List<int>{0,0,0},
-			ArmorPierce: 0,
-			DamageReductionBeforeArmor: 0,
-			DamageReductionAfterArmor: 0
-		);
-		var targetTempModifiers = (
-			Attack: 0,
-			Health: 0,
-			MaxHealth: 0,
-			Defense: 0,
-			Armor: new List<int>{0,0,0},
-			ArmorPierce: 0,
-			DamageReductionBeforeArmor: 0,
-			DamageReductionAfterArmor: 0
-		);
-		foreach (BuffAction modifier in attackAction.temporaryBuffs)
-		{
-			if(attackAction.target == TargetTypes.Self) /* The modifiers apply to myself */
-			{
-				switch (modifier.Attribute)
-				{
-					case Attributes.Attack: attackerTempModifiers.Attack += modifier.amount; break;
-					case Attributes.Health: attackerTempModifiers.Health += modifier.amount; break;
-					case Attributes.MaxHealth: attackerTempModifiers.MaxHealth += modifier.amount; break;
-					case Attributes.Defense: attackerTempModifiers.Defense += modifier.amount; break;
-					case Attributes.DefenseMelee: attackerTempModifiers.Armor[0] += modifier.amount; break;
-					case Attributes.DefenseRanged: attackerTempModifiers.Armor[1] += modifier.amount; break;
-					case Attributes.DefenseEnergy: attackerTempModifiers.Armor[2] += modifier.amount; break;
-					case Attributes.ArmorPierce: attackerTempModifiers.ArmorPierce += modifier.amount; break;
-					case Attributes.DamageReductionBeforeArmor: attackerTempModifiers.DamageReductionBeforeArmor += modifier.amount; break;
-					case Attributes.DamageReductionAfterArmor: attackerTempModifiers.DamageReductionAfterArmor += modifier.amount; break;
-				}
-			} else if(attackAction.target == TargetTypes.SingleEnemy)
-			{
-				switch (modifier.Attribute)
-				{
-					case Attributes.Attack: attackerTempModifiers.Attack += modifier.amount; break;
-					case Attributes.Health: attackerTempModifiers.Health += modifier.amount; break;
-					case Attributes.MaxHealth: attackerTempModifiers.MaxHealth += modifier.amount; break;
-					case Attributes.Defense: attackerTempModifiers.Defense += modifier.amount; break;
-					case Attributes.DefenseMelee: attackerTempModifiers.Armor[0] += modifier.amount; break;
-					case Attributes.DefenseRanged: attackerTempModifiers.Armor[1] += modifier.amount; break;
-					case Attributes.DefenseEnergy: attackerTempModifiers.Armor[2] += modifier.amount; break;
-					case Attributes.ArmorPierce: attackerTempModifiers.ArmorPierce += modifier.amount; break;
-					case Attributes.DamageReductionBeforeArmor: attackerTempModifiers.DamageReductionBeforeArmor += modifier.amount; break;
-					case Attributes.DamageReductionAfterArmor: attackerTempModifiers.DamageReductionAfterArmor += modifier.amount; break;
-				}
-			}
-		}
-		
-		int targetArmor = 0;
-		string damageType = "melee";
-		switch (attackAction.damageType)
-		{
-			case DamageTypes.Melee: targetArmor = target.armor[0]; break;
-			case DamageTypes.Ranged: targetArmor = target.armor[1]; break;
-			case DamageTypes.Energy: targetArmor = target.armor[2]; break;
-			case DamageTypes.MeleeOrRanged:
-				if(target.armor[0] < target.armor[1])
-					{ targetArmor = target.armor[0]; } else
-					{ targetArmor = target.armor[1]; damageType = "ranged"; } break;
-			case DamageTypes.RangedOrEnergy:
-				if(target.armor[2] < target.armor[1])
-					{ targetArmor = target.armor[2]; damageType = "energy"; } else
-					{ targetArmor = target.armor[1]; damageType = "ranged"; } break;
-			case DamageTypes.MeleeOrEnergy:
-				if(target.armor[0] < target.armor[2])
-					{ targetArmor = target.armor[0]; } else
-					{ targetArmor = target.armor[2]; damageType = "energy"; } break;
-			case DamageTypes.MeleeOrRangedOrEnergy:
-				if(target.armor[0] < target.armor[1] && target.armor[0] < target.armor[2])
-					{ targetArmor = target.armor[0]; } else if(target.armor[1] < target.armor[2])
-					{ targetArmor = target.armor[1]; damageType = "ranged"; } else 
-					{ targetArmor = target.armor[2]; damageType = "energy"; } break;
-		}
-		switch (damageType)
-		{
-			case "melee": targetArmor += targetTempModifiers.Armor[0]; break;
-			case "ranged": targetArmor += targetTempModifiers.Armor[1]; break;
-			case "energy": targetArmor += targetTempModifiers.Armor[2]; break;
-		}
-		targetArmor -= attacker.armorPierce + attackerTempModifiers.ArmorPierce;
-		if(targetArmor < 0){ targetArmor = 0; }
-
-		int dmg = Mathf.FloorToInt((attacker.attack + attackerTempModifiers.Attack) * attackAction.damageMultiplier) - targetArmor;
-		if(attackAction.damageType == DamageTypes.SelfDamage)
-		{
-			targetArmor = 0;
-		}
-		if(attackAction.flatDamageOverwrite > 0)
-		{
-			dmg = attackAction.flatDamageOverwrite - targetArmor;
-		}
-		if(dmg <= 0){
-			dmg = 1;
-		}
-
-		return dmg;
 	}
 
 	/* --- Turn management and card action functions --------------------------------------------- */
@@ -653,7 +400,7 @@ public class GameManager : MonoBehaviour
 					{
 						await Task.Delay(400);
 					}
-					PerformConfirmedAction(action);
+					action.Perform();
 					break;
 			}
 		}
@@ -670,7 +417,13 @@ public class GameManager : MonoBehaviour
 		SwitchTurns();
 	}
 
-	public async void RoundEnd()
+	public void RoundEnd()
+	{
+		EventManager.OnRoundEnd();
+		RoundRestart();
+	}
+
+	public async void RoundRestart()
 	{
 		RollAllDices();
 		foreach (PlayerProfile player in Players)
@@ -702,7 +455,7 @@ public class GameManager : MonoBehaviour
 			newRound = true;
 			RoundEnd();
 		}
-		Debug.Log($"Host: {Host.actionPoints} | Opponent: {Opponent.actionPoints} | {PlayerAtPlay.Role} will play now.");
+		//Debug.Log($"Host: {Host.actionPoints} | Opponent: {Opponent.actionPoints} | {PlayerAtPlay.Role} will play now.");
 		if (!newRound)
 		{
 			PlayerAtPlay.actionPoints -= 1;
@@ -871,34 +624,14 @@ public class TurnAction{
 			case ActionTypes.Attack:
 				foreach (var attack in actionObject.action.attacks)
 				{
-					switch (attack.target)
-					{
-						case TargetTypes.SingleEnemy: targets.Add(null); break;
-						case TargetTypes.LineOfEnemies: targets.Add(null); break;
-						case TargetTypes.Self: targets.Add(actionObject.sourceCard); break;
-						case TargetTypes.AllAllies: targets.Add(actionObject.sourceCard); break;
-						case TargetTypes.AlliesNextToMe: targets.Add(actionObject.sourceCard); break;
-						case TargetTypes.AlliesInSameLine: targets.Add(actionObject.sourceCard); break;
-						case TargetTypes.SingleAlly: targets.Add(null); break;
-						default: targets.Add(actionObject.sourceCard); break;
-					}
+					if (attack.isTargetImplicit) { targets.Add(actionObject.sourceCard); } else { targets.Add(null); }
 				}
 			break;
 			case ActionTypes.Buff:
 				foreach (var buff in actionObject.action.buffs)
 				{
-					switch (buff.target)
-					{
-						case TargetTypes.SingleEnemy: targets.Add(null); break;
-						case TargetTypes.LineOfEnemies: targets.Add(null); break;
-						case TargetTypes.Self: targets.Add(actionObject.sourceCard); break;
-						case TargetTypes.AllAllies: targets.Add(actionObject.sourceCard); break;
-						case TargetTypes.AlliesNextToMe: targets.Add(actionObject.sourceCard); break;
-						case TargetTypes.AlliesInSameLine: targets.Add(actionObject.sourceCard); break;
-						case TargetTypes.SingleAlly: targets.Add(null); break;
-						default: targets.Add(actionObject.sourceCard); break;
-					}
-				}
+                    if (buff.isTargetImplicit) { targets.Add(actionObject.sourceCard); } else { targets.Add(null); }
+                }
 			break;
 		}
 		UpdateTargetCountAndIndex();
@@ -941,6 +674,11 @@ public class TurnAction{
 		{
 			nextNullIndex = -1;
 		}
+	}
+
+	public void Perform()
+	{
+		CardActionTools.PerformConfirmedAction(this);
 	}
 
 	public void Clean(){
