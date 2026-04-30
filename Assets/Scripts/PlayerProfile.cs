@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 [System.Serializable]
 public class PlayerProfile
@@ -33,6 +34,10 @@ public class PlayerProfile
 			}
 			return spaces;
 		}
+	}
+	public bool isMyTurnToPlay
+	{
+		get { return GM.PlayerAtPlay == this; }
 	}
 
 	public PlayerProfile()
@@ -98,5 +103,18 @@ public class PlayerProfile
 			}
 		}
 	}
+
+	public bool HasDiceForAction(CardActionObject action)
+	{
+		bool itHas = false;
+        foreach (var dice in Dices)
+        {
+            if ((action.diceValues.Contains(dice.value) || dice.wild) && !dice.used)
+            {
+                itHas = true;
+            }
+        }
+		return itHas;
+    }
 
 }

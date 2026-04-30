@@ -23,9 +23,13 @@ public class DetailedInfo : MonoBehaviour
     public GameObject ActionBoxPrefab;
     public List<GameObject> ActionBoxes = new List<GameObject>();
     private GameManager GM;
-    
-    void OnEnable(){
+
+    void Awake()
+    {
         GM = FindObjectOfType<GameManager>();
+    }
+
+    void OnEnable(){
         EventManager.ClickCard += DisplayDetailedCardInfo;
     }
 
@@ -52,7 +56,7 @@ public class DetailedInfo : MonoBehaviour
 
         int index = 0;
         await Task.Delay(1);
-        foreach (var action in actionMenu.actions)
+        foreach (CardActionObject action in actionMenu.actions)
         {
             ActionBoxes.Add(Instantiate(ActionBoxPrefab));
             ActionBoxes[index].transform.SetParent(AbilityContainer.transform, false);
@@ -73,7 +77,6 @@ public class DetailedInfo : MonoBehaviour
             Transform SkillDetail = ActionBoxes[index].transform.Find("SkillDetail");
             Transform Overlay = ActionBoxes[index].transform.Find("Overlay");
             DiceNumbers.GetComponent<TextMeshProUGUI>().text = "";
-            bool thereIsDiceForThisAction = false;
             foreach (var diceValue in action.diceValues)
             {
                 switch (diceValue)
@@ -85,15 +88,7 @@ public class DetailedInfo : MonoBehaviour
                     case 5: DiceNumbers.GetComponent<TextMeshProUGUI>().text += "5️"; break;
                     case 6: DiceNumbers.GetComponent<TextMeshProUGUI>().text += "6️"; break;
                 }
-                foreach (var diceResult in GM.PlayerAtPlay.Dices)
-                {
-                    if((diceResult.value == diceValue || diceResult.wild) && !diceResult.used)
-                    {
-                        thereIsDiceForThisAction = true;
-                    }
-                }
-                if(thereIsDiceForThisAction && cardDisplay.HasBeenPlayed &&
-                    cardDisplay.mySpace != null && cardDisplay.mySpace.Owner == GM.PlayerAtPlay)
+                if(action.HasMatchingDice() && cardDisplay.CanActThisTurn)
                 {
                     action.canBeUsed = true;
                     Overlay.gameObject.SetActive(false);
@@ -178,11 +173,11 @@ public class DetailedInfo : MonoBehaviour
             passiveSkills.Add(new CardPassiveSkillObject(passive, cardDisplay));
         }
 
-        int index = 0;
-        if(passiveSkills.Count > 0)
+        foreach (CardPassiveSkillObject passiveSkillObject in passiveSkills)
         {
-            SkillText += passiveSkills[0].description+"\n\n";
+            SkillText += passiveSkillObject.description+"\n";
         }
+        SkillText += "\n\n";
 
         return SkillText;
     }

@@ -20,25 +20,30 @@ MonoBehaviour:
   Artwork: {fileID: 21300000, guid: 958b4bd7ab3e2184ba1291b0adadae4e, type: 3}
   Origin: 03000000
   MaxHP: 6
-  HP: 0
   Armor: 010000000100000001000000
   Attack: 5
-  SkillSet: []
+  Passives: []
   CardActions:
   - actionType: 0
     attacks:
-    - damageType: 0
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
       damageMultiplier: 1
-      target: 2
+      flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
+    - target: 2
       requirements: []
-    - damageType: 1
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 1
       damageMultiplier: 1
-      target: 2
+      flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
-      requirements: []
     attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
@@ -47,18 +52,42 @@ MonoBehaviour:
     buffs: []
   - actionType: 0
     attacks:
-    - damageType: 0
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
       damageMultiplier: 1
-      target: 2
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs:
+      - target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        Attribute: 0
+        amount: 0
+        isDebuff: 0
+        amountCanBeAugmented: 0
+        specialEffect: 0
+        specialBehavior: 
+        originPassive:
+          title: 
+          description: 
+          trigger: 0
+          canBeShared: 0
+          oncePerTurn: 0
+          buffs: []
+          source: {fileID: 0}
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
-      requirements: []
-    - damageType: 0
-      damageMultiplier: 1
-      target: 2
-      attackEffect: []
-      temporaryBuffs: []
-      requirements: []
     attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
@@ -67,12 +96,15 @@ MonoBehaviour:
     buffs: []
   - actionType: 0
     attacks:
-    - damageType: 2
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 2
       damageMultiplier: 1
-      target: 2
+      flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
-      requirements: []
     attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1

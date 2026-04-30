@@ -14185,6 +14185,10 @@ PrefabInstance:
       propertyPath: m_fontSizeBase
       value: 18
       objectReference: {fileID: 0}
+    - target: {fileID: 2962488130967057685, guid: 9e9d10b15d1c1884f8b1207d16342067, type: 3}
+      propertyPath: m_paragraphSpacing
+      value: 24
+      objectReference: {fileID: 0}
     - target: {fileID: 4856750230495388157, guid: 9e9d10b15d1c1884f8b1207d16342067, type: 3}
       propertyPath: m_Pivot.x
       value: 0

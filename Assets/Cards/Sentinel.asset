@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Sentinel
   m_EditorClassIdentifier: 
   Name: Sentinel
-  CardCount: 1000
+  CardCount: 10
   Type: 0
   Subtypes: 0300000009000000
   Cost: 1
@@ -39,31 +39,6 @@ MonoBehaviour:
       receiver: {fileID: 0}
       Attribute: 0
       amount: 2
-      isDebuff: 0
-      amountCanBeAugmented: 1
-      specialEffect: 0
-      specialBehavior: 
-      originPassive:
-        title: 
-        description: 
-        trigger: 0
-        canBeShared: 0
-        oncePerTurn: 0
-        buffs: []
-        source: {fileID: 0}
-    source: {fileID: 0}
-  - title: Being a good lad
-    description: 
-    trigger: 1
-    canBeShared: 0
-    oncePerTurn: 0
-    buffs:
-    - target: 1
-      requirements: []
-      source: {fileID: 0}
-      receiver: {fileID: 0}
-      Attribute: 0
-      amount: 5
       isDebuff: 0
       amountCanBeAugmented: 1
       specialEffect: 0

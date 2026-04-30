@@ -335,7 +335,6 @@ public static class CardTranslator
     {
         string text = "";
         int index = 0;
-        int subIndex = 0;
 
         // Checks if all the buffs apply to the same target. This is to ensure that each buff describes who gets it.
         bool allSameTarget = true;
@@ -752,10 +751,13 @@ public class CardActionObject : CardSkillObject
         description = TranslateActionToText();
     }
 
+    public bool HasMatchingDice()
+    {
+        return sourceCard.mySpace?.Owner.HasDiceForAction(this) ?? false;
+    }
+
     public string TranslateActionToText(){
         string text = "";
-        int index = 0;
-        int subIndex = 0;
 
         switch (action.actionType)
         {
@@ -776,9 +778,6 @@ public class CardActionObject : CardSkillObject
 public class CardPassiveSkillObject : CardSkillObject
 {
     public PassiveSkill skill;
-    public string description;
-    // public bool isAction = false;
-    // public CardDisplay sourceCard;
 
     public CardPassiveSkillObject(PassiveSkill theSkill, CardDisplay theCard) : base(theCard)
     {

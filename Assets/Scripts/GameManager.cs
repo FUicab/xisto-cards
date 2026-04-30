@@ -83,9 +83,10 @@ public class GameManager : MonoBehaviour
 					Card RandomCard = Deck[Random.Range(0, Deck.Count)];
 					GameObject CardInstance = Instantiate(CardObject,player.Hand[i].transform);
 					CardInstance.GetComponent<CardDisplay>().card = RandomCard;
-					CardInstance.GetComponent<CardDisplay>().HasBeenPlayed = false;
+					//CardInstance.GetComponent<CardDisplay>().HasBeenPlayed = false;
 					CardInstance.GetComponent<CardDisplay>().HandIndex = i;
-					player.AvailableCardSlots[i] = false;
+                    CardInstance.GetComponent<CardDisplay>().Owner = player;
+                    player.AvailableCardSlots[i] = false;
 					Deck.Remove(RandomCard);
 				}
 			}

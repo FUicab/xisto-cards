@@ -52,7 +52,7 @@ public class CardSpace : MonoBehaviour, IDropHandler {
 		if(!Occupied && !cardDisplay.HasBeenPlayed){
 
 			//Check if the unit is defender and if the slot is also not for traps
-			if(CanPlaceCard(cardDisplay.card) ){
+			if(CanPlaceCard(cardDisplay) ){
 				//Check if we can buy this card
 				if(GM.CanBuyCard(cardDisplay)){
 					if(OnAnimEnd == null){ PlaceCard(cardDisplay); } else
@@ -76,8 +76,8 @@ public class CardSpace : MonoBehaviour, IDropHandler {
 		return WasPlaced;
 	}
 
-	public bool CanPlaceCard(Card card){
-		return Owner == GM.PlayerAtPlay;
+	public bool CanPlaceCard(CardDisplay cardDisplay){
+		return Owner == GM.PlayerAtPlay && Owner == cardDisplay.Owner;
 				// && CardPlacingIsValid(card); As of the new version, there are no longer trap cards and defender slots are no longer restricted to that subtype.
 	}
 
@@ -131,7 +131,7 @@ public class CardSpace : MonoBehaviour, IDropHandler {
 	//     Debug.Log("Animation ended");
 	// }
 	private void PlaceCard(CardDisplay card, System.Action OnAnimEnd = null){
-		card.HasBeenPlayed = true;
+		//card.HasBeenPlayed = true;
 		card.OriginParent = transform;
 		card.transform.SetParent(card.OriginParent);
 		//card.rectTransform.rotation = card.OriginParent.rotation;
@@ -157,7 +157,7 @@ public class CardSpace : MonoBehaviour, IDropHandler {
 		EventManager.OnBoardUpdate();
 	}
 	public void UndoPlaceCard(){
-		PlayingCard.HasBeenPlayed = false;
+		//PlayingCard.HasBeenPlayed = false;
 		PlayingCard.OriginParent = null;
 		PlayingCard.mySpace = null;
 		FreeSpace();

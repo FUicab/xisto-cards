@@ -13,8 +13,15 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 {
 
 	public Card card;
-	public bool HasBeenPlayed;
+	public bool HasBeenPlayed {
+		get { return mySpace != null; }
+	}
+	public bool CanBeDragged
+	{
+		get { return !HasBeenPlayed && Owner.Role == PlayerRole.Host; }
+	}
 	public int HandIndex;
+	public PlayerProfile Owner;
 
 	/* Card values calculated after all modifiers and other independent values */
 	public int hp;
@@ -181,7 +188,14 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 
 	public GameObject UndoButtonObject;
 	public TurnAction PurchaseAction;
-
+	public bool HasActedThisRound
+	{
+		get { return GM.RoundActions.Exists(x => x.CardInAction == this && x.movementType == TurnMovementType.PerformAction ); }
+	}
+	public bool CanActThisTurn
+	{
+		get { return Owner.isMyTurnToPlay && HasBeenPlayed && (!HasActedThisRound || card.Subtypes.Contains(UnitSubtype.Combo)); }
+	}
 
 	void OnEnable()
 	{
@@ -210,7 +224,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		{
 			GM.RefundCard(PurchaseAction);
 			mySpace.UndoPlaceCard();
-			HasBeenPlayed = false;
+			//HasBeenPlayed = false;
 			HandIndex = PurchaseAction.HandIndexOrigin;
 			OriginParent = GM.Hand[HandIndex];
 			transform.SetParent(OriginParent);
@@ -286,7 +300,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 
 	public void OnBeginDrag(PointerEventData eventData)
 	{
-		if (mySpace != null && mySpace.Owner.Role != PlayerRole.Host)
+		if (!CanBeDragged)
 		{
 			return;
 		}
@@ -294,10 +308,6 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		//     mySpace.PlayingCard = null;
 		//     mySpace.CardObject = null;
 		// }
-		if (HasBeenPlayed)
-		{
-			return;
-		}
 		canvasGroup.alpha = 0.5f;
 		canvasGroup.blocksRaycasts = false;
 		transform.SetParent(transform.parent.parent.parent);
@@ -308,7 +318,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 	public void OnDrag(PointerEventData eventData)
 	{
 
-		if ((mySpace != null && mySpace.Owner.Role != PlayerRole.Host) || HasBeenPlayed)
+		if (!CanBeDragged)
 		{
 			return;
 		}
@@ -318,7 +328,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 			if (eventData.hovered[0].GetComponent<CardSpace>())
 			{
 				CardSpace space = eventData.hovered[0].GetComponent<CardSpace>();
-				if (space.CanPlaceCard(card))
+				if (space.CanPlaceCard(this))
 				{
 					space.outline.enabled = true;
 					LastHoveredSpace = space;
@@ -356,14 +366,20 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		}
 	}
 
+	public bool TriggerClickEvent(PointerEventData eventData = null) {
+		bool success = true;
+        if (Overlay.enabled) { return false; }
+        if (GM.turnStatus == TurnStatus.SelectingTargets)
+        {
+            GM.SelectCardAsTargetOfAction(this);
+        }
+        EventManager.OnClickCard(this);
+		return success;
+    }
+
 	public void OnPointerDown(PointerEventData eventData)
 	{
-		if (Overlay.enabled) { return; }
-		if (GM.turnStatus == TurnStatus.SelectingTargets)
-		{
-			GM.SelectCardAsTargetOfAction(this);
-		}
-		EventManager.OnClickCard(this);
+		TriggerClickEvent(eventData);
 	}
 
 	/* --- Outline and UI functions --------------------------------------------- */

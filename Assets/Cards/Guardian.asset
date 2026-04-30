@@ -38,6 +38,14 @@ MonoBehaviour:
       amountCanBeAugmented: 1
       specialEffect: 0
       specialBehavior: 
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerTurn: 0
+        buffs: []
+        source: {fileID: 0}
     - target: 0
       requirements: []
       source: {fileID: 0}
@@ -48,6 +56,14 @@ MonoBehaviour:
       amountCanBeAugmented: 1
       specialEffect: 0
       specialBehavior: 
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerTurn: 0
+        buffs: []
+        source: {fileID: 0}
   - actionType: 1
     attacks: []
     attackCountCanBeAugmented: 0
@@ -65,7 +81,7 @@ MonoBehaviour:
       temporaryBuffs:
       - target: 0
         requirements:
-        - requirement: 4
+        - requirement: 2
           subtypeRequirement: 
           factionRequirement: 
           targetIs: 00000000
@@ -77,6 +93,14 @@ MonoBehaviour:
         amountCanBeAugmented: 1
         specialEffect: 0
         specialBehavior: 
+        originPassive:
+          title: 
+          description: 
+          trigger: 0
+          canBeShared: 0
+          oncePerTurn: 0
+          buffs: []
+          source: {fileID: 0}
     attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
@@ -101,6 +125,14 @@ MonoBehaviour:
       amountCanBeAugmented: 1
       specialEffect: 0
       specialBehavior: 
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerTurn: 0
+        buffs: []
+        source: {fileID: 0}
     - target: 6
       requirements:
       - requirement: 1
@@ -115,3 +147,11 @@ MonoBehaviour:
       amountCanBeAugmented: 0
       specialEffect: 1
       specialBehavior: 
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerTurn: 0
+        buffs: []
+        source: {fileID: 0}
