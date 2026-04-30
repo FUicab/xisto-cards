@@ -11,7 +11,8 @@ using Unity.VisualScripting;
 public enum TurnMovementType{
 	CardPurchase,
 	PerformAction,
-	MoveCard
+	MoveCard,
+	Pass
 }
 
 public class GameManager : MonoBehaviour
@@ -138,16 +139,16 @@ public class GameManager : MonoBehaviour
 	public TurnAction RegisterCurrentAction(){
         //RoundActions.Add(new TurnAction(CurrentAction));
         if (PlayerAtPlay.selectedDice != null) PlayerAtPlay.selectedDice.Use();
-        TurnActions.Add(new TurnAction(CurrentAction));
+        TurnActions.Add(new TurnAction(CurrentAction) { Owner = PlayerAtPlay });
         CurrentAction.Clean();
 		availableActionsForThisTurn -= 1;
 		SetConfirmationButton("");
 		return TurnActions[TurnActions.Count - 1];
 	}
 
-	public void SaveTurnActions()
+	public void SaveTurnActions(List<TurnAction> turnActions)
 	{
-		RoundActions.AddRange(TurnActions);
+		RoundActions.AddRange(turnActions);
 		TurnActions.Clear();
 	}
 
@@ -168,46 +169,49 @@ public class GameManager : MonoBehaviour
 				$"<i>Registered actions</i>\n";
 		foreach (TurnAction tuAc in RoundActions)
 		{
-			if(tuAc.CardInAction != null)
+			switch (tuAc.movementType)
 			{
-				switch (tuAc.movementType)
-				{
-					case TurnMovementType.CardPurchase:
-						info += $"<b>{tuAc.CardInAction.mySpace.Owner.Role}</b> bought <b>{tuAc.CardInAction.card.name}</b> for <b>{tuAc.PurchasePrice}</b> gold.\n";
-					break;
+				case TurnMovementType.CardPurchase:
+					if(tuAc.CardInAction != null)
+					info += $"💲 <b>{tuAc.Owner.Role}</b> bought <b>{tuAc.CardInAction.card.name}</b> for <b>{tuAc.PurchasePrice}</b> gold.\n";
+				break;
 
-					case TurnMovementType.PerformAction:
-						switch (tuAc.actionObject.action.actionType)
-						{
-							case ActionTypes.Attack:
-								info += $"<b>{tuAc.CardInAction.mySpace.Owner.Role}</b>'s <b>{tuAc.CardInAction.card.Name}</b> attacks ";
-								for (int i = 0; i < tuAc.targets.Count; i++)
+				case TurnMovementType.PerformAction:
+					if(tuAc.CardInAction != null)
+					switch (tuAc.actionObject.action.actionType)
+					{
+						case ActionTypes.Attack:
+							info += $"⚔️ <b>{tuAc.Owner.Role}</b>'s <b>{tuAc.CardInAction.card.Name}</b> attacks ";
+							for (int i = 0; i < tuAc.targets.Count; i++)
+							{
+								info += "<b>· "+tuAc.targets[i].card.name+"</b> <i>("+ tuAc.actionObject.action.attacks[i].CalculateDamage(tuAc.targets[i])+")</i> ";
+							}
+							info += "\n";
+						break;
+						case ActionTypes.Buff:
+							info += $"⏫ <b>{tuAc.Owner.Role}</b>'s <b>{tuAc.CardInAction.card.Name}</b> applies buffs: ";
+							for (int i = 0; i < tuAc.targets.Count; i++)
+							{
+								if(tuAc.actionObject.action.buffs[i].amount > 0){ info += "+"; }
+								info += tuAc.actionObject.action.buffs[i].amount+" "+CardTranslator.BuffAttributeDescription(tuAc.actionObject.action.buffs[i].Attribute);
+								switch (tuAc.actionObject.action.buffs[i].target)
 								{
-									info += "<b>· "+tuAc.targets[i].card.name+"</b> <i>("+ tuAc.actionObject.action.attacks[i].CalculateDamage(tuAc.targets[i])+")</i> ";
+									default: info += " "+CardTranslator.TargetTypeDescription(tuAc.actionObject.action.buffs[i].target); break;
 								}
-								info += "\n";
-							break;
-							case ActionTypes.Buff:
-								info += $"<b>{tuAc.CardInAction.mySpace.Owner.Role}</b>'s <b>{tuAc.CardInAction.card.Name}</b> applies buffs: ";
-								for (int i = 0; i < tuAc.targets.Count; i++)
-								{
-									if(tuAc.actionObject.action.buffs[i].amount > 0){ info += "+"; }
-									info += tuAc.actionObject.action.buffs[i].amount+" "+CardTranslator.BuffAttributeDescription(tuAc.actionObject.action.buffs[i].Attribute);
-									switch (tuAc.actionObject.action.buffs[i].target)
-									{
-										default: info += " "+CardTranslator.TargetTypeDescription(tuAc.actionObject.action.buffs[i].target); break;
-									}
-									// info += "<b>· "+tuAc.targets[i].card.name+"</b> "+CardTranslator.BuffAttributeDescription(tuAc.actionObject.action.buffs[i].Attribute)+" <i>("+tuAc.actionObject.action.buffs[i].amount+")</i> ";
-									if(i+1 < tuAc.targets.Count){ info += ", "; }
-								}
-								info += "\n";
-							break;
-						}
-					break;
-					
-					case TurnMovementType.MoveCard:
-					break;
-				}
+								// info += "<b>· "+tuAc.targets[i].card.name+"</b> "+CardTranslator.BuffAttributeDescription(tuAc.actionObject.action.buffs[i].Attribute)+" <i>("+tuAc.actionObject.action.buffs[i].amount+")</i> ";
+								if(i+1 < tuAc.targets.Count){ info += ", "; }
+							}
+							info += "\n";
+						break;
+					}
+				break;
+
+                case TurnMovementType.Pass:
+                    info += $"💰 <b>{tuAc.Owner.Role}</b> passed.\n";
+                break;
+
+                case TurnMovementType.MoveCard:
+				break;
 			}
 		}
 		DebugText.text = info;
@@ -385,6 +389,7 @@ public class GameManager : MonoBehaviour
 		SetConfirmationButton(EndTurnText, GoldOnPassTip, true);
 	}
 	public async void TurnEnd(){
+		List<TurnAction> turnActions = new List<TurnAction>();
 		foreach (TurnAction action in TurnActions)
 		{
 			switch (action.movementType)
@@ -404,6 +409,11 @@ public class GameManager : MonoBehaviour
 					action.Perform();
 					break;
 			}
+			turnActions.Add(action);
+		}
+		if(TurnActions.Count == 0)
+		{
+			turnActions.Add(new TurnAction() { movementType = TurnMovementType.Pass, Owner = PlayerAtPlay});
 		}
 		if(availableActionsForThisTurn > 0)
 		{
@@ -412,7 +422,7 @@ public class GameManager : MonoBehaviour
 		//PlayerAtPlay.Gold += ActionPoints;
 		//PlayerAtPlay.Gold += 1;
 		//DrawCards(PlayerAtPlay);
-		SaveTurnActions();
+		SaveTurnActions(turnActions);
 		UpdateDisplayGoldValues();
 		//ClearActionPoints();
 		SwitchTurns();
@@ -600,6 +610,7 @@ public class TurnAction{
 	public int remainingTargets = 0;
 	public int HandIndexOrigin;
 	public int PurchasePrice;
+	public PlayerProfile Owner;
 
 	public TurnAction(TurnAction Origin = null){
 		if(Origin != null){
@@ -610,6 +621,7 @@ public class TurnAction{
 			HandIndexOrigin = Origin.HandIndexOrigin;
 			actionObject = Origin.actionObject;
 			targets = new List<CardDisplay>(Origin.targets);
+			Owner = Origin.Owner;
 		}
 		UpdateTargetCountAndIndex();
 	}
