@@ -11,32 +11,47 @@ public class CardActionMenu
     public List<CardActionObject> actions = new List<CardActionObject>();
     public CardDisplay sourceCard;
 
+    public CardActionMenu(List<CardAction> cardActions)
+    {
+        SetUpTheMenu(cardActions);
+    }
     public CardActionMenu(CardDisplay cardDisplay)
+    {
+        sourceCard = cardDisplay;
+        SetUpTheMenu(cardDisplay.cardActions);
+    }
+
+    private void SetUpTheMenu(List<CardAction> cardActions)
     {
         int index = 0;
         int actionIndex = 0;
-        sourceCard = cardDisplay;
-        foreach (var item in cardDisplay.cardActions)
+        foreach (var item in cardActions)
         {
-            if(item.actionType != ActionTypes.RepeatFromAbove)
+            if (item.actionType != ActionTypes.RepeatFromAbove)
             {
-                if(index != 0){ actionIndex += 1; }
+                if (index != 0) { actionIndex += 1; }
                 actions.Add(new CardActionObject(item, sourceCard));
-                actions[actionIndex].diceValues.Add(index+1);
-            } else {
-                actions[actionIndex].diceValues.Add(index+1);
+                actions[actionIndex].diceValues.Add(index + 1);
+            }
+            else
+            {
+                actions[actionIndex].diceValues.Add(index + 1);
             }
             index += 1;
         }
         foreach (var action in actions)
         {
-            if(action.diceValues.Count == 1)
+            if (action.diceValues.Count == 1)
             {
                 action.diceAverageValue = action.diceValues[0];
-            } else if (action.diceValues.Count % 2 == 0) {
-                action.diceAverageValue = action.diceValues[action.diceValues.Count/2];
-            } else {
-                action.diceAverageValue = action.diceValues[(action.diceValues.Count-1) / 2];
+            }
+            else if (action.diceValues.Count % 2 == 0)
+            {
+                action.diceAverageValue = action.diceValues[action.diceValues.Count / 2];
+            }
+            else
+            {
+                action.diceAverageValue = action.diceValues[(action.diceValues.Count - 1) / 2];
             }
         }
     }

@@ -155,3 +155,4 @@ MonoBehaviour:
         oncePerTurn: 0
         buffs: []
         source: {fileID: 0}
+  PowerPoints: Infinity

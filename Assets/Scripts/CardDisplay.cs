@@ -1,18 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
+using System.Linq;
+using System.Threading.Tasks;
 using TMPro;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using UnityEngine.XR;
 using static CardSpace;
 using static TurnAction;
-using System.Threading.Tasks;
-using System.Linq;
 
 public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler
 {
 
 	public Card card;
+	public float power = 0f;
 	public bool HasBeenPlayed {
 		get { return mySpace != null; }
 	}
@@ -98,7 +100,29 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 			return finalValues;
 		}
 	}
-	public int attack
+    public int damageReduction
+    {
+        get
+        {
+            int bonus = 0;
+            foreach (BuffAction buff in appliedBuffs)
+            {
+                if (buff.Attribute == Attributes.DamageReductionAfterArmor || buff.Attribute == Attributes.DamageReductionBeforeArmor)
+                {
+                    bonus += buff.amount;
+                }
+            }
+            if (bonus <= 0)
+            {
+                return 0;
+            }
+            else
+            {
+                return bonus;
+            }
+        }
+    }
+    public int attack
 	{
 		get
 		{
@@ -132,7 +156,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 					bonus += buff.amount;
 				}
 			}
-			if (bonus < 0)
+			if (bonus <= 0)
 			{
 				return 0;
 			}
@@ -171,7 +195,10 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 	public TextMeshProUGUI HPText;
 	public TextMeshProUGUI ArmorText;
 	public TextMeshProUGUI AttackText;
-	public Image DefenderBarrier;
+	public Image ArmorPierceImage;
+    public Image DamageReductionImage;
+    public Image PotentialDamageImage;
+    public Image DefenderBarrier;
 	// private TextMeshProUGUI BuffListText;
 
 	private GameManager GM;
@@ -256,7 +283,8 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		UndoButtonObject.SetActive(false);
 		OriginParent = transform.parent;
 		OriginPosition = rectTransform.anchoredPosition;
-		NameText.text = card.Name;
+		power = card.PowerPoints;
+		NameText.text = $"{power:0.00} · {card.Name}";
 		ArtworkImage.sprite = card.Artwork;
 		hp = card.MaxHP;
 
@@ -436,7 +464,26 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		HPText.text = hpText;
 		ArmorText.text = armorText;
 		AttackText.text = attackText;
-	}
+
+        if (damageReduction <= 0)
+        {
+            DamageReductionImage.gameObject.SetActive(false);
+        }
+        else
+        {
+            DamageReductionImage.gameObject.SetActive(true);
+            DamageReductionImage.GetComponentInChildren<TextMeshProUGUI>().text = damageReduction.ToString();
+        }
+        if (armorPierce <= 0)
+        {
+            ArmorPierceImage.gameObject.SetActive(false);
+        }
+        else
+        {
+            ArmorPierceImage.gameObject.SetActive(true);
+            ArmorPierceImage.GetComponentInChildren<TextMeshProUGUI>().text = armorPierce.ToString();
+        }
+    }
 
 	/* --- Combat functions --------------------------------------------- */
 	public void ReceiveDamage(int dmg)

@@ -20,29 +20,34 @@ MonoBehaviour:
   Artwork: {fileID: 21300000, guid: 5703c77e31ae99b44850342934e9ae20, type: 3}
   Origin: 00000000
   MaxHP: 3
-  HP: 0
   Armor: 010000000300000001000000
   Attack: 4
-  SkillSet: []
+  Passives: []
   CardActions:
   - actionType: 0
     attacks:
-    - damageType: 0
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
       damageMultiplier: 0.5
-      target: 2
+      flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
-      requirements: []
     attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 0
     attacks:
-    - damageType: 1
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 1
       damageMultiplier: 1
-      target: 2
+      flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
-      requirements: []
     attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
@@ -51,23 +56,37 @@ MonoBehaviour:
     buffs: []
   - actionType: 0
     attacks:
-    - damageType: 1
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 1
       damageMultiplier: 1
-      target: 2
+      flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs:
       - target: 0
-        Attribute: 0
-        amount: 2
-        amountCanBeAugmented: 1
-        specialEffect: 0
         requirements:
-        - requirement: 0
+        - requirement: 1
           subtypeRequirement: 00000000
           factionRequirement: 
           targetIs: 
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        Attribute: 0
+        amount: 2
+        isDebuff: 0
+        amountCanBeAugmented: 1
+        specialEffect: 0
         specialBehavior: 
-      requirements: []
+        originPassive:
+          title: 
+          description: 
+          trigger: 0
+          canBeShared: 0
+          oncePerTurn: 0
+          buffs: []
+          source: {fileID: 0}
     attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
@@ -78,3 +97,4 @@ MonoBehaviour:
     attacks: []
     attackCountCanBeAugmented: 0
     buffs: []
+  PowerPoints: 8.09

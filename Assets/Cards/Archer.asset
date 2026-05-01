@@ -22,28 +22,41 @@ MonoBehaviour:
   MaxHP: 2
   Armor: 000000000000000000000000
   Attack: 7
-  SkillSet: []
+  Passives: []
   CardActions:
   - actionType: 0
     attacks:
-    - damageType: 1
-      damageMultiplier: 1
-      target: 2
-      attackEffect: []
-      temporaryBuffs:
-      - target: 0
-        Attribute: 0
-        amount: 1
-        amountCanBeAugmented: 1
-        specialEffect: 0
-        requirements: []
-        specialBehavior: 
-        source: {fileID: 0}
+    - target: 2
       requirements:
       - requirement: 1
         subtypeRequirement: 02000000
         factionRequirement: 05000000
         targetIs: 
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 1
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs:
+      - target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        Attribute: 0
+        amount: 1
+        isDebuff: 0
+        amountCanBeAugmented: 1
+        specialEffect: 0
+        specialBehavior: 
+        originPassive:
+          title: 
+          description: 
+          trigger: 0
+          canBeShared: 0
+          oncePerTurn: 0
+          buffs: []
+          source: {fileID: 0}
     attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
@@ -56,12 +69,15 @@ MonoBehaviour:
     buffs: []
   - actionType: 0
     attacks:
-    - damageType: 1
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 1
       damageMultiplier: 1
-      target: 2
+      flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
-      requirements: []
     attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
@@ -72,3 +88,4 @@ MonoBehaviour:
     attacks: []
     attackCountCanBeAugmented: 0
     buffs: []
+  PowerPoints: 9.065625

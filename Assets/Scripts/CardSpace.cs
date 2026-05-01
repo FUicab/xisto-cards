@@ -17,6 +17,10 @@ public class CardSpace : MonoBehaviour, IDropHandler {
 	// public bool IsTrap = false;
 	public GameObject CardObject;
 	public CardDisplay PlayingCard;
+    public bool HasCard
+    {
+		get { return PlayingCard != null; }
+	}
 	public List<CardSpace> Defenders = new List<CardSpace>();
 	public CardSpace AttachedTrap;
 	public PlayerRole OwnerRole = PlayerRole.Host;

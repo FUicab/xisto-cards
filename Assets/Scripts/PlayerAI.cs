@@ -9,6 +9,7 @@ using static UnitType;
 using static UnitSubtype;
 using static TurnMovementType;
 using System.Threading.Tasks;
+using System.Linq;
 
 [System.Serializable]
 public class PlayerAI{
@@ -341,6 +342,23 @@ public class PlayerAI{
 				OpponentSpaces.Add(AllSpaces[i]);
 			}
 		}
+	}
+
+    /* -------------------------------- AI analyzing tasks -------------------------------- */
+
+	public List<CardDisplay> GetTopWarriors()
+	{
+		List<CardDisplay> theTop = new();
+		List<CardDisplay> myCards = Profile.GetActiveCards().OrderByDescending(x => x.power).ToList();
+
+        foreach (CardDisplay cardDisplay in myCards)
+        {
+            if(cardDisplay.card.Type == UnitType.Warrior && theTop.Count < 3) {
+				theTop.Add(cardDisplay);
+			}
+        }
+
+        return theTop;
 	}
 
 }

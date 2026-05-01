@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -102,6 +103,12 @@ public class PlayerProfile
 				dice.UpdateDiceSelectionStatus(dice.selectable, false);
 			}
 		}
+	}
+
+	public List<CardDisplay> GetActiveCards()
+	{
+		List<CardDisplay> activeCards = mySpaces.Where(x => x.HasCard).Select(x => x.PlayingCard).ToList();
+        return activeCards;
 	}
 
 	public bool HasDiceForAction(CardActionObject action)

@@ -54,7 +54,7 @@ MonoBehaviour:
       isDebuff: 0
       amountCanBeAugmented: 1
       specialEffect: 0
-      specialBehavior: 00000000
+      specialBehavior: 
       originPassive:
         title: 
         description: 
@@ -90,3 +90,4 @@ MonoBehaviour:
       temporaryBuffs: []
     attackCountCanBeAugmented: 0
     buffs: []
+  PowerPoints: Infinity
