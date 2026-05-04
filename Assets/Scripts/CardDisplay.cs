@@ -283,7 +283,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		UndoButtonObject.SetActive(false);
 		OriginParent = transform.parent;
 		OriginPosition = rectTransform.anchoredPosition;
-		power = card.PowerPoints;
+		power = card.powerRating.total;
 		NameText.text = $"{power:0.00} · {card.Name}";
 		ArtworkImage.sprite = card.Artwork;
 		hp = card.MaxHP;
