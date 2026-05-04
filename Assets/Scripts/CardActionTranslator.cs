@@ -155,53 +155,7 @@ public static class CardTranslator
                         // Lists the requirements for those attack effects
                         if(effect.requirements.Count > 0)
                         {
-                            Requirements requirement = effect.requirements[0];
-                            if(requirement.requirement == RequirementTypes.TargetHasSubtypesOrFactions)
-                            {
-                                text += " when targetting ";
-                                subIndex = 0;
-                                foreach (var subtype in requirement.subtypeRequirement)
-                                {
-                                    if(subIndex == 0)
-                                    {
-                                        text += TextFormat(TargetSubtypeDescription(subtype,true),"subtype");
-                                    } else {
-                                        if(requirement.subtypeRequirement.Count-1 == index){
-                                            text += " and ";
-                                            text += TextFormat(TargetSubtypeDescription(subtype,true),"subtype");
-                                        } else {
-                                            text += ", ";
-                                            text += TextFormat(TargetSubtypeDescription(subtype,true),"subtype");
-                                        }
-                                    }
-                                    subIndex += 1;
-                                }
-                                if(requirement.factionRequirement.Count > 0 && requirement.subtypeRequirement.Count > 0)
-                                {
-                                    text += " and ";
-                                }
-                                subIndex = 0;
-                                foreach (var faction in requirement.factionRequirement)
-                                {
-                                    if(subIndex == 0)
-                                    {
-                                        text += TextFormat(TargetFactionDescription(faction,true),"faction");
-                                    } else {
-                                        if(requirement.factionRequirement.Count-1 == index){
-                                            text += " and ";
-                                            text += TextFormat(TargetFactionDescription(faction,true),"faction");
-                                        } else {
-                                            text += ", ";
-                                            text += TextFormat(TargetFactionDescription(faction,true),"faction");
-                                        }
-                                    }
-                                    subIndex += 1;
-                                }
-                            }
-                            if(requirement.requirement == RequirementTypes.TargetHasAttackedThisRound)
-                            {
-                                text += " if the target has attacked during this round";
-                            }
+                            text += text += RequirementDescription(effect.requirements, attack.target, attack.source?.card, "effectOrTempBuff");
                         }
 
                         subIndex += 1;
@@ -235,53 +189,7 @@ public static class CardTranslator
                         // Lists the requirements for the temporary buffs on an attack.
                         if(tempBuff.requirements.Count > 0)
                         {
-                            Requirements requirement = tempBuff.requirements[0];
-                            if(requirement.requirement == RequirementTypes.TargetHasSubtypesOrFactions)
-                            {
-                                text += " when targetting ";
-                                subIndex = 0;
-                                foreach (var subtype in requirement.subtypeRequirement)
-                                {
-                                    if(subIndex == 0)
-                                    {
-                                        text += TextFormat(TargetSubtypeDescription(subtype,true),"subtype");
-                                    } else {
-                                        if(requirement.subtypeRequirement.Count-1 == index){
-                                            text += " and ";
-                                            text += TextFormat(TargetSubtypeDescription(subtype,true),"subtype");
-                                        } else {
-                                            text += ", ";
-                                            text += TextFormat(TargetSubtypeDescription(subtype,true),"subtype");
-                                        }
-                                    }
-                                    subIndex += 1;
-                                }
-                                if(requirement.factionRequirement.Count > 0 && requirement.subtypeRequirement.Count > 0)
-                                {
-                                    text += " and ";
-                                }
-                                subIndex = 0;
-                                foreach (var faction in requirement.factionRequirement)
-                                {
-                                    if(subIndex == 0)
-                                    {
-                                        text += TextFormat(TargetFactionDescription(faction,true),"faction");
-                                    } else {
-                                        if(requirement.factionRequirement.Count-1 == index){
-                                            text += " and ";
-                                            text += TextFormat(TargetFactionDescription(faction,true),"faction");
-                                        } else {
-                                            text += ", ";
-                                            text += TextFormat(TargetFactionDescription(faction,true),"faction");
-                                        }
-                                    }
-                                    subIndex += 1;
-                                }
-                            }
-                            if(requirement.requirement == RequirementTypes.TargetHasAttackedThisRound)
-                            {
-                                text += " if the target has attacked during this round";
-                            }
+                            text += RequirementDescription(tempBuff.requirements, tempBuff.target, attack.source?.card, "effectOrTempBuff");
                         }
 
                         subIndex += 1;
@@ -291,53 +199,7 @@ public static class CardTranslator
                 // Lists the requirements of an attack.
                 if (attack.requirements.Count > 0)
                 {
-                    Requirements requirement = attack.requirements[0];
-                    if(requirement.requirement == RequirementTypes.TargetHasSubtypesOrFactions)
-                    {
-                        text += ", but can only target ";
-                        subIndex = 0;
-                        foreach (var subtype in requirement.subtypeRequirement)
-                        {
-                            if(subIndex == 0)
-                            {
-                                text += TextFormat(TargetSubtypeDescription(subtype,true),"subtype");
-                            } else {
-                                if(requirement.subtypeRequirement.Count-1 == index){
-                                    text += " and ";
-                                    text += TextFormat(TargetSubtypeDescription(subtype,true),"subtype");
-                                } else {
-                                    text += ", ";
-                                    text += TextFormat(TargetSubtypeDescription(subtype,true),"subtype");
-                                }
-                            }
-                            subIndex += 1;
-                        }
-                        if(requirement.factionRequirement.Count > 0 && requirement.subtypeRequirement.Count > 0)
-                        {
-                            text += " and ";
-                        }
-                        subIndex = 0;
-                        foreach (var faction in requirement.factionRequirement)
-                        {
-                            if(subIndex == 0)
-                            {
-                                text += TextFormat(TargetFactionDescription(faction,true),"faction");
-                            } else {
-                                if(requirement.factionRequirement.Count-1 == index){
-                                    text += " and ";
-                                    text += TextFormat(TargetFactionDescription(faction,true),"faction");
-                                } else {
-                                    text += ", ";
-                                    text += TextFormat(TargetFactionDescription(faction,true),"faction");
-                                }
-                            }
-                            subIndex += 1;
-                        }
-                    }
-                    if(requirement.requirement == RequirementTypes.TargetHasAttackedThisRound)
-                    {
-                        text += " if the target has attacked during this round";
-                    }
+                    text += RequirementDescription(attack.requirements, attack.target, attack.source?.card, "attack");
                 }
 
                 index += 1;
@@ -412,43 +274,13 @@ public static class CardTranslator
             }
             if(buff.requirements.Count > 0)
             {
-                text += " if ";
-                foreach (var requirement in buff.requirements)
-                {
-                    if(buff.target == TargetTypes.Self)
-                    {
-                        switch (requirement.requirement)
-                        {
-                            case RequirementTypes.TargetIsNextTo:
-                                text += "I'm next to";
-                                switch (requirement.targetIs[0])
-                                {
-                                    case TargetUnitDefinition.SameAsMyself:
-                                        text += " another <b>"+buff.source?.card.Name+"</b>";
-                                    break;
-                                }
-                            break;
-                            case RequirementTypes.TargetHasAttackedThisRound:
-                                text += "I have attacked before during this round";
-                            break;
-                        }
-                    }
-                    if(buff.target == TargetTypes.AlliesNextToMe)
-                    {
-                        switch (requirement.requirement)
-                        {
-                            case RequirementTypes.TargetHasSubtypesOrFactions:
-                                text += "they are ";
-                                switch (requirement.subtypeRequirement[0])
-                                {
-                                    case UnitSubtype.Defender:
-                                        text += TextFormat(TargetSubtypeDescription(requirement.subtypeRequirement[0],true),"subtype");
-                                    break;
-                                }
-                            break;
-                        }
-                    }
-                }
+                //if (buff.isTargetPlural)
+                //{
+                //    text += " who ";
+                //} else { 
+                //    text += " if ";
+                //}
+                text += RequirementDescription(buff.requirements, buff.target, buff.source?.card);
             }
             index += 1;
         }
@@ -483,6 +315,231 @@ public static class CardTranslator
             }
         }
         text += $">{textToFormat}</color></b>";
+        return text;
+    }
+
+    public static string FactionOrSubtypeRequirementDescription(Requirements requirement)
+    {
+        string text = "";
+        for (int i = 0; i < requirement.subtypeRequirement.Count; i++)
+        {
+            text += TextFormat(TargetSubtypeDescription(requirement.subtypeRequirement[i], true), "subtype");
+            if (i == requirement.subtypeRequirement.Count - 2) { text += " or "; }
+            if (i < requirement.subtypeRequirement.Count - 2) { text += ", "; }
+        }
+        if (requirement.subtypeRequirement.Count > 0 && requirement.factionRequirement.Count > 0) { text += " or "; }
+        for (int i = 0; i < requirement.factionRequirement.Count; i++)
+        {
+            text += TextFormat(TargetFactionDescription(requirement.factionRequirement[i], true), "faction");
+            if (i == requirement.factionRequirement.Count - 2) { text += " or "; }
+            if (i < requirement.factionRequirement.Count - 2) { text += ", "; }
+        }
+        return text;
+    }
+
+    public static string RequirementDescription(List<Requirements> requirements, TargetTypes target, Card card = null, string formattingFor = "buff")
+    {
+        string text = "";
+        foreach (var requirement in requirements)
+        {
+            if (!requirement.targetOfRequirementIsTargetOfAttack)
+            {
+                switch (target)
+                {
+                    case TargetTypes.Self:
+                        switch (requirement.requirement)
+                        {
+                            case RequirementTypes.TargetHasSubtypesOrFactions:
+                                text += " if I'm ";
+                                text += FactionOrSubtypeRequirementDescription(requirement);
+                                break;
+                            case RequirementTypes.TargetIsNextTo:
+                                text += " if I'm next to";
+                                switch (requirement.targetIs[0])
+                                {
+                                    case TargetUnitDefinition.SameAsMyself:
+                                        text += " another <b>" + card?.Name + "</b>";
+                                        break;
+                                }
+                                break;
+                            case RequirementTypes.TargetHasAttackedThisRound:
+                                text += " if I have attacked before during this round";
+                                break;
+                            case RequirementTypes.TargetAttributeIs:
+                                text += " if my ";
+                                text += TextFormat(BuffAttributeDescription(requirement.attribute), requirement.attribute);
+                                text += " is ";
+                                text += $"{ComparisonDescription(requirement.comparison)} <b>{requirement.attributeValue}</b>";
+                                break;
+                        }
+                        break;
+                    case TargetTypes.SameTarget:
+                        break;
+                    case TargetTypes.SingleEnemy:
+                    case TargetTypes.SingleAlly:
+                    
+                        switch (requirement.requirement)
+                        {
+                            case RequirementTypes.TargetHasSubtypesOrFactions:
+                                switch (formattingFor)
+                                {
+                                    case "attack":
+                                        text += ", but can only target ";
+                                        break;
+                                    case "effectOrTempBuff":
+                                        text += " when targetting ";
+                                        break;
+                                    case "buff":
+                                        text += " if they're ";
+                                        break;
+                                }
+                                text += FactionOrSubtypeRequirementDescription(requirement);
+                                break;
+                            case RequirementTypes.TargetIsNextTo:
+                                switch (formattingFor)
+                                {
+                                    case "attack":
+                                        text += ", but target must be next to ";
+                                        break;
+                                    case "effectOrTempBuff":
+                                        text += " when target is next to ";
+                                        break;
+                                    case "buff":
+                                        text += " if they're next to ";
+                                        break;
+                                }
+                                switch (requirement.targetIs[0])
+                                {
+                                    case TargetUnitDefinition.SameAsMyself:
+                                        text += " another <b>" + card?.Name + "</b>";
+                                        break;
+                                }
+                                break;
+                            case RequirementTypes.TargetHasAttackedThisRound:
+                                switch (formattingFor)
+                                {
+                                    case "attack":
+                                        text += ", but target must have ";
+                                        break;
+                                    case "effectOrTempBuff":
+                                        text += " when the target has ";
+                                        break;
+                                    case "buff":
+                                        text += " if they have ";
+                                        break;
+                                }
+                                text += "attacked before during this round";
+                                break;
+                            case RequirementTypes.TargetAttributeIs:
+                                switch (formattingFor)
+                                {
+                                    case "attack":
+                                        text += ", but target's ";
+                                        break;
+                                    case "effectOrTempBuff":
+                                        text += " when the target's ";
+                                        break;
+                                    case "buff":
+                                        text += " if their ";
+                                        break;
+                                }
+                                text += TextFormat(BuffAttributeDescription(requirement.attribute), requirement.attribute);
+                                switch (formattingFor)
+                                {
+                                    case "attack":
+                                        text += " must be ";
+                                        break;
+                                    case "effectOrTempBuff":
+                                    case "buff":
+                                        text += " is ";
+                                        break;
+                                }
+                                text += $"{ComparisonDescription(requirement.comparison)} <b>{requirement.attributeValue}</b>";
+                                break;
+                        }
+                        break;
+                    case TargetTypes.LineOfEnemies:
+                    case TargetTypes.AlliesInSameLine:
+                    case TargetTypes.AllAllies:
+                    case TargetTypes.AlliesNextToMe:
+                        switch (requirement.requirement)
+                        {
+                            case RequirementTypes.TargetHasSubtypesOrFactions:
+                                switch (formattingFor)
+                                {
+                                    case "attack":
+                                        text += ", but only hits ";
+                                        break;
+                                    case "effectOrTempBuff":
+                                        text += " when they're ";
+                                        break;
+                                    case "buff":
+                                        text += " who are ";
+                                        break;
+                                }
+                                text += FactionOrSubtypeRequirementDescription(requirement);
+                                break;
+                            case RequirementTypes.TargetIsNextTo:
+                                switch (formattingFor)
+                                {
+                                    case "attack":
+                                        text += ", but only hits if they're next to ";
+                                        break;
+                                    case "effectOrTempBuff":
+                                        text += " when they're next to ";
+                                        break;
+                                    case "buff":
+                                        text += " who are next to";
+                                        break;
+                                }
+                                switch (requirement.targetIs[0])
+                                {
+                                    case TargetUnitDefinition.SameAsMyself:
+                                        text += " another <b>" + card?.Name + "</b>";
+                                        break;
+                                }
+                                break;
+                            case RequirementTypes.TargetHasAttackedThisRound:
+                                switch (formattingFor)
+                                {
+                                    case "attack":
+                                        text += ", but hits only those who have ";
+                                        break;
+                                    case "effectOrTempBuff":
+                                        text += " who have ";
+                                        break;
+                                    case "buff":
+                                        text += " who have ";
+                                        break;
+                                }
+                                text += "attacked before during this round";
+                                break;
+                            case RequirementTypes.TargetAttributeIs:
+                                switch (formattingFor)
+                                {
+                                    case "attack":
+                                        text += ", but hits only those whose ";
+                                        break;
+                                    case "effectOrTempBuff":
+                                    case "buff":
+                                        text += " whose ";
+                                        break;
+                                }
+                                text += TextFormat(BuffAttributeDescription(requirement.attribute), requirement.attribute);
+                                text += " is ";
+                                text += $"{ComparisonDescription(requirement.comparison)} <b>{requirement.attributeValue}</b>";
+                                break;
+                        }
+                        break;
+                }
+            } else
+            {
+                text += " if my target's ";
+                text += TextFormat(BuffAttributeDescription(requirement.attribute), requirement.attribute);
+                text += " is ";
+                text += $"{ComparisonDescription(requirement.comparison)} <b>{requirement.attributeValue}</b>";
+            }
+        }
         return text;
     }
 
@@ -638,6 +695,15 @@ public static class CardTranslator
             case UnitSubtype.Inheritor:
                 if(!plural){ text += "🧬 inheritor"; }else{ text += "🧬 inheritors"; }
             break;
+            case UnitSubtype.Opportunist:
+                if (!plural) { text += "📜 opportunist"; } else { text += "📜 opportunists"; }
+            break;
+            case UnitSubtype.Doragon:
+                if (!plural) { text += "🌌 Yatza"; } else { text += "🌌 Yatza"; }
+            break;
+            case UnitSubtype.Yatza:
+                if (!plural) { text += "⭐ Doragon"; } else { text += "⭐ Doragon"; }
+            break;
         }
         return text;
     }
@@ -694,9 +760,8 @@ public static class CardTranslator
         string text = "";
         switch (buffAction.specialEffect){
 			case BuffSpecialEffects.RedirectAttacksTowardsMe:
-				text += "redirects all attacks ";
+				text += "I absorb attacks targetted ";
 				text += CardTranslator.TargetTypeDescription(buffAction.target);
-                text += " towards me";
 			break;
 		}
 		return text;
@@ -750,6 +815,34 @@ public static class CardTranslator
 		}
 		return text;
     }
+
+    public static string ComparisonDescription(Comparison comparison)
+    {
+        string text = "";
+        switch (comparison)
+        {
+            case Comparison.LessThan:
+                text += "less than";
+                break;
+            case Comparison.LessThanOrEqual:
+                text += "less than or equal to";
+                break;
+            case Comparison.Equal:
+                text += "equal to";
+                break;
+            case Comparison.MoreThan:
+                text += "more than";
+                break;
+            case Comparison.MoreThanOrEqual:
+                text += "more than or equal to";
+                break;
+            case Comparison.Not:
+                text += "not";
+                break;
+        }
+        return text;
+    }
+
 }
 
 [System.Serializable]

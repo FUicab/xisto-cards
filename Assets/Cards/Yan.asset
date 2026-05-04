@@ -1,0 +1,277 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e4e87ef44ac0934298d8773e4605e72, type: 3}
+  m_Name: Yan
+  m_EditorClassIdentifier: Assembly-CSharp::Card
+  Name: Yan
+  CardCount: 50
+  Type: 3
+  Subtypes: 000000000c000000
+  Cost: 6
+  Artwork: {fileID: 21300000, guid: b734b3715652f814eb259edb93b6ac8b, type: 3}
+  Origin: 00000000
+  MaxHP: 18
+  Armor: 020000000a00000002000000
+  Attack: 8
+  Passives:
+  - title: Protector's leader
+    description: 
+    trigger: 1
+    canBeShared: 0
+    oncePerTurn: 0
+    buffs:
+    - target: 4
+      requirements:
+      - requirement: 1
+        subtypeRequirement: 
+        factionRequirement: 0000000005000000
+        targetIs: 
+        attribute: 0
+        comparison: 0
+        attributeValue: 0
+        targetOfRequirementIsTargetOfAttack: 0
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      Attribute: 0
+      amount: 1
+      isDebuff: 0
+      amountCanBeAugmented: 1
+      specialEffect: 0
+      specialBehavior: 
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerTurn: 0
+        buffs: []
+        source: {fileID: 0}
+    source: {fileID: 0}
+  - title: Anti-motion
+    description: 
+    trigger: 1
+    canBeShared: 0
+    oncePerTurn: 0
+    buffs:
+    - target: 4
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      Attribute: 2
+      amount: 1
+      isDebuff: 0
+      amountCanBeAugmented: 1
+      specialEffect: 0
+      specialBehavior: 
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerTurn: 0
+        buffs: []
+        source: {fileID: 0}
+    source: {fileID: 0}
+  - title: Crushing
+    description: 
+    trigger: 0
+    canBeShared: 1
+    oncePerTurn: 0
+    buffs:
+    - target: 0
+      requirements:
+      - requirement: 3
+        subtypeRequirement: 
+        factionRequirement: 
+        targetIs: 
+        attribute: 1
+        comparison: 0
+        attributeValue: 10
+        targetOfRequirementIsTargetOfAttack: 1
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      Attribute: 0
+      amount: 4
+      isDebuff: 0
+      amountCanBeAugmented: 1
+      specialEffect: 0
+      specialBehavior: 
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerTurn: 0
+        buffs: []
+        source: {fileID: 0}
+    source: {fileID: 0}
+  CardActions:
+  - actionType: 0
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
+    attackCountCanBeAugmented: 0
+    buffs: []
+  - actionType: 1
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
+    attackCountCanBeAugmented: 0
+    buffs: []
+  - actionType: 2
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
+    attackCountCanBeAugmented: 0
+    buffs:
+    - target: 4
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      Attribute: 2
+      amount: 2
+      isDebuff: 0
+      amountCanBeAugmented: 1
+      specialEffect: 0
+      specialBehavior: 
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerTurn: 0
+        buffs: []
+        source: {fileID: 0}
+  - actionType: 1
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
+    attackCountCanBeAugmented: 0
+    buffs:
+    - target: 4
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      Attribute: 2
+      amount: 2
+      isDebuff: 0
+      amountCanBeAugmented: 1
+      specialEffect: 0
+      specialBehavior: 
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerTurn: 0
+        buffs: []
+        source: {fileID: 0}
+  - actionType: 1
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
+    attackCountCanBeAugmented: 0
+    buffs:
+    - target: 4
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      Attribute: 2
+      amount: 2
+      isDebuff: 0
+      amountCanBeAugmented: 1
+      specialEffect: 0
+      specialBehavior: 
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerTurn: 0
+        buffs: []
+        source: {fileID: 0}
+  - actionType: 0
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 5
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
+    attackCountCanBeAugmented: 0
+    buffs:
+    - target: 4
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      Attribute: 2
+      amount: 2
+      isDebuff: 0
+      amountCanBeAugmented: 1
+      specialEffect: 0
+      specialBehavior: 
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerTurn: 0
+        buffs: []
+        source: {fileID: 0}
+  powerRating:
+    card: {fileID: 11400000}
+    bonusPerAction:
+    - 1.8850001
+    - 7.48
+    - 1.1500001
+    bonusPerPassive:
+    - 4.84
+    - 8.8
+    - 2.31

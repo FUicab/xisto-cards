@@ -15,7 +15,7 @@ MonoBehaviour:
   Name: Ninja
   CardCount: 10
   Type: 0
-  Subtypes: 0100000002000000
+  Subtypes: 02000000
   Cost: 2
   Artwork: {fileID: 21300000, guid: 958b4bd7ab3e2184ba1291b0adadae4e, type: 3}
   Origin: 03000000
@@ -111,3 +111,10 @@ MonoBehaviour:
     attacks: []
     attackCountCanBeAugmented: 0
     buffs: []
+  powerRating:
+    card: {fileID: 11400000}
+    bonusPerAction:
+    - 2.559375
+    - 2.1145833
+    - 1.4208333
+    bonusPerPassive: []

@@ -7,6 +7,7 @@ using UnityEditor.PackageManager;
 using UnityEngine;
 using static UnityEngine.UI.Image;
 
+[Serializable]
 public class PowerRating
 {
 	private readonly float HP_scaling = 1f;
@@ -60,6 +61,10 @@ public class PowerRating
                     case UnitSubtype.Opportunist:
                         theBonus += (armorBonus.Sum() + HPBonus) * (0.15f * card.Origin.Count);
                         break;
+                    case UnitSubtype.Yatza:
+                    case UnitSubtype.Doragon:
+                        theBonus += (baseBonus + card.Attack) / 2;
+                        break;
                 }
             }
             return theBonus;
@@ -110,12 +115,11 @@ public class PowerRating
 
     public void SetPassiveBonus()
     {
-        float bonus = 0f;
         foreach (PassiveSkill passiveSkill in card.Passives)
         {
             float passivePower = GetBuffPowerBonus(passiveSkill.buffs);
             if (passiveSkill.canBeShared) { passivePower *= 1.05f; }
-            bonusPerPassive.Add(bonus);
+            bonusPerPassive.Add(passivePower);
         }
     }
 
@@ -175,7 +179,7 @@ public class PowerRating
 
     public float GetTargetTypeBonus(TargetTypes targetType)
     {
-        float bonus = 0f;
+        float bonus = 1f;
         switch (targetType)
         {
             case TargetTypes.Self:
@@ -202,7 +206,7 @@ public class PowerRating
     public float GetBuffPowerBonus(BuffAction buff)
     {
         float augmentationBonus = 1f;
-        float temporaryBuffPower = 0f;
+        float buffPower = 0f;
         augmentationBonus *= GetTargetTypeBonus(buff.target);
         if (buff.amountCanBeAugmented) { augmentationBonus *= 1.1f; }
         switch (buff.Attribute)
@@ -211,25 +215,26 @@ public class PowerRating
             case Attributes.ArmorPierce:
             case Attributes.Health:
             case Attributes.Defense:
-                temporaryBuffPower += buff.amount * augmentationBonus;
+                buffPower += buff.amount * augmentationBonus;
                 break;
             case Attributes.DefenseMelee:
-                temporaryBuffPower += (buff.amount * armor_scaling[0] * augmentationBonus) / 3;
+                buffPower += (buff.amount * armor_scaling[0] * augmentationBonus) / 3;
                 break;
             case Attributes.DefenseRanged:
-                temporaryBuffPower += (buff.amount * armor_scaling[1] * augmentationBonus) / 3;
+                buffPower += (buff.amount * armor_scaling[1] * augmentationBonus) / 3;
                 break;
             case Attributes.DefenseEnergy:
-                temporaryBuffPower += (buff.amount * armor_scaling[2] * augmentationBonus) / 3;
+                buffPower += (buff.amount * armor_scaling[2] * augmentationBonus) / 3;
                 break;
             case Attributes.DamageReductionBeforeArmor:
             case Attributes.DamageReductionAfterArmor:
             case Attributes.MaxHealth:
-                temporaryBuffPower += (buff.amount * augmentationBonus) * 1.25f;
+                buffPower += (buff.amount * augmentationBonus) * 1.25f;
                 break;
         }
+        if (!buff.targetIsFromMyTeam) { buffPower *= -1f; }
         float temporaryBuffRequirementNerf = GetRequirementsNerf(buff.requirements);
-        return temporaryBuffPower * temporaryBuffRequirementNerf;
+        return buffPower * temporaryBuffRequirementNerf;
     }
     public float GetBuffPowerBonus(List<BuffAction> buffs)
     {

@@ -35,6 +35,8 @@ public class ActiveAction
     public bool isTargetImplicit { get { return CardActionTools.IsTargetImplicit(target); } }
 	public List<CardDisplay> GetImplicitTargetsOfAction() { return CardActionTools.GetImplicitTargetsOfAction(this); }
 	public bool TargetMeetsRequirements(CardDisplay target) { return CardActionTools.TargetMeetsRequirementsOfAction(target, this); }
+	public bool targetIsFromMyTeam { get { return CardActionTools.TargetIsFromMyTeam(target); } }
+	public bool isTargetPlural { get { return CardActionTools.IsTargetPlural(target); }  }
 }
 
 [System.Serializable]
@@ -109,6 +111,10 @@ public class Requirements{
 	public List<UnitSubtype> subtypeRequirement;
 	public List<Faction> factionRequirement;
 	public List<TargetUnitDefinition> targetIs;
+	public Attributes attribute;
+	public Comparison comparison;
+	public int attributeValue = 0;
+	public bool targetOfRequirementIsTargetOfAttack;
 }
 
 [System.Serializable]
@@ -184,7 +190,17 @@ public enum SpecialBehavior{
 public enum RequirementTypes{
 	TargetIsNextTo,
 	TargetHasSubtypesOrFactions,
-	TargetHasAttackedThisRound
+	TargetHasAttackedThisRound,
+	TargetAttributeIs
+}
+public enum Comparison
+{
+	LessThan,
+	LessThanOrEqual,
+	Equal,
+	MoreThan,
+	MoreThanOrEqual,
+	Not
 }
 public enum TargetUnitDefinition{
 	SameAsMyself

@@ -15,7 +15,7 @@ MonoBehaviour:
   Name: Voucari bowman
   CardCount: 10
   Type: 0
-  Subtypes: 0300000002000000
+  Subtypes: 02000000
   Cost: 1
   Artwork: {fileID: 21300000, guid: 431e710e66d0d52469f10e592ef3a4d1, type: 3}
   Origin: 03000000
@@ -88,4 +88,9 @@ MonoBehaviour:
     attacks: []
     attackCountCanBeAugmented: 0
     buffs: []
-  PowerPoints: 9.065625
+  powerRating:
+    card: {fileID: 11400000}
+    bonusPerAction:
+    - 1.9356251
+    - 2.38
+    bonusPerPassive: []

@@ -21,6 +21,11 @@ public class DetailedInfo : MonoBehaviour
     public TextMeshProUGUI BuffInfoText;
     public GameObject AbilityContainer;
     public GameObject ActionBoxPrefab;
+    public Image SubtypePowerDisplay;
+    public Image HPAndArmorPowerDisplay;
+    public Image PassivesPowerDisplay;
+    public Image ActionsPowerDisplay;
+    public Image TotalPowerDisplay;
     public List<GameObject> ActionBoxes = new List<GameObject>();
     private GameManager GM;
 
@@ -47,6 +52,11 @@ public class DetailedInfo : MonoBehaviour
         AttackText.text = card.Attack.ToString();
         SubtypesText.text = "<b>"+card.Origin[0]+"</b> - "+SubtypesAsText(card.Subtypes);
         SkillInfoText.text = PrettifiedSkillText(cardDisplay);
+        SubtypePowerDisplay.GetComponentInChildren<TextMeshProUGUI>().text = $"{card.powerRating.subTypeBonus:0.00}";
+        HPAndArmorPowerDisplay.GetComponentInChildren<TextMeshProUGUI>().text = $"{card.powerRating.baseBonus:0.00}";
+        PassivesPowerDisplay.GetComponentInChildren<TextMeshProUGUI>().text = $"{card.powerRating.passiveBonus:0.00}";
+        ActionsPowerDisplay.GetComponentInChildren<TextMeshProUGUI>().text = $"{card.powerRating.actionOutputBonus:0.00}";
+        TotalPowerDisplay.GetComponentInChildren<TextMeshProUGUI>().text = $"{card.powerRating.total:0.00}";
         CardActionMenu actionMenu = new CardActionMenu(cardDisplay);
         foreach (var actionBox in ActionBoxes)
         {
@@ -62,6 +72,8 @@ public class DetailedInfo : MonoBehaviour
             ActionBoxes[index].transform.SetParent(AbilityContainer.transform, false);
             ActionBoxes[index].GetComponent<ActionBoxScript>().action = action;
 
+            TextMeshProUGUI powerRating = ActionBoxes[index].transform.Find("PowerRating").GetComponentInChildren<TextMeshProUGUI>();
+            powerRating.text = $"{card.powerRating.bonusPerAction[index]:0.00}";
             Image actionBoxImage = ActionBoxes[index].GetComponent<Image>();
             switch (action.diceAverageValue)
             {

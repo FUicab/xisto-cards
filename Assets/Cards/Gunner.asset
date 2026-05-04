@@ -15,7 +15,7 @@ MonoBehaviour:
   Name: Gunner
   CardCount: 10
   Type: 0
-  Subtypes: 03000000
+  Subtypes: 
   Cost: 1
   Artwork: {fileID: 21300000, guid: 5703c77e31ae99b44850342934e9ae20, type: 3}
   Origin: 00000000
@@ -97,4 +97,10 @@ MonoBehaviour:
     attacks: []
     attackCountCanBeAugmented: 0
     buffs: []
-  PowerPoints: 8.09
+  powerRating:
+    card: {fileID: 11400000}
+    bonusPerAction:
+    - 0.24166667
+    - 1.0483333
+    - 1.8000001
+    bonusPerPassive: []

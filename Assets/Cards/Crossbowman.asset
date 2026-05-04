@@ -15,7 +15,7 @@ MonoBehaviour:
   Name: Keranean Crossbowman
   CardCount: 10
   Type: 0
-  Subtypes: 03000000
+  Subtypes: 
   Cost: 1
   Artwork: {fileID: 21300000, guid: fa301ade7c243c84980b7e90613d5b4f, type: 3}
   Origin: 02000000
@@ -33,7 +33,6 @@ MonoBehaviour:
       damageType: 4
       damageMultiplier: 1
       flatDamageOverwrite: 0
-      target: 2
       attackEffect: []
       temporaryBuffs: []
     attackCountCanBeAugmented: 0
@@ -55,31 +54,44 @@ MonoBehaviour:
       damageType: 4
       damageMultiplier: 1
       flatDamageOverwrite: 0
-      target: 2
       attackEffect: []
       temporaryBuffs:
       - target: 0
         requirements: []
         source: {fileID: 0}
         receiver: {fileID: 0}
-        target: 0
         Attribute: 0
         amount: -1
         isDebuff: 0
         amountCanBeAugmented: 0
         specialEffect: 0
         specialBehavior: 
+        originPassive:
+          title: 
+          description: 
+          trigger: 0
+          canBeShared: 0
+          oncePerTurn: 0
+          buffs: []
+          source: {fileID: 0}
       - target: 0
         requirements: []
         source: {fileID: 0}
         receiver: {fileID: 0}
-        target: 0
         Attribute: 6
         amount: 2
         isDebuff: 0
         amountCanBeAugmented: 1
         specialEffect: 0
         specialBehavior: 
+        originPassive:
+          title: 
+          description: 
+          trigger: 0
+          canBeShared: 0
+          oncePerTurn: 0
+          buffs: []
+          source: {fileID: 0}
     attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
@@ -91,31 +103,44 @@ MonoBehaviour:
       damageType: 4
       damageMultiplier: 1
       flatDamageOverwrite: 0
-      target: 2
       attackEffect: []
       temporaryBuffs:
       - target: 0
         requirements: []
         source: {fileID: 0}
         receiver: {fileID: 0}
-        target: 0
         Attribute: 0
         amount: -1
         isDebuff: 0
         amountCanBeAugmented: 0
         specialEffect: 0
         specialBehavior: 
+        originPassive:
+          title: 
+          description: 
+          trigger: 0
+          canBeShared: 0
+          oncePerTurn: 0
+          buffs: []
+          source: {fileID: 0}
       - target: 0
         requirements: []
         source: {fileID: 0}
         receiver: {fileID: 0}
-        target: 0
         Attribute: 6
         amount: 2
         isDebuff: 0
         amountCanBeAugmented: 0
         specialEffect: 0
         specialBehavior: 
+        originPassive:
+          title: 
+          description: 
+          trigger: 0
+          canBeShared: 0
+          oncePerTurn: 0
+          buffs: []
+          source: {fileID: 0}
     attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
@@ -127,30 +152,49 @@ MonoBehaviour:
       damageType: 4
       damageMultiplier: 1
       flatDamageOverwrite: 0
-      target: 2
       attackEffect: []
       temporaryBuffs:
       - target: 0
         requirements: []
         source: {fileID: 0}
         receiver: {fileID: 0}
-        target: 0
         Attribute: 0
         amount: -1
         isDebuff: 0
         amountCanBeAugmented: 0
         specialEffect: 0
         specialBehavior: 
+        originPassive:
+          title: 
+          description: 
+          trigger: 0
+          canBeShared: 0
+          oncePerTurn: 0
+          buffs: []
+          source: {fileID: 0}
       - target: 0
         requirements: []
         source: {fileID: 0}
         receiver: {fileID: 0}
-        target: 0
         Attribute: 6
         amount: 2
         isDebuff: 0
         amountCanBeAugmented: 0
         specialEffect: 0
         specialBehavior: 
+        originPassive:
+          title: 
+          description: 
+          trigger: 0
+          canBeShared: 0
+          oncePerTurn: 0
+          buffs: []
+          source: {fileID: 0}
     attackCountCanBeAugmented: 0
     buffs: []
+  powerRating:
+    card: {fileID: 11400000}
+    bonusPerAction:
+    - 3.42
+    - 3.3600004
+    bonusPerPassive: []

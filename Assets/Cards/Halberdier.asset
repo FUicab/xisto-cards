@@ -15,7 +15,7 @@ MonoBehaviour:
   Name: Halberdier
   CardCount: 10
   Type: 0
-  Subtypes: 000000000300000009000000
+  Subtypes: 0000000009000000
   Cost: 1
   Artwork: {fileID: 21300000, guid: f0e19f165b3b51b498271c13d55c840c, type: 3}
   Origin: 01000000
@@ -38,6 +38,14 @@ MonoBehaviour:
       amountCanBeAugmented: 1
       specialEffect: 0
       specialBehavior: 
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerTurn: 0
+        buffs: []
+        source: {fileID: 0}
   - actionType: 1
     attacks: []
     attackCountCanBeAugmented: 0
@@ -77,6 +85,14 @@ MonoBehaviour:
       amountCanBeAugmented: 1
       specialEffect: 0
       specialBehavior: 
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerTurn: 0
+        buffs: []
+        source: {fileID: 0}
     - target: 1
       requirements: []
       source: {fileID: 0}
@@ -87,3 +103,18 @@ MonoBehaviour:
       amountCanBeAugmented: 1
       specialEffect: 0
       specialBehavior: 
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerTurn: 0
+        buffs: []
+        source: {fileID: 0}
+  powerRating:
+    card: {fileID: 11400000}
+    bonusPerAction:
+    - 0.71500003
+    - 1.2325001
+    - 0.38500002
+    bonusPerPassive: []

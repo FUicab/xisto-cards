@@ -395,4 +395,46 @@ public static class CardActionTools
         }
 		return isIt;
     }
+
+	public static bool TargetIsFromMyTeam(TargetTypes targetType)
+	{
+		bool itIs = false;
+		switch (targetType)
+		{
+			case TargetTypes.Self:
+			case TargetTypes.AlliesInSameLine:
+			case TargetTypes.AllAllies:
+			case TargetTypes.AlliesNextToMe:
+			case TargetTypes.SingleAlly:
+				itIs = true;
+				break;
+			case TargetTypes.SingleEnemy:
+			case TargetTypes.LineOfEnemies:
+			case TargetTypes.SameTarget:
+				itIs = false;
+				break;
+		}
+		return itIs;
+	}
+
+	public static bool IsTargetPlural(TargetTypes targetType)
+	{
+		bool itIs = false;
+		switch (targetType)
+		{
+			case TargetTypes.Self:
+			case TargetTypes.SingleEnemy:
+			case TargetTypes.SameTarget:
+			case TargetTypes.SingleAlly:
+				itIs = false;
+				break;
+			case TargetTypes.AlliesInSameLine:
+			case TargetTypes.LineOfEnemies:
+			case TargetTypes.AllAllies:
+			case TargetTypes.AlliesNextToMe:
+				itIs = true;
+				break;
+		}
+		return itIs;
+	}
 }
