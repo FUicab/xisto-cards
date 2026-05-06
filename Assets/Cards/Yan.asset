@@ -23,11 +23,13 @@ MonoBehaviour:
   Armor: 020000000a00000002000000
   Attack: 8
   Passives:
-  - title: Protector's leader
+  - title: Leader of Protectors
     description: 
     trigger: 1
     canBeShared: 0
     oncePerTurn: 0
+    buffsAreTemporary: 0
+    requiresElementalExchange: 0
     buffs:
     - target: 4
       requirements:
@@ -45,6 +47,8 @@ MonoBehaviour:
       amount: 1
       isDebuff: 0
       amountCanBeAugmented: 1
+      activatesOnHit: 0
+      onHitRequirements: []
       specialEffect: 0
       specialBehavior: 
       originPassive:
@@ -53,6 +57,8 @@ MonoBehaviour:
         trigger: 0
         canBeShared: 0
         oncePerTurn: 0
+        buffsAreTemporary: 0
+        requiresElementalExchange: 0
         buffs: []
         source: {fileID: 0}
     source: {fileID: 0}
@@ -61,6 +67,8 @@ MonoBehaviour:
     trigger: 1
     canBeShared: 0
     oncePerTurn: 0
+    buffsAreTemporary: 0
+    requiresElementalExchange: 0
     buffs:
     - target: 4
       requirements: []
@@ -70,6 +78,8 @@ MonoBehaviour:
       amount: 1
       isDebuff: 0
       amountCanBeAugmented: 1
+      activatesOnHit: 0
+      onHitRequirements: []
       specialEffect: 0
       specialBehavior: 
       originPassive:
@@ -78,6 +88,8 @@ MonoBehaviour:
         trigger: 0
         canBeShared: 0
         oncePerTurn: 0
+        buffsAreTemporary: 0
+        requiresElementalExchange: 0
         buffs: []
         source: {fileID: 0}
     source: {fileID: 0}
@@ -86,23 +98,27 @@ MonoBehaviour:
     trigger: 0
     canBeShared: 1
     oncePerTurn: 0
+    buffsAreTemporary: 0
+    requiresElementalExchange: 0
     buffs:
     - target: 0
-      requirements:
-      - requirement: 3
-        subtypeRequirement: 
-        factionRequirement: 
-        targetIs: 
-        attribute: 1
-        comparison: 0
-        attributeValue: 10
-        targetOfRequirementIsTargetOfAttack: 1
+      requirements: []
       source: {fileID: 0}
       receiver: {fileID: 0}
       Attribute: 0
       amount: 4
       isDebuff: 0
       amountCanBeAugmented: 1
+      activatesOnHit: 1
+      onHitRequirements:
+      - requirement: 3
+        subtypeRequirement: 
+        factionRequirement: 
+        targetIs: 
+        attribute: 1
+        comparison: 1
+        attributeValue: 10
+        targetOfRequirementIsTargetOfAttack: 1
       specialEffect: 0
       specialBehavior: 
       originPassive:
@@ -111,6 +127,55 @@ MonoBehaviour:
         trigger: 0
         canBeShared: 0
         oncePerTurn: 0
+        buffsAreTemporary: 0
+        requiresElementalExchange: 0
+        buffs: []
+        source: {fileID: 0}
+    source: {fileID: 0}
+  - title: Protector's insignia
+    description: 
+    trigger: 1
+    canBeShared: 0
+    oncePerTurn: 0
+    buffsAreTemporary: 0
+    requiresElementalExchange: 1
+    buffs:
+    - target: 8
+      requirements:
+      - requirement: 1
+        subtypeRequirement: 02000000
+        factionRequirement: 
+        targetIs: 
+        attribute: 0
+        comparison: 0
+        attributeValue: 0
+        targetOfRequirementIsTargetOfAttack: 0
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      Attribute: 0
+      amount: -2
+      isDebuff: 1
+      amountCanBeAugmented: 1
+      activatesOnHit: 1
+      onHitRequirements:
+      - requirement: 1
+        subtypeRequirement: 
+        factionRequirement: 0000000005000000
+        targetIs: 
+        attribute: 0
+        comparison: 0
+        attributeValue: 0
+        targetOfRequirementIsTargetOfAttack: 0
+      specialEffect: 0
+      specialBehavior: 
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerTurn: 0
+        buffsAreTemporary: 0
+        requiresElementalExchange: 0
         buffs: []
         source: {fileID: 0}
     source: {fileID: 0}
@@ -162,6 +227,8 @@ MonoBehaviour:
       amount: 2
       isDebuff: 0
       amountCanBeAugmented: 1
+      activatesOnHit: 0
+      onHitRequirements: []
       specialEffect: 0
       specialBehavior: 
       originPassive:
@@ -170,6 +237,8 @@ MonoBehaviour:
         trigger: 0
         canBeShared: 0
         oncePerTurn: 0
+        buffsAreTemporary: 0
+        requiresElementalExchange: 0
         buffs: []
         source: {fileID: 0}
   - actionType: 1
@@ -193,6 +262,8 @@ MonoBehaviour:
       amount: 2
       isDebuff: 0
       amountCanBeAugmented: 1
+      activatesOnHit: 0
+      onHitRequirements: []
       specialEffect: 0
       specialBehavior: 
       originPassive:
@@ -201,6 +272,8 @@ MonoBehaviour:
         trigger: 0
         canBeShared: 0
         oncePerTurn: 0
+        buffsAreTemporary: 0
+        requiresElementalExchange: 0
         buffs: []
         source: {fileID: 0}
   - actionType: 1
@@ -224,6 +297,8 @@ MonoBehaviour:
       amount: 2
       isDebuff: 0
       amountCanBeAugmented: 1
+      activatesOnHit: 0
+      onHitRequirements: []
       specialEffect: 0
       specialBehavior: 
       originPassive:
@@ -232,6 +307,8 @@ MonoBehaviour:
         trigger: 0
         canBeShared: 0
         oncePerTurn: 0
+        buffsAreTemporary: 0
+        requiresElementalExchange: 0
         buffs: []
         source: {fileID: 0}
   - actionType: 0
@@ -255,6 +332,8 @@ MonoBehaviour:
       amount: 2
       isDebuff: 0
       amountCanBeAugmented: 1
+      activatesOnHit: 0
+      onHitRequirements: []
       specialEffect: 0
       specialBehavior: 
       originPassive:
@@ -263,6 +342,8 @@ MonoBehaviour:
         trigger: 0
         canBeShared: 0
         oncePerTurn: 0
+        buffsAreTemporary: 0
+        requiresElementalExchange: 0
         buffs: []
         source: {fileID: 0}
   powerRating:
@@ -274,4 +355,18 @@ MonoBehaviour:
     bonusPerPassive:
     - 4.84
     - 8.8
-    - 2.31
+    - 4.62
+    - 5.8080006
+    passiveDescription: "<b>Leader of Protectors</b>: Grants <b><color=#15c>+1</color></b>
+      <b><color=#900>attack</color></b> to all allies who are <b><color=#555>Protectors</color></b>
+      or <b><color=#555>Independent units</color></b>.\n<b>Anti-motion</b>: Grants
+      <b><color=#15c>+1</color></b> <b><color=#760>defense</color></b> to all allies.\n\U0001F517
+      <b>Crushing</b>: <b>When attacking \U0001F4A5</b>, grants <b><color=#15c>+4</color></b>
+      <b><color=#900>attack</color></b> to me <i>(until the end of the round)</i>.\n\U0001F4AB
+      <b>Protector's insignia</b>: <b>When attacking \U0001F4A5</b>, grants <b><color=#15c>+-2</color></b>
+      <b><color=#900>attack</color></b> to all enemies <i>(until the end of the round)</i>
+      who are <b><color=#714>\U0001F3F4 mercenaries</color></b> who are <b><color=#555>Protectors</color></b>
+      or <b><color=#555>Independent units</color></b>.\n"
+    actionsDescription: "\u2694\uFE0F Melee attack.\nGrants <b><color=#15c>+2</color></b>
+      <b><color=#760>defense</color></b> to all allies.\n\u2694\uFE0F Melee or \u2728
+      energy attack.\n"

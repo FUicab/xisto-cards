@@ -432,7 +432,8 @@ public static class CardActionTools
 			case TargetTypes.LineOfEnemies:
 			case TargetTypes.AllAllies:
 			case TargetTypes.AlliesNextToMe:
-				itIs = true;
+            case TargetTypes.AllEnemies:
+                itIs = true;
 				break;
 		}
 		return itIs;

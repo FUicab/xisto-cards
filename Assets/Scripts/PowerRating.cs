@@ -76,6 +76,8 @@ public class PowerRating
     public List<float> bonusPerPassive = new();
     public float passiveBonus { get { return bonusPerPassive.Sum(); } }
     public float total { get { return baseBonus + actionOutputBonus + passiveBonus + subTypeBonus; } }
+    public string passiveDescription = "";
+    public string actionsDescription = "";
 
     public PowerRating(Card card)
 	{
@@ -86,6 +88,7 @@ public class PowerRating
 
     public void SetActionBonus()
     {
+        actionsDescription = "";
         CardActionMenu actionMenu = new CardActionMenu(card.CardActions);
         foreach (CardActionObject actionObj in actionMenu.actions)
         {
@@ -110,16 +113,22 @@ public class PowerRating
                 }
                 bonusPerAction.Add((actionPower * dicePower) / 6);
             }
+            actionsDescription += actionObj.description+"\n";
         }
     }
 
     public void SetPassiveBonus()
     {
+        passiveDescription = "";
         foreach (PassiveSkill passiveSkill in card.Passives)
         {
             float passivePower = GetBuffPowerBonus(passiveSkill.buffs);
             if (passiveSkill.canBeShared) { passivePower *= 1.05f; }
+            if (passiveSkill.oncePerTurn) { passivePower *= 0.66f; }
+            if (passiveSkill.requiresElementalExchange) { passivePower *= 0.66f; }
             bonusPerPassive.Add(passivePower);
+            CardPassiveSkillObject cardPassiveSkillObject = new CardPassiveSkillObject(passiveSkill, null);
+            passiveDescription += cardPassiveSkillObject.description+"\n";
         }
     }
 
@@ -194,6 +203,7 @@ public class PowerRating
             case TargetTypes.LineOfEnemies:
                 bonus *= 4;
                 break;
+            case TargetTypes.AllEnemies:
             case TargetTypes.AllAllies:
                 bonus *= 8;
                 break;

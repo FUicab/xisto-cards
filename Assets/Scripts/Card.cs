@@ -28,7 +28,8 @@ public class Card : ScriptableObject
 
     //private GameManager GM;
 
-    void OnEnable(){
+    private void OnValidate()
+    {
         powerRating = new PowerRating(this);
     }
 

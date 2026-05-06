@@ -69,6 +69,8 @@ public class BuffAction : ActiveAction{
 	public int amount;
 	public bool isDebuff = false; /* Check this if this is meant to be a negative effect for the one whoe receives it. */
 	public bool amountCanBeAugmented = false;
+	public bool activatesOnHit = false; /* Check this if the buff is meant to only activate during attacks. As if it was a temporary buff. */
+	public List<Requirements> onHitRequirements; /* The buff will not activate its "on hit" benefits if these requirements are not met. */
 	public BuffSpecialEffects specialEffect;
 	public List<SpecialBehavior> specialBehavior;
 	[HideInInspector] public PassiveSkill originPassive;
@@ -85,6 +87,9 @@ public class BuffAction : ActiveAction{
 		source = values.source;
 		receiver = values.receiver;
 		originPassive = values.originPassive;
+		isDebuff = values.isDebuff;
+		activatesOnHit = values.activatesOnHit;
+		onHitRequirements = values.onHitRequirements;
 	}
 }
 
@@ -124,7 +129,8 @@ public class PassiveSkill : CardSkill{
 	public TriggerTypes trigger;
 	public bool canBeShared = false;
 	public bool oncePerTurn = false;
-	// public bool oncePerGame = false;
+	//public bool buffsAreTemporary = false;
+	public bool requiresElementalExchange = false;
 	public List<BuffAction> buffs;
 	[HideInInspector] public CardDisplay source;
 
@@ -136,6 +142,7 @@ public class PassiveSkill : CardSkill{
 		oncePerTurn = passiveSkill.oncePerTurn;
 		buffs = new List<BuffAction>();
 		source = passiveSkill.source;
+		requiresElementalExchange = passiveSkill.requiresElementalExchange;
 	}
 }
 
@@ -182,7 +189,8 @@ public enum TargetTypes{
 	AllAllies,
 	SameTarget,
 	AlliesNextToMe,
-	SingleAlly
+	SingleAlly,
+	AllEnemies
 }
 public enum SpecialBehavior{
 	OnlyActivatesOnce
