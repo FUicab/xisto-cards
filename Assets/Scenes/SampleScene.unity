@@ -14694,19 +14694,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2962488130967057685, guid: 9e9d10b15d1c1884f8b1207d16342067, type: 3}
       propertyPath: m_fontSize
-      value: 18
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 2962488130967057685, guid: 9e9d10b15d1c1884f8b1207d16342067, type: 3}
       propertyPath: m_lineSpacing
-      value: -48
+      value: -52
       objectReference: {fileID: 0}
     - target: {fileID: 2962488130967057685, guid: 9e9d10b15d1c1884f8b1207d16342067, type: 3}
       propertyPath: m_fontSizeBase
-      value: 18
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 2962488130967057685, guid: 9e9d10b15d1c1884f8b1207d16342067, type: 3}
       propertyPath: m_paragraphSpacing
-      value: 24
+      value: 52
       objectReference: {fileID: 0}
     - target: {fileID: 4856750230495388157, guid: 9e9d10b15d1c1884f8b1207d16342067, type: 3}
       propertyPath: m_Pivot.x

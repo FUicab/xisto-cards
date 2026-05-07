@@ -9,6 +9,7 @@ using UnityEngine.UI;
 using UnityEngine.XR;
 using static CardSpace;
 using static TurnAction;
+using static UnityEngine.GraphicsBuffer;
 
 public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler
 {
@@ -50,7 +51,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		get
 		{
 			int bonus = 0;
-			foreach (BuffAction buff in appliedBuffs)
+			foreach (BuffAction buff in appliedBuffs.Where(x => !x.activatesOnHit))
 			{
 				if (buff.Attribute == Attributes.MaxHealth)
 				{
@@ -72,7 +73,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		get
 		{
 			int[] bonus = { 0, 0, 0 };
-			foreach (BuffAction buff in appliedBuffs)
+			foreach (BuffAction buff in appliedBuffs.Where(x => !x.activatesOnHit))
 			{
 				switch (buff.Attribute)
 				{
@@ -105,7 +106,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
         get
         {
             int bonus = 0;
-            foreach (BuffAction buff in appliedBuffs)
+            foreach (BuffAction buff in appliedBuffs.Where(x => !x.activatesOnHit))
             {
                 if (buff.Attribute == Attributes.DamageReductionAfterArmor || buff.Attribute == Attributes.DamageReductionBeforeArmor)
                 {
@@ -127,7 +128,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		get
 		{
 			int bonus = 0;
-			foreach (BuffAction buff in appliedBuffs)
+			foreach (BuffAction buff in appliedBuffs.Where(x => !x.activatesOnHit))
 			{
 				if (buff.Attribute == Attributes.Attack)
 				{
@@ -149,7 +150,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		get
 		{
 			int bonus = 0;
-			foreach (BuffAction buff in appliedBuffs)
+			foreach (BuffAction buff in appliedBuffs.Where(x => !x.activatesOnHit))
 			{
 				if (buff.Attribute == Attributes.ArmorPierce)
 				{
@@ -171,7 +172,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		get
 		{
 			int bonus = 0;
-			foreach (BuffAction buff in appliedBuffs)
+			foreach (BuffAction buff in appliedBuffs.Where(x => !x.activatesOnHit))
 			{
 				if (buff.Attribute == Attributes.Cost)
 				{
@@ -296,12 +297,36 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 			foreach (AttackAction attack in cardActions[i].attacks)
 			{
 				newAttacks.Add(new AttackAction(attack) { source = this });
+				//if (attack.requirements.Count > 0)
+				//{
+    //                newAttacks[i].requirements.Clear();
+				//	foreach (Requirements requirement in attack.requirements)
+				//	{
+				//		newAttacks[i].requirements.Add(new Requirements(requirement) { originAction = attack });
+				//	}
+    //            }
 			}
 			cardActions[i].attacks = newAttacks;
 			foreach (BuffAction buff in cardActions[i].buffs)
 			{
 				newBuffs.Add(new BuffAction(buff) { source = this });
-			}
+                //if (newBuffs[i].requirements.Count > 0)
+                //{
+                //    newBuffs[i].requirements.Clear();
+                //    foreach (Requirements requirement in buff.requirements)
+                //    {
+                //        newBuffs[i].requirements.Add(new Requirements(requirement) { originAction = buff });
+                //    }
+                //}
+                //if (newBuffs[i].onHitRequirements.Count > 0 && newBuffs[i].activatesOnHit)
+                //{
+                //    newBuffs[i].onHitRequirements.Clear();
+                //    foreach (Requirements requirement in buff.onHitRequirements)
+                //    {
+                //        newBuffs[i].onHitRequirements.Add(new Requirements(requirement) { originAction = buff });
+                //    }
+                //}
+            }
 			cardActions[i].buffs = newBuffs;
 		}
 		for (int i = 0; i < card.Passives.Count; i++)
@@ -626,12 +651,14 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 			{
                 foreach (BuffAction buff in passive.buffs)
 				{
-                    if (buff.isTargetImplicit) /* Passive skills can only provide buffs to implicit targets as none should be selected, otherwise the passive buff is invalid. */
+                    if (buff.isTargetImplicit) /* Passive skills can only provide buffs to implicit targets as none should be selected, otherwise the passive buff is invalid.*/
 					{
                         foreach (CardDisplay target in buff.GetImplicitTargetsOfAction())
 						{
-							if(!target.passiveBuffs.Exists(x => x.originPassive.title == passive.title && x.originPassive.source == passive.source)) { 
-								target.ReceivePassiveBuff(buff);
+							//Debug.Log($"{passive.title} from {passive.source.card.Name} is checking for validity on {target.card.Name}: {buff.TargetMeetsRequirements(target)}");
+							if (!target.passiveBuffs.Exists(x => x.originPassive.title == passive.title && x.originPassive.source == passive.source)) {
+                                //Debug.Log($"{passive.title} from {passive.source.card.Name} was successfully applied to {target.card.Name}");
+                                target.ReceivePassiveBuff(buff);
 							}
                         }
 						foreach (CardSpace cardSpace in mySpace.Owner.mySpaces.Where(x => x.PlayingCard != null)) /* Check if my buffs change their status related to others */
@@ -639,9 +666,11 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 							for (int i = cardSpace.PlayingCard.passiveBuffs.Count-1; i >= 0; i--)
 							{
 								BuffAction theirBuff = cardSpace.PlayingCard.passiveBuffs[i];
-								if (theirBuff.originPassive.source == this && !buff.TargetMeetsRequirements(cardSpace.PlayingCard))
+                                //Debug.Log($"{theirBuff.originPassive.source.card.Name} applied {theirBuff.originPassive.title} to {passive.source.card.Name}. Can they keep it? : {theirBuff.TargetMeetsRequirements(cardSpace.PlayingCard)}");
+                                if (theirBuff.originPassive.source == this && !theirBuff.TargetMeetsRequirements(cardSpace.PlayingCard))
 								{
-									cardSpace.PlayingCard.passiveBuffs.RemoveAt(i);
+                                    //Debug.Log($"{passive.title} from {passive.source.card.Name} can no longer be applied to {cardSpace.PlayingCard.card.Name}");
+                                    cardSpace.PlayingCard.passiveBuffs.RemoveAt(i);
 								}
 							}
 						}
@@ -699,6 +728,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 			{
 				case ActionTypes.Attack:
 					AttackAction attack = turnAction.actionObject.action.attacks[i];
+					Debug.Log($"Checking if {card.Name} meets the requirements: {attack.TargetMeetsRequirements(this)}");
 					if (attack.TargetMeetsRequirements(this) && attack.TargetCanBeReached(this))
 					{
 						itCan = true;

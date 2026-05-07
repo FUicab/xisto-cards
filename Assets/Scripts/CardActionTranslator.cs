@@ -724,24 +724,36 @@ public static class CardTranslator
 		string text = "";
 		switch (faction)
 		{
-			case Faction.Protectors:
-				if(!plural){ text += "Protector"; }else{ text += "Protectors"; }
-			break;
-			case Faction.Saggists:
-				if(!plural){ text += "Saggist"; }else{ text += "Saggists"; }
-			break;
-			case Faction.Keraneans:
-				if(!plural){ text += "Keranean"; }else{ text += "Keraneans"; }
-			break;
-			case Faction.Voucari:
-				if(!plural){ text += "Voucarian"; }else{ text += "Voucarians"; }
-			break;
-			case Faction.Auro:
-				if(!plural){ text += "Auro"; }else{ text += "Auro"; }
-			break;
-			case Faction.Independent:
-				if(!plural){ text += "Independent unit"; }else{ text += "Independent units"; }
-			break;
+            case Faction.Protectors:
+                if (!plural) { text += "Protector"; } else { text += "Protectors"; }
+                break;
+            case Faction.Saggists:
+                if (!plural) { text += "Saggist"; } else { text += "Saggists"; }
+                break;
+            case Faction.Keraneans:
+                if (!plural) { text += "Keranean"; } else { text += "Keraneans"; }
+                break;
+            case Faction.Voucari:
+                if (!plural) { text += "Voucarian"; } else { text += "Voucarians"; }
+                break;
+            case Faction.Auro:
+                if (!plural) { text += "Auroran"; } else { text += "Aurorans"; }
+                break;
+            case Faction.Independent:
+                if (!plural) { text += "Independent unit"; } else { text += "Independent units"; }
+                break;
+            case Faction.Fennraign:
+                if (!plural) { text += "Fennraigner"; } else { text += "Fennraigners"; }
+                break;
+			case Faction.Zikin:
+                if (!plural) { text += "Zikinite"; } else { text += "Zikinites"; }
+                break;
+			case Faction.Tekvault:
+                if (!plural) { text += "Tekvault associate"; } else { text += "Tekvault associates"; }
+                break;
+			default:
+                if (!plural) { text += "extradimensional being"; } else { text += "extradimensional beings"; }
+                break;
 		}
 		return text;
 	}
@@ -810,23 +822,20 @@ public static class CardTranslator
 				{
 					if(index == 0){
 						text += "removes ";
-						if(buff.amount < 0){ text += TextFormat(buff.amount.ToString(),null,buff.amountCanBeAugmented)+" "; } else { text += TextFormat("+"+buff.amount.ToString(),null,buff.amountCanBeAugmented)+" "; }
-						text += TextFormat(BuffAttributeDescription(buff.Attribute),buff.Attribute);
-						switch (buff.target)
+						text += AttributeAndValue(buff);
+                        switch (buff.target)
 						{
 							case TargetTypes.SameTarget: text += " from the target"; break;
 						}
 					} else {
 						if(effect.buffs.Count-1 == index){
 							text += " and ";
-							if(buff.amount < 0){ text += TextFormat(buff.amount.ToString(),null,buff.amountCanBeAugmented)+" "; } else { text += TextFormat("+"+buff.amount.ToString(),null,buff.amountCanBeAugmented)+" "; }
-							text += TextFormat(BuffAttributeDescription(buff.Attribute),buff.Attribute);
-							text += " ";
+                            text += AttributeAndValue(buff);
+                            text += " ";
 						} else {
 							text += ", ";
-							if(buff.amount < 0){ text += TextFormat(buff.amount.ToString(),null,buff.amountCanBeAugmented)+" "; } else { text += TextFormat("+"+buff.amount.ToString(),null,buff.amountCanBeAugmented)+" "; }
-							text += TextFormat(BuffAttributeDescription(buff.Attribute),buff.Attribute);
-						}
+                            text += AttributeAndValue(buff);
+                        }
 					}
 					index += 1;
 				}
@@ -850,34 +859,41 @@ public static class CardTranslator
 	public static string AppliedBuffDescription(List<BuffAction> buffs)
 	{
 		string text = "";
-		string numberSign = "";
 
 		for (int i = 0; i < buffs.Count; i++)
 		{
-			if(buffs[i].amount > 0){ numberSign = "+"; }
-
-			if(buffs[i].specialEffect == BuffSpecialEffects.None){
-				text += TextFormat(numberSign+buffs[i].amount,null,buffs[i].amountCanBeAugmented)+" "+TextFormat(BuffAttributeDescription(buffs[i].Attribute),buffs[i].Attribute)+" from ";
-				if (buffs[i].originPassive == null)
+			BuffAction buff = buffs[i];
+			if(buff.specialEffect == BuffSpecialEffects.None){
+				if (buff.activatesOnHit)
 				{
-					if(buffs[i].source == buffs[i].receiver)
+					text += "<b>💥 On hit</b>: ";
+				}
+				text += AttributeAndValue(buff);
+				if (buff.activatesOnHit)
+				{
+					text += RequirementDescription(buff.onHitRequirements, buff.target, buff.source?.card, "onHit")+",";
+                }
+				text += " from ";
+				if (buff.originPassive == null)
+				{
+					if(buff.source == buff.receiver)
 					{
 						text += "myself";
 					} else {
-						text += $"<b>{buffs[i].source.card.Name}</b>";
+						text += $"<b>{buff.source.card.Name}</b>";
 					}
 				} else {
-					if (buffs[i].source == buffs[i].receiver)
+					if (buff.source == buff.receiver)
 					{
-						text += $"my passive <b>{buffs[i].originPassive.title}</b>";
+						text += $"my passive <b>{buff.originPassive.title}</b>";
 					}
 					else
 					{
-						text += $"<b>{buffs[i].source.card.Name}</b>'s <b>{buffs[i].originPassive.title}</b>";
+						text += $"<b>{buff.source.card.Name}</b>'s <b>{buff.originPassive.title}</b>";
 					}
 				}
 			} else {
-				text += BuffEffectDescriptionAsTarget(buffs[i]);
+				text += BuffEffectDescriptionAsTarget(buff);
 			}
 
 			text += "\n";

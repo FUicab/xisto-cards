@@ -21,6 +21,7 @@ public class PlayerProfile
 	//public GameObject DiceUI_3;
 	public List<Dice> Dices = new List<Dice>() { };
 	public Dice selectedDice = null;
+	public PlayerProfile otherPlayer;
 	public GameManager GM;
 	public List<CardSpace> mySpaces {
 		get

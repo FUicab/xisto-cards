@@ -28,6 +28,7 @@ MonoBehaviour:
     trigger: 1
     canBeShared: 0
     oncePerTurn: 0
+    requiresElementalExchange: 0
     buffs:
     - target: 0
       requirements:
@@ -35,12 +36,18 @@ MonoBehaviour:
         subtypeRequirement: 
         factionRequirement: 
         targetIs: 00000000
+        attribute: 0
+        comparison: 0
+        attributeValue: 0
+        targetOfRequirementIsTargetOfAttack: 0
       source: {fileID: 0}
       receiver: {fileID: 0}
       Attribute: 0
       amount: 2
       isDebuff: 0
       amountCanBeAugmented: 1
+      activatesOnHit: 0
+      onHitRequirements: []
       specialEffect: 0
       specialBehavior: 
       originPassive:
@@ -49,6 +56,7 @@ MonoBehaviour:
         trigger: 0
         canBeShared: 0
         oncePerTurn: 0
+        requiresElementalExchange: 0
         buffs: []
         source: {fileID: 0}
     source: {fileID: 0}
@@ -112,3 +120,13 @@ MonoBehaviour:
     - 0.5625
     bonusPerPassive:
     - 1.1
+    passiveDescription: '<b>Formation</b>: Grants <b><color=#15c>+2</color></b> <b><color=#900>attack</color></b>
+      to me if I''m next to another <b>card of my kind</b>.
+
+'
+    passiveBuffDescriptions: '<b><color=#15c>+2</color></b> <b><color=#900>attack</color></b>
+      from my passive <b></b>
+
+'
+    actionsDescription: "\u2694\uFE0F Melee attack.\n\U0001F3AF Ranged attack.\n\u2694\uFE0F
+      Melee or \U0001F3AF ranged attack.\n"

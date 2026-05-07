@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -155,6 +156,15 @@ public static class CardActionTools
                     }
                 }
                 break;
+            case TargetTypes.AllEnemies:
+                foreach (BoardRow row in action.source.mySpace.Owner.otherPlayer.MyBoardRows)
+                {
+                    foreach (CardSpace cardSpace in row.BoardSpaces.Where(x => x.PlayingCard != null && action.TargetMeetsRequirements(x.PlayingCard)))
+                    {
+                        targets.Add(cardSpace.PlayingCard);
+                    }
+                }
+                break;
             case TargetTypes.AlliesInSameLine:
                 foreach (CardSpace cardSpace in action.source.mySpace.myRow.BoardSpaces.Where(x => x.PlayingCard != null && action.TargetMeetsRequirements(x.PlayingCard)))
                 {
@@ -174,50 +184,128 @@ public static class CardActionTools
 
 	public static bool TargetMeetsRequirementsOfAction(CardDisplay target, ActiveAction action)
 	{
+		return TargetMeetsRequirements(target, action.requirements);
+	}
+	public static bool TargetMeetsRequirements(CardDisplay actionTarget, List<Requirements> requirements)
+	{
 		bool itDoes = true;
 
-        if (action.requirements.Count > 0) // Check attack requirements
+        if (requirements.Count > 0) // Check attack requirements
         {
             itDoes = false;
-            foreach (Requirements requirement in action.requirements)
+
+            foreach (Requirements requirement in requirements)
             {
-				switch (requirement.requirement)
+				CardDisplay target;
+
+				BuffAction originBuff = requirement.originAction as BuffAction;
+                AttackAction originAttack = requirement.originAction as AttackAction;
+				if (originBuff != null)
 				{
-					case RequirementTypes.TargetHasSubtypesOrFactions:
-						foreach (UnitSubtype subtype in target.card.Subtypes)
-						{
-							if (requirement.subtypeRequirement.Contains(subtype))
-							{
-								itDoes = true;
-							}
-						}
-						foreach (Faction faction in target.card.Origin)
-						{
-							if (requirement.factionRequirement.Contains(faction))
-							{
-								itDoes = true;
-							}
-						}
-						break;
-					case RequirementTypes.TargetIsNextTo:
-                        foreach (CardSpace neighborSpace in target.mySpace.SpacesNextToMe() )
-                        {
-							if(neighborSpace.PlayingCard != null)
-							foreach (TargetUnitDefinition neighborType in requirement.targetIs)
-							{
-								switch (neighborType)
-								{
-									case TargetUnitDefinition.SameAsMyself:
-										if(neighborSpace.PlayingCard.card.Name == target.card.Name)
-											{
-												itDoes = true;
-											}
-										break;
-								}
-							}
-                        }
-						break;
+					if ( !originBuff.activatesOnHit || (originBuff.activatesOnHit && requirement.targetOfRequirementIsTargetOfAttack) )
+					{
+						target = actionTarget;
+					} else {
+						target = requirement.originAction.source;
+					}
+				} else {
+					target = actionTarget;
 				}
+
+				//Debug.Log($"{target.card.Name} seems to be the target of this action.");
+
+				switch (requirement.requirement)
+                {
+                    case RequirementTypes.TargetHasSubtypesOrFactions:
+                        foreach (UnitSubtype subtype in target.card.Subtypes)
+                        {
+                            if (requirement.subtypeRequirement.Contains(subtype))
+                            {
+                                itDoes = true;
+                            }
+                        }
+                        foreach (Faction faction in target.card.Origin)
+                        {
+                            if (requirement.factionRequirement.Contains(faction))
+                            {
+                                itDoes = true;
+                            }
+                        }
+                        break;
+                    case RequirementTypes.TargetIsNextTo:
+                        foreach (CardSpace neighborSpace in target.mySpace.SpacesNextToMe())
+                        {
+                            if (neighborSpace.PlayingCard != null)
+                                foreach (TargetUnitDefinition neighborType in requirement.targetIs)
+                                {
+                                    switch (neighborType)
+                                    {
+                                        case TargetUnitDefinition.SameAsMyself:
+                                            if (neighborSpace.PlayingCard.card.Name == target.card.Name)
+                                            {
+                                                itDoes = true;
+                                            }
+                                            break;
+                                    }
+                                }
+                        }
+                        break;
+					case RequirementTypes.TargetAttributeIs:
+						int attributeValueInTarget = 0;
+						switch (requirement.attribute)
+						{
+							case Attributes.Attack:
+								attributeValueInTarget = target.attack;
+								break;
+							case Attributes.Health:
+                                attributeValueInTarget = target.hp;
+                                break;
+							case Attributes.DefenseMelee:
+                                attributeValueInTarget = target.armor[0];
+                                break;
+							case Attributes.DefenseRanged:
+                                attributeValueInTarget = target.armor[1];
+                                break;
+							case Attributes.DefenseEnergy:
+                                attributeValueInTarget = target.armor[2];
+                                break;
+							case Attributes.ArmorPierce:
+                                attributeValueInTarget = target.armorPierce;
+                                break;
+							case Attributes.DamageReductionBeforeArmor:
+							case Attributes.DamageReductionAfterArmor:
+                                attributeValueInTarget = target.damageReduction;
+                                break;
+							case Attributes.MaxHealth:
+                                attributeValueInTarget = target.maxHP;
+                                break;
+							case Attributes.Cost:
+                                attributeValueInTarget = target.cost;
+                                break;
+						}
+						switch (requirement.comparison)
+						{
+							case Comparison.LessThan:
+								itDoes = attributeValueInTarget < requirement.attributeValue;
+								break;
+							case Comparison.LessThanOrEqual:
+                                itDoes = attributeValueInTarget <= requirement.attributeValue;
+                                break;
+							case Comparison.Equal:
+                                itDoes = attributeValueInTarget == requirement.attributeValue;
+                                break;
+							case Comparison.MoreThan:
+                                itDoes = attributeValueInTarget > requirement.attributeValue;
+                                break;
+							case Comparison.MoreThanOrEqual:
+                                itDoes = attributeValueInTarget >= requirement.attributeValue;
+                                break;
+							case Comparison.Not:
+                                itDoes = attributeValueInTarget != requirement.attributeValue;
+                                break;
+						}
+						break;
+                }
             }
         }
 
@@ -261,65 +349,31 @@ public static class CardActionTools
 	{
 
 		CardDisplay attacker = attackAction.source;
+		List<BuffAction> onHitBuffs = attackAction.source.appliedBuffs.Where(x => x.activatesOnHit).ToList();
 
 		/* Calculation of temporary buffs and debuffs */
-		var attackerTempModifiers = (
-			Attack: 0,
-			Health: 0,
-			MaxHealth: 0,
-			Defense: 0,
-			Armor: new List<int> { 0, 0, 0 },
-			ArmorPierce: 0,
-			DamageReductionBeforeArmor: 0,
-			DamageReductionAfterArmor: 0
-		);
-		var targetTempModifiers = (
-			Attack: 0,
-			Health: 0,
-			MaxHealth: 0,
-			Defense: 0,
-			Armor: new List<int> { 0, 0, 0 },
-			ArmorPierce: 0,
-			DamageReductionBeforeArmor: 0,
-			DamageReductionAfterArmor: 0
-		);
-		foreach (BuffAction modifier in attackAction.temporaryBuffs)
+		var attackerTempModifiers = new TempModifiers();
+		var targetTempModifiers = new TempModifiers();
+		foreach (BuffAction buff in attackAction.temporaryBuffs)
 		{
 			if (attackAction.target == TargetTypes.Self) /* The modifiers apply to myself */
 			{
-				switch (modifier.Attribute)
-				{
-					case Attributes.Attack: attackerTempModifiers.Attack += modifier.amount; break;
-					case Attributes.Health: attackerTempModifiers.Health += modifier.amount; break;
-					case Attributes.MaxHealth: attackerTempModifiers.MaxHealth += modifier.amount; break;
-					case Attributes.Defense: attackerTempModifiers.Defense += modifier.amount; break;
-					case Attributes.DefenseMelee: attackerTempModifiers.Armor[0] += modifier.amount; break;
-					case Attributes.DefenseRanged: attackerTempModifiers.Armor[1] += modifier.amount; break;
-					case Attributes.DefenseEnergy: attackerTempModifiers.Armor[2] += modifier.amount; break;
-					case Attributes.ArmorPierce: attackerTempModifiers.ArmorPierce += modifier.amount; break;
-					case Attributes.DamageReductionBeforeArmor: attackerTempModifiers.DamageReductionBeforeArmor += modifier.amount; break;
-					case Attributes.DamageReductionAfterArmor: attackerTempModifiers.DamageReductionAfterArmor += modifier.amount; break;
-				}
+				attackerTempModifiers.SetModifiersFromBuff(buff);
 			}
 			else if (attackAction.target == TargetTypes.SingleEnemy)
 			{
-				switch (modifier.Attribute)
-				{
-					case Attributes.Attack: attackerTempModifiers.Attack += modifier.amount; break;
-					case Attributes.Health: attackerTempModifiers.Health += modifier.amount; break;
-					case Attributes.MaxHealth: attackerTempModifiers.MaxHealth += modifier.amount; break;
-					case Attributes.Defense: attackerTempModifiers.Defense += modifier.amount; break;
-					case Attributes.DefenseMelee: attackerTempModifiers.Armor[0] += modifier.amount; break;
-					case Attributes.DefenseRanged: attackerTempModifiers.Armor[1] += modifier.amount; break;
-					case Attributes.DefenseEnergy: attackerTempModifiers.Armor[2] += modifier.amount; break;
-					case Attributes.ArmorPierce: attackerTempModifiers.ArmorPierce += modifier.amount; break;
-					case Attributes.DamageReductionBeforeArmor: attackerTempModifiers.DamageReductionBeforeArmor += modifier.amount; break;
-					case Attributes.DamageReductionAfterArmor: attackerTempModifiers.DamageReductionAfterArmor += modifier.amount; break;
-				}
+				targetTempModifiers.SetModifiersFromBuff(buff);
 			}
 		}
+        foreach (BuffAction buff in onHitBuffs)
+        {
+			if (buff.TargetMeetsOnHitRequirements(target))
+			{
+				attackerTempModifiers.SetModifiersFromBuff(buff);
+			}
+        }
 
-		int targetArmor = 0;
+        int targetArmor = 0;
 		string damageType = "melee";
 		switch (attackAction.damageType)
 		{
@@ -438,4 +492,33 @@ public static class CardActionTools
 		}
 		return itIs;
 	}
+}
+
+class TempModifiers
+{
+    public int Attack = 0;
+	public int Health = 0;
+	public int MaxHealth = 0;
+	public int Defense = 0;
+	public List<int> Armor = new List<int> { 0, 0, 0 };
+	public int ArmorPierce = 0;
+	public int DamageReductionBeforeArmor = 0;
+	public int DamageReductionAfterArmor = 0;
+
+	public void SetModifiersFromBuff(BuffAction buff)
+	{
+        switch (buff.Attribute)
+        {
+            case Attributes.Attack: Attack += buff.amount; break;
+            case Attributes.Health: Health += buff.amount; break;
+            case Attributes.MaxHealth: MaxHealth += buff.amount; break;
+            case Attributes.Defense: Defense += buff.amount; break;
+            case Attributes.DefenseMelee: Armor[0] += buff.amount; break;
+            case Attributes.DefenseRanged: Armor[1] += buff.amount; break;
+            case Attributes.DefenseEnergy: Armor[2] += buff.amount; break;
+            case Attributes.ArmorPierce: ArmorPierce += buff.amount; break;
+            case Attributes.DamageReductionBeforeArmor: DamageReductionBeforeArmor += buff.amount; break;
+            case Attributes.DamageReductionAfterArmor: DamageReductionAfterArmor += buff.amount; break;
+        }
+    }
 }

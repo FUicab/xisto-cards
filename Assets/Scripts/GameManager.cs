@@ -374,6 +374,9 @@ public class GameManager : MonoBehaviour
 		Opponent.Dices.Add(Dice3UI_Opponent);
 		DrawCards(Opponent);
 
+		Opponent.otherPlayer = Host;
+		Host.otherPlayer = Opponent;
+
 		Players.Add(Host);
 		Players.Add(Opponent);
 		OpponentAI.GM = this;

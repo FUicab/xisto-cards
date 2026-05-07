@@ -28,13 +28,13 @@ public class CardAction : CardSkill
 public class ActiveAction
 {
 	public TargetTypes target;
-    public List<Requirements> requirements;
+    public List<Requirements> requirements = new();
     [HideInInspector] public CardDisplay source;
     [HideInInspector] public CardDisplay receiver;
 
     public bool isTargetImplicit { get { return CardActionTools.IsTargetImplicit(target); } }
 	public List<CardDisplay> GetImplicitTargetsOfAction() { return CardActionTools.GetImplicitTargetsOfAction(this); }
-	public bool TargetMeetsRequirements(CardDisplay target) { return CardActionTools.TargetMeetsRequirementsOfAction(target, this); }
+	public bool TargetMeetsRequirements(CardDisplay targetCard) { return CardActionTools.TargetMeetsRequirementsOfAction(targetCard, this); }
 	public bool targetIsFromMyTeam { get { return CardActionTools.TargetIsFromMyTeam(target); } }
 	public bool isTargetPlural { get { return CardActionTools.IsTargetPlural(target); }  }
 }
@@ -54,9 +54,11 @@ public class AttackAction : ActiveAction{
 		target = values.target; 
 		attackEffect = values.attackEffect;
 		temporaryBuffs = values.temporaryBuffs;
-		requirements = values.requirements;
+		//requirements = values.requirements;
 		source = values.source;
 		receiver = values.receiver;
+		if(values.requirements.Count > 0)
+			values.requirements.ForEach(req => { requirements.Add(new Requirements(req) { originAction = this }); });
 	}
 
 	public int CalculateDamage(CardDisplay target) { return CardActionTools.CalculateDamage(target, this); }
@@ -70,7 +72,7 @@ public class BuffAction : ActiveAction{
 	public bool isDebuff = false; /* Check this if this is meant to be a negative effect for the one whoe receives it. */
 	public bool amountCanBeAugmented = false;
 	public bool activatesOnHit = false; /* Check this if the buff is meant to only activate during attacks. As if it was a temporary buff. */
-	public List<Requirements> onHitRequirements; /* The buff will not activate its "on hit" benefits if these requirements are not met. */
+	public List<Requirements> onHitRequirements = new(); /* The buff will not activate its "on hit" benefits if these requirements are not met. */
 	public BuffSpecialEffects specialEffect;
 	public List<SpecialBehavior> specialBehavior;
 	[HideInInspector] public PassiveSkill originPassive;
@@ -82,15 +84,21 @@ public class BuffAction : ActiveAction{
 		amount = values.amount;
 		amountCanBeAugmented = values.amountCanBeAugmented;
 		specialEffect = values.specialEffect;
-		requirements = values.requirements;
-		specialBehavior = values.specialBehavior;
+        //requirements = values.requirements;
+        specialBehavior = values.specialBehavior;
 		source = values.source;
 		receiver = values.receiver;
 		originPassive = values.originPassive;
 		isDebuff = values.isDebuff;
 		activatesOnHit = values.activatesOnHit;
-		onHitRequirements = values.onHitRequirements;
+		if(values.requirements.Count > 0)
+			values.requirements.ForEach(req => { requirements?.Add(new Requirements(req) { originAction = this }); });
+        if (values.onHitRequirements.Count > 0)
+            values.onHitRequirements.ForEach(req => { onHitRequirements?.Add(new Requirements(req) { originAction = this }); });
+		//onHitRequirements = values.onHitRequirements;
 	}
+
+    public bool TargetMeetsOnHitRequirements(CardDisplay target) { return CardActionTools.TargetMeetsRequirements(target, onHitRequirements); }
 }
 
 [System.Serializable]
@@ -120,6 +128,19 @@ public class Requirements{
 	public Comparison comparison;
 	public int attributeValue = 0;
 	public bool targetOfRequirementIsTargetOfAttack;
+	[HideInInspector] public ActiveAction originAction;
+
+	public Requirements(Requirements requirements){
+		requirement = requirements.requirement;
+		subtypeRequirement = requirements.subtypeRequirement;
+		factionRequirement = requirements.factionRequirement;
+		targetIs = requirements.targetIs;
+		attribute = requirements.attribute;
+		comparison = requirements.comparison;
+		attributeValue = requirements.attributeValue;
+		targetOfRequirementIsTargetOfAttack = requirements.targetOfRequirementIsTargetOfAttack;
+		originAction = requirements.originAction;
+	}
 }
 
 [System.Serializable]
