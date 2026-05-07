@@ -728,7 +728,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 			{
 				case ActionTypes.Attack:
 					AttackAction attack = turnAction.actionObject.action.attacks[i];
-					Debug.Log($"Checking if {card.Name} meets the requirements: {attack.TargetMeetsRequirements(this)}");
+					//Debug.Log($"Checking if {card.Name} meets the requirements: {attack.TargetMeetsRequirements(this)}");
 					if (attack.TargetMeetsRequirements(this) && attack.TargetCanBeReached(this))
 					{
 						itCan = true;

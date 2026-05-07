@@ -29,7 +29,7 @@ public class ActiveAction
 {
 	public TargetTypes target;
     public List<Requirements> requirements = new();
-    [HideInInspector] public CardDisplay source;
+    public CardDisplay source;
     [HideInInspector] public CardDisplay receiver;
 
     public bool isTargetImplicit { get { return CardActionTools.IsTargetImplicit(target); } }
@@ -44,21 +44,22 @@ public class AttackAction : ActiveAction{
 	public DamageTypes damageType;
 	public float damageMultiplier = 1;
 	public int flatDamageOverwrite = 0; //This overwrite will make attacks deal a given amount of damage without taking into account the attack value of the card nor any modifiers
-	public List<AttackEffect> attackEffect;
-	public List<BuffAction> temporaryBuffs; //Temporary buffs are applied during the attack
+	public List<AttackEffect> attackEffect = new();
+	public List<BuffAction> temporaryBuffs = new(); //Temporary buffs are applied during the attack
 
 	public AttackAction(AttackAction values)
 	{
 		damageType = values.damageType;
 		damageMultiplier = values.damageMultiplier;
 		target = values.target; 
-		attackEffect = values.attackEffect;
-		temporaryBuffs = values.temporaryBuffs;
+		//attackEffect = values.attackEffect;
+		//temporaryBuffs = values.temporaryBuffs;
 		//requirements = values.requirements;
 		source = values.source;
 		receiver = values.receiver;
-		if(values.requirements.Count > 0)
-			values.requirements.ForEach(req => { requirements.Add(new Requirements(req) { originAction = this }); });
+		values.requirements.ForEach(req => { requirements.Add(new Requirements(req) { originAction = this }); });
+		values.attackEffect.ForEach(atkFx => { attackEffect.Add(new AttackEffect(atkFx, this));  } );
+		values.temporaryBuffs.ForEach(tempBuff => { temporaryBuffs.Add(new BuffAction(tempBuff, this)); });
 	}
 
 	public int CalculateDamage(CardDisplay target) { return CardActionTools.CalculateDamage(target, this); }
@@ -74,10 +75,11 @@ public class BuffAction : ActiveAction{
 	public bool activatesOnHit = false; /* Check this if the buff is meant to only activate during attacks. As if it was a temporary buff. */
 	public List<Requirements> onHitRequirements = new(); /* The buff will not activate its "on hit" benefits if these requirements are not met. */
 	public BuffSpecialEffects specialEffect;
-	public List<SpecialBehavior> specialBehavior;
-	[HideInInspector] public PassiveSkill originPassive;
+	public List<SpecialBehavior> specialBehavior = new();
+	public AttackAction originAttack;
+	public PassiveSkill originPassive;
 
-	public BuffAction(BuffAction values)
+	public BuffAction(BuffAction values, AttackAction sourceAttack = null)
 	{
 		target = values.target;
 		Attribute = values.Attribute;
@@ -89,12 +91,11 @@ public class BuffAction : ActiveAction{
 		source = values.source;
 		receiver = values.receiver;
 		originPassive = values.originPassive;
+		originAttack = sourceAttack ?? values.originAttack;
 		isDebuff = values.isDebuff;
 		activatesOnHit = values.activatesOnHit;
-		if(values.requirements.Count > 0)
-			values.requirements.ForEach(req => { requirements?.Add(new Requirements(req) { originAction = this }); });
-        if (values.onHitRequirements.Count > 0)
-            values.onHitRequirements.ForEach(req => { onHitRequirements?.Add(new Requirements(req) { originAction = this }); });
+		values.requirements.ForEach(req => { requirements?.Add(new Requirements(req) { originAction = (originAttack != null ? originAttack : this) }); });
+        values.onHitRequirements.ForEach(req => { onHitRequirements?.Add(new Requirements(req) { originAction = this }); });
 		//onHitRequirements = values.onHitRequirements;
 	}
 
@@ -108,9 +109,21 @@ public class AttackEffect
     public bool useAttackValue;
     public int value;
     public bool valueCanBeAugmented = false;
-    public List<BuffAction> buffs;
+    public List<BuffAction> buffs = new();
     //public List<BuffAction> debuffs;
-    public List<Requirements> requirements;
+    public List<Requirements> requirements = new();
+	[HideInInspector] public AttackAction originAttack;
+
+	public AttackEffect(AttackEffect values, AttackAction attackSource)
+	{
+		effectType = values.effectType;
+		useAttackValue = values.useAttackValue;
+		value = values.value;
+		valueCanBeAugmented = values.valueCanBeAugmented;
+		originAttack = attackSource;
+		values.buffs.ForEach(buff => { buffs.Add(new BuffAction(buff){ originAttack = attackSource, source = attackSource.source }); });
+        values.requirements.ForEach(req => { requirements?.Add(new Requirements(req) { originAction = originAttack }); });
+    }
 }
 
 public enum BuffSpecialEffects{

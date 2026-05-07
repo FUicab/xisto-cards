@@ -396,14 +396,24 @@ public static class CardTranslator
 		return text;
 	}
 
-	public static string RequirementDescription(List<Requirements> requirements, TargetTypes target, Card card = null, string formattingFor = "buff")
+	public static string RequirementDescription(List<Requirements> requirements, TargetTypes providedTarget, Card card = null, string formattingFor = "buff")
 	{
 		string text = "";
 		foreach (var requirement in requirements)
 		{
-			if (!requirement.targetOfRequirementIsTargetOfAttack)
+			TargetTypes target;
+			BuffAction originBuff = requirement.originAction as BuffAction;
+			AttackAction originAttack = requirement.originAction as AttackAction;
+			Debug.Log($"{requirement.originAction?.source?.card.Name} {originBuff?.originPassive?.title ?? ""} --> Origin buff: {originBuff} | Origin attack: {originAttack} ");
+			if(originAttack != null && requirement.targetOfRequirementIsTargetOfAttack)
 			{
-				switch (target)
+				target = originAttack.target;
+			} else
+			{
+				target = providedTarget;
+			}
+
+			switch (target)
 				{
 					case TargetTypes.Self:
 						switch (requirement.requirement)
@@ -433,7 +443,6 @@ public static class CardTranslator
 						}
 						break;
 					case TargetTypes.SameTarget:
-						break;
 					case TargetTypes.SingleEnemy:
 					case TargetTypes.SingleAlly:
 					
@@ -480,7 +489,7 @@ public static class CardTranslator
 								switch (formattingFor)
 								{
 									case "attack":
-										text += ", but target must have ";
+										text += ", but target must have had ";
 										break;
 									case "effectOrTempBuff":
 									case "onHit":
@@ -609,13 +618,6 @@ public static class CardTranslator
 						}
 						break;
 				}
-			} else
-			{
-				text += " if my target's ";
-				text += TextFormat(BuffAttributeDescription(requirement.attribute), requirement.attribute);
-				text += " is ";
-				text += $"{ComparisonDescription(requirement.comparison)} <b>{requirement.attributeValue}</b>";
-			}
 		}
 		return text;
 	}
@@ -874,13 +876,13 @@ public static class CardTranslator
 					text += RequirementDescription(buff.onHitRequirements, buff.target, buff.source?.card, "onHit")+",";
                 }
 				text += " from ";
-				if (buff.originPassive == null)
+				if (buff.originPassive.title == "")
 				{
 					if(buff.source == buff.receiver)
 					{
 						text += "myself";
 					} else {
-						text += $"<b>{buff.source.card.Name}</b>";
+						text += $"<b>{buff.source?.card.Name ?? buff.originAttack?.source?.card.Name}</b>";
 					}
 				} else {
 					if (buff.source == buff.receiver)
@@ -889,7 +891,7 @@ public static class CardTranslator
 					}
 					else
 					{
-						text += $"<b>{buff.source.card.Name}</b>'s <b>{buff.originPassive.title}</b>";
+						text += $"<b>{buff.source?.card.Name}</b>'s <b>{buff.originPassive?.title}</b>";
 					}
 				}
 			} else {

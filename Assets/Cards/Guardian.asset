@@ -36,14 +36,27 @@ MonoBehaviour:
       amount: 1
       isDebuff: 0
       amountCanBeAugmented: 1
+      activatesOnHit: 0
+      onHitRequirements: []
       specialEffect: 0
       specialBehavior: 
+      originAttack:
+        target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        damageType: 0
+        damageMultiplier: 0
+        flatDamageOverwrite: 0
+        attackEffect: []
+        temporaryBuffs: []
       originPassive:
         title: 
         description: 
         trigger: 0
         canBeShared: 0
         oncePerTurn: 0
+        requiresElementalExchange: 0
         buffs: []
         source: {fileID: 0}
     - target: 0
@@ -54,14 +67,27 @@ MonoBehaviour:
       amount: 1
       isDebuff: 0
       amountCanBeAugmented: 1
+      activatesOnHit: 0
+      onHitRequirements: []
       specialEffect: 0
       specialBehavior: 
+      originAttack:
+        target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        damageType: 0
+        damageMultiplier: 0
+        flatDamageOverwrite: 0
+        attackEffect: []
+        temporaryBuffs: []
       originPassive:
         title: 
         description: 
         trigger: 0
         canBeShared: 0
         oncePerTurn: 0
+        requiresElementalExchange: 0
         buffs: []
         source: {fileID: 0}
   - actionType: 1
@@ -85,20 +111,37 @@ MonoBehaviour:
           subtypeRequirement: 
           factionRequirement: 
           targetIs: 00000000
+          attribute: 0
+          comparison: 0
+          attributeValue: 0
+          targetOfRequirementIsTargetOfAttack: 1
         source: {fileID: 0}
         receiver: {fileID: 0}
         Attribute: 0
         amount: 2
         isDebuff: 0
         amountCanBeAugmented: 1
+        activatesOnHit: 0
+        onHitRequirements: []
         specialEffect: 0
         specialBehavior: 
+        originAttack:
+          target: 0
+          requirements: []
+          source: {fileID: 0}
+          receiver: {fileID: 0}
+          damageType: 0
+          damageMultiplier: 0
+          flatDamageOverwrite: 0
+          attackEffect: []
+          temporaryBuffs: []
         originPassive:
           title: 
           description: 
           trigger: 0
           canBeShared: 0
           oncePerTurn: 0
+          requiresElementalExchange: 0
           buffs: []
           source: {fileID: 0}
     attackCountCanBeAugmented: 0
@@ -123,14 +166,27 @@ MonoBehaviour:
       amount: 2
       isDebuff: 0
       amountCanBeAugmented: 1
+      activatesOnHit: 0
+      onHitRequirements: []
       specialEffect: 0
       specialBehavior: 
+      originAttack:
+        target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        damageType: 0
+        damageMultiplier: 0
+        flatDamageOverwrite: 0
+        attackEffect: []
+        temporaryBuffs: []
       originPassive:
         title: 
         description: 
         trigger: 0
         canBeShared: 0
         oncePerTurn: 0
+        requiresElementalExchange: 0
         buffs: []
         source: {fileID: 0}
     - target: 6
@@ -139,20 +195,52 @@ MonoBehaviour:
         subtypeRequirement: 00000000
         factionRequirement: 
         targetIs: 
+        attribute: 0
+        comparison: 0
+        attributeValue: 0
+        targetOfRequirementIsTargetOfAttack: 0
       source: {fileID: 0}
       receiver: {fileID: 0}
       Attribute: 2
       amount: 0
       isDebuff: 0
       amountCanBeAugmented: 0
+      activatesOnHit: 0
+      onHitRequirements: []
       specialEffect: 1
       specialBehavior: 
+      originAttack:
+        target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        damageType: 0
+        damageMultiplier: 0
+        flatDamageOverwrite: 0
+        attackEffect: []
+        temporaryBuffs: []
       originPassive:
         title: 
         description: 
         trigger: 0
         canBeShared: 0
         oncePerTurn: 0
+        requiresElementalExchange: 0
         buffs: []
         source: {fileID: 0}
-  PowerPoints: Infinity
+  powerRating:
+    card: {fileID: 11400000}
+    bonusPerAction:
+    - 0.71500003
+    - 1.08375
+    - 0.275
+    bonusPerPassive: []
+    passiveDescription: 
+    passiveBuffDescriptions: 
+    actionsDescription: "Grants <b><color=#15c>+1</color></b> <b><color=#760>defense</color></b>
+      and heals <b><color=#15c>+1</color></b> <b><color=#583>HP</color></b> to me.\n\u2694\uFE0F
+      Melee attack, with <b><color=#15c>+2</color></b> <b><color=#900>attack</color></b>
+      if my target's <b><color=#900>attack</color></b> is less than <b>0</b>.\nGrants
+      <b><color=#15c>+2</color></b> <b><color=#760>defense</color></b> to me and
+      I absorb attacks targetted to allies next to me who are <b><color=#714>\u2693
+      defenders</color></b>.\n"

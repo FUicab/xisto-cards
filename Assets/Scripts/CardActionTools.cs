@@ -202,7 +202,7 @@ public static class CardActionTools
                 AttackAction originAttack = requirement.originAction as AttackAction;
 				if (originBuff != null)
 				{
-					if ( !originBuff.activatesOnHit || (originBuff.activatesOnHit && requirement.targetOfRequirementIsTargetOfAttack) )
+					if ( !originBuff.activatesOnHit || (originBuff.activatesOnHit && (requirement.targetOfRequirementIsTargetOfAttack && requirement.requirement == RequirementTypes.TargetAttributeIs)) )
 					{
 						target = actionTarget;
 					} else {

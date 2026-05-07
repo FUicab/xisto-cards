@@ -54,9 +54,9 @@ public class RequirementsDrawer : PropertyDrawer
                 currentY += height + 2;
                 EditorGUI.PropertyField(new Rect(position.x, currentY, position.width, height), attributeValue, true);
                 currentY += height + 2;
-                EditorGUI.PropertyField(new Rect(position.x, currentY, position.width, height), targetOfRequirementIsTargetOfAttack, true);
-                currentY += height + 2;
             }
+            EditorGUI.PropertyField(new Rect(position.x, currentY, position.width, EditorGUIUtility.singleLineHeight), targetOfRequirementIsTargetOfAttack, true);
+            currentY += currentY + 2;
 
             EditorGUI.indentLevel--;
         }
@@ -83,8 +83,8 @@ public class RequirementsDrawer : PropertyDrawer
             height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("attribute"), true) + 2;
             height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("comparison"), true) + 2;
             height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("attributeValue"), true) + 2;
-            height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("targetOfRequirementIsTargetOfAttack"), true) + 2;
         }
+        height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("targetOfRequirementIsTargetOfAttack"), true) + 2;
 
         return height;
     }

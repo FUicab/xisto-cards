@@ -50,6 +50,16 @@ MonoBehaviour:
       onHitRequirements: []
       specialEffect: 0
       specialBehavior: 
+      originAttack:
+        target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        damageType: 0
+        damageMultiplier: 0
+        flatDamageOverwrite: 0
+        attackEffect: []
+        temporaryBuffs: []
       originPassive:
         title: 
         description: 
@@ -79,6 +89,16 @@ MonoBehaviour:
       onHitRequirements: []
       specialEffect: 0
       specialBehavior: 
+      originAttack:
+        target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        damageType: 0
+        damageMultiplier: 0
+        flatDamageOverwrite: 0
+        attackEffect: []
+        temporaryBuffs: []
       originPassive:
         title: 
         description: 
@@ -116,6 +136,16 @@ MonoBehaviour:
         targetOfRequirementIsTargetOfAttack: 1
       specialEffect: 0
       specialBehavior: 
+      originAttack:
+        target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        damageType: 0
+        damageMultiplier: 0
+        flatDamageOverwrite: 0
+        attackEffect: []
+        temporaryBuffs: []
       originPassive:
         title: 
         description: 
@@ -161,6 +191,16 @@ MonoBehaviour:
         targetOfRequirementIsTargetOfAttack: 0
       specialEffect: 0
       specialBehavior: 
+      originAttack:
+        target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        damageType: 0
+        damageMultiplier: 0
+        flatDamageOverwrite: 0
+        attackEffect: []
+        temporaryBuffs: []
       originPassive:
         title: 
         description: 
@@ -223,6 +263,16 @@ MonoBehaviour:
       onHitRequirements: []
       specialEffect: 0
       specialBehavior: 
+      originAttack:
+        target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        damageType: 0
+        damageMultiplier: 0
+        flatDamageOverwrite: 0
+        attackEffect: []
+        temporaryBuffs: []
       originPassive:
         title: 
         description: 
@@ -257,6 +307,16 @@ MonoBehaviour:
       onHitRequirements: []
       specialEffect: 0
       specialBehavior: 
+      originAttack:
+        target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        damageType: 0
+        damageMultiplier: 0
+        flatDamageOverwrite: 0
+        attackEffect: []
+        temporaryBuffs: []
       originPassive:
         title: 
         description: 
@@ -291,6 +351,16 @@ MonoBehaviour:
       onHitRequirements: []
       specialEffect: 0
       specialBehavior: 
+      originAttack:
+        target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        damageType: 0
+        damageMultiplier: 0
+        flatDamageOverwrite: 0
+        attackEffect: []
+        temporaryBuffs: []
       originPassive:
         title: 
         description: 
@@ -325,6 +395,16 @@ MonoBehaviour:
       onHitRequirements: []
       specialEffect: 0
       specialBehavior: 
+      originAttack:
+        target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        damageType: 0
+        damageMultiplier: 0
+        flatDamageOverwrite: 0
+        attackEffect: []
+        temporaryBuffs: []
       originPassive:
         title: 
         description: 

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e4e87ef44ac0934298d8773e4605e72, type: 3}
   m_Name: Archer
   m_EditorClassIdentifier: 
-  Name: Voucari bowman
+  Name: Voucarian bowman
   CardCount: 10
   Type: 0
   Subtypes: 02000000
@@ -32,6 +32,10 @@ MonoBehaviour:
         subtypeRequirement: 02000000
         factionRequirement: 05000000
         targetIs: 
+        attribute: 0
+        comparison: 0
+        attributeValue: 0
+        targetOfRequirementIsTargetOfAttack: 0
       source: {fileID: 0}
       receiver: {fileID: 0}
       damageType: 1
@@ -47,14 +51,27 @@ MonoBehaviour:
         amount: 1
         isDebuff: 0
         amountCanBeAugmented: 1
+        activatesOnHit: 0
+        onHitRequirements: []
         specialEffect: 0
         specialBehavior: 
+        originAttack:
+          target: 0
+          requirements: []
+          source: {fileID: 0}
+          receiver: {fileID: 0}
+          damageType: 0
+          damageMultiplier: 0
+          flatDamageOverwrite: 0
+          attackEffect: []
+          temporaryBuffs: []
         originPassive:
           title: 
           description: 
           trigger: 0
           canBeShared: 0
           oncePerTurn: 0
+          requiresElementalExchange: 0
           buffs: []
           source: {fileID: 0}
     attackCountCanBeAugmented: 0
@@ -94,3 +111,9 @@ MonoBehaviour:
     - 1.9356251
     - 2.38
     bonusPerPassive: []
+    passiveDescription: 
+    passiveBuffDescriptions: 
+    actionsDescription: "\U0001F3AF Ranged attack, with <b><color=#15c>+1</color></b>
+      <b><color=#900>attack</color></b>, but can only target <b><color=#714>\U0001F3F4
+      mercenaries</color></b> or <b><color=#555>Independent units</color></b>.\n\U0001F3AF
+      Ranged attack.\n"

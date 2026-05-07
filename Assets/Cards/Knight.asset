@@ -53,14 +53,27 @@ MonoBehaviour:
       amount: 1
       isDebuff: 0
       amountCanBeAugmented: 1
+      activatesOnHit: 0
+      onHitRequirements: []
       specialEffect: 0
       specialBehavior: 
+      originAttack:
+        target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        damageType: 0
+        damageMultiplier: 0
+        flatDamageOverwrite: 0
+        attackEffect: []
+        temporaryBuffs: []
       originPassive:
         title: 
         description: 
         trigger: 0
         canBeShared: 0
         oncePerTurn: 0
+        requiresElementalExchange: 0
         buffs: []
         source: {fileID: 0}
   - actionType: 1
@@ -87,7 +100,29 @@ MonoBehaviour:
         valueCanBeAugmented: 0
         buffs: []
         requirements: []
+        originAttack:
+          target: 0
+          requirements: []
+          source: {fileID: 0}
+          receiver: {fileID: 0}
+          damageType: 0
+          damageMultiplier: 0
+          flatDamageOverwrite: 0
+          attackEffect: []
+          temporaryBuffs: []
       temporaryBuffs: []
     attackCountCanBeAugmented: 0
     buffs: []
-  PowerPoints: Infinity
+  powerRating:
+    card: {fileID: 11400000}
+    bonusPerAction:
+    - 0.94250005
+    - 4.6749997
+    - 0.7375
+    bonusPerPassive: []
+    passiveDescription: 
+    passiveBuffDescriptions: 
+    actionsDescription: "\u2694\uFE0F Melee attack.\nGrants <b><color=#15c>+1</color></b>
+      <b><color=#760>damage reduction</color></b> to all allies.\n\u2694\uFE0F Melee
+      attack and deals <b><color=#222>+2</color></b> damage to enemies next to the
+      target.\n"

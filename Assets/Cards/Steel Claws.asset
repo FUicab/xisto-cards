@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Steel Claws
   m_EditorClassIdentifier: 
   Name: Steel Claws
-  CardCount: 10
+  CardCount: 50
   Type: 0
   Subtypes: 02000000
   Cost: 1
@@ -22,19 +22,19 @@ MonoBehaviour:
   MaxHP: 4
   Armor: 010000000000000000000000
   Attack: 5
-  SkillSet: []
+  Passives: []
   CardActions:
   - actionType: 0
     attacks:
-    - damageType: 0
-      damageMultiplier: 1
-      flatDamageOverwrite: 0
-      target: 2
-      attackEffect: []
-      temporaryBuffs: []
+    - target: 2
       requirements: []
       source: {fileID: 0}
       receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
     attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
@@ -51,10 +51,13 @@ MonoBehaviour:
     buffs: []
   - actionType: 0
     attacks:
-    - damageType: 0
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
       damageMultiplier: 1
       flatDamageOverwrite: 0
-      target: 2
       attackEffect:
       - effectType: 2
         useAttackValue: 0
@@ -62,23 +65,62 @@ MonoBehaviour:
         valueCanBeAugmented: 0
         buffs:
         - target: 5
+          requirements: []
+          source: {fileID: 0}
+          receiver: {fileID: 0}
           Attribute: 2
           amount: -1
           isDebuff: 1
           amountCanBeAugmented: 1
+          activatesOnHit: 0
+          onHitRequirements: []
           specialEffect: 0
-          requirements: []
           specialBehavior: 
+          originAttack:
+            target: 0
+            requirements: []
+            source: {fileID: 0}
+            receiver: {fileID: 0}
+            damageType: 0
+            damageMultiplier: 0
+            flatDamageOverwrite: 0
+            attackEffect: []
+            temporaryBuffs: []
+          originPassive:
+            title: 
+            description: 
+            trigger: 0
+            canBeShared: 0
+            oncePerTurn: 0
+            requiresElementalExchange: 0
+            buffs: []
+            source: {fileID: 0}
+        requirements: []
+        originAttack:
+          target: 0
+          requirements: []
           source: {fileID: 0}
           receiver: {fileID: 0}
-        requirements: []
+          damageType: 0
+          damageMultiplier: 0
+          flatDamageOverwrite: 0
+          attackEffect: []
+          temporaryBuffs: []
       temporaryBuffs: []
-      requirements: []
-      source: {fileID: 0}
-      receiver: {fileID: 0}
     attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
     attacks: []
     attackCountCanBeAugmented: 0
     buffs: []
+  powerRating:
+    card: {fileID: 11400000}
+    bonusPerAction:
+    - 2.2354167
+    - 1.220625
+    bonusPerPassive: []
+    passiveDescription: 
+    passiveBuffDescriptions: 
+    actionsDescription: "\u2694\uFE0F Melee attack.\n\u2694\uFE0F Melee attack and
+      removes <b><color=#15c>-1</color></b> <b><color=#760>defense</color></b> from
+      the target.\n"
