@@ -20,26 +20,37 @@ MonoBehaviour:
   Artwork: {fileID: 21300000, guid: e51b3432303932e4892a832d0e418f3d, type: 3}
   Origin: 02000000
   MaxHP: 5
-  HP: 0
   Armor: 020000000100000002000000
   Attack: 7
-  SkillSet: []
+  Passives: []
   CardActions:
   - actionType: 0
     attacks:
-    - damageType: 0
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
       damageMultiplier: 1
-      target: 2
+      flatDamageOverwrite: 0
       attackEffect:
       - effectType: 1
         useAttackValue: 0
         value: 2
         valueCanBeAugmented: 0
         buffs: []
-        debuffs: []
         requirements: []
+        originAttack:
+          target: 0
+          requirements: []
+          source: {fileID: 0}
+          receiver: {fileID: 0}
+          damageType: 0
+          damageMultiplier: 0
+          flatDamageOverwrite: 0
+          attackEffect: []
+          temporaryBuffs: []
       temporaryBuffs: []
-      requirements: []
     attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
@@ -52,12 +63,15 @@ MonoBehaviour:
     buffs: []
   - actionType: 0
     attacks:
-    - damageType: 0
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
       damageMultiplier: 1
-      target: 2
+      flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
-      requirements: []
     attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
@@ -68,3 +82,13 @@ MonoBehaviour:
     attacks: []
     attackCountCanBeAugmented: 0
     buffs: []
+  powerRating:
+    card: {fileID: 11400000}
+    bonusPerAction:
+    - 1.460625
+    - 2.0300002
+    bonusPerPassive: []
+    passiveDescription: 
+    passiveBuffDescriptions: 
+    actionsDescription: "\u2694\uFE0F Melee attack and inflicts <b><color=#222>+2</color></b>
+      <b><color=#c42>self-damage</color></b>.\n\u2694\uFE0F Melee attack.\n"

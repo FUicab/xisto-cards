@@ -288,6 +288,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		NameText.text = $"{power:0.00} · {card.Name}";
 		ArtworkImage.sprite = card.Artwork;
 		hp = card.MaxHP;
+		PotentialDamageImage.gameObject.SetActive(false);
 
 		for (int i = 0; i < card.CardActions.Count; i++)
 		{
@@ -297,35 +298,11 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 			foreach (AttackAction attack in cardActions[i].attacks)
 			{
 				newAttacks.Add(new AttackAction(attack) { source = this });
-				//if (attack.requirements.Count > 0)
-				//{
-    //                newAttacks[i].requirements.Clear();
-				//	foreach (Requirements requirement in attack.requirements)
-				//	{
-				//		newAttacks[i].requirements.Add(new Requirements(requirement) { originAction = attack });
-				//	}
-    //            }
 			}
 			cardActions[i].attacks = newAttacks;
 			foreach (BuffAction buff in cardActions[i].buffs)
 			{
 				newBuffs.Add(new BuffAction(buff) { source = this });
-                //if (newBuffs[i].requirements.Count > 0)
-                //{
-                //    newBuffs[i].requirements.Clear();
-                //    foreach (Requirements requirement in buff.requirements)
-                //    {
-                //        newBuffs[i].requirements.Add(new Requirements(requirement) { originAction = buff });
-                //    }
-                //}
-                //if (newBuffs[i].onHitRequirements.Count > 0 && newBuffs[i].activatesOnHit)
-                //{
-                //    newBuffs[i].onHitRequirements.Clear();
-                //    foreach (Requirements requirement in buff.onHitRequirements)
-                //    {
-                //        newBuffs[i].onHitRequirements.Add(new Requirements(requirement) { originAction = buff });
-                //    }
-                //}
             }
 			cardActions[i].buffs = newBuffs;
 		}
@@ -709,11 +686,13 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 
 		if (clickable)
 		{
+			SetPotentialDamageDisplay(currentTurn);
 			Overlay.enabled = false;
 		}
 		else
 		{
-			Overlay.enabled = true;
+            PotentialDamageImage.gameObject.SetActive(false);
+            Overlay.enabled = true;
 		}
 	}
 
@@ -742,6 +721,26 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		}
 
 		return itCan;
+	}
+
+	public void SetPotentialDamageDisplay(TurnAction turnAction)
+	{
+		if (turnAction.movementType == TurnMovementType.PerformAction && turnAction.actionObject?.action?.actionType == ActionTypes.Attack && GM.turnStatus == TurnStatus.SelectingTargets) {
+			PotentialDamageImage.gameObject.SetActive(true);
+		} else
+		{
+            PotentialDamageImage.gameObject.SetActive(false);
+            return;
+		}
+        int i = turnAction.nextNullIndex;
+		TextMeshProUGUI potentialDamage = PotentialDamageImage.GetComponentInChildren<TextMeshProUGUI>();
+        int incomingDamage = CardActionTools.CalculateDamage(this, turnAction.actionObject.action.attacks[i]);
+		if (this.hp <= incomingDamage) {
+            potentialDamage.text = $"☠️";
+        } else
+		{
+			potentialDamage.text = $"-{incomingDamage} ❤️";
+		}
 	}
 
 	public void OnDrawAnimationEnd()

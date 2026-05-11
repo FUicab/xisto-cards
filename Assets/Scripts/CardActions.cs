@@ -57,7 +57,7 @@ public class AttackAction : ActiveAction{
 		//requirements = values.requirements;
 		source = values.source;
 		receiver = values.receiver;
-		values.requirements.ForEach(req => { requirements.Add(new Requirements(req) { originAction = this }); });
+		values.requirements.ForEach(req => { requirements.Add(new Requirements(req, this) ); });
 		values.attackEffect.ForEach(atkFx => { attackEffect.Add(new AttackEffect(atkFx, this));  } );
 		values.temporaryBuffs.ForEach(tempBuff => { temporaryBuffs.Add(new BuffAction(tempBuff, this)); });
 	}
@@ -94,8 +94,8 @@ public class BuffAction : ActiveAction{
 		originAttack = sourceAttack ?? values.originAttack;
 		isDebuff = values.isDebuff;
 		activatesOnHit = values.activatesOnHit;
-		values.requirements.ForEach(req => { requirements?.Add(new Requirements(req) { originAction = (originAttack != null ? originAttack : this) }); });
-        values.onHitRequirements.ForEach(req => { onHitRequirements?.Add(new Requirements(req) { originAction = this }); });
+		values.requirements.ForEach(req => { requirements?.Add(new Requirements(req, (originAttack != null ? originAttack : this) ) ); });
+        values.onHitRequirements.ForEach(req => { onHitRequirements?.Add(new Requirements(req, (originAttack != null ? originAttack : this) ) ); });
 		//onHitRequirements = values.onHitRequirements;
 	}
 
@@ -120,9 +120,9 @@ public class AttackEffect
 		useAttackValue = values.useAttackValue;
 		value = values.value;
 		valueCanBeAugmented = values.valueCanBeAugmented;
-		originAttack = attackSource;
-		values.buffs.ForEach(buff => { buffs.Add(new BuffAction(buff){ originAttack = attackSource, source = attackSource.source }); });
-        values.requirements.ForEach(req => { requirements?.Add(new Requirements(req) { originAction = originAttack }); });
+		originAttack = attackSource ?? values.originAttack;
+		values.buffs.ForEach(buff => { buffs.Add(new BuffAction(buff, originAttack){ source = attackSource.source }); });
+        values.requirements.ForEach(req => { requirements?.Add(new Requirements(req, originAttack) ); });
     }
 }
 
@@ -143,7 +143,7 @@ public class Requirements{
 	public bool targetOfRequirementIsTargetOfAttack;
 	[HideInInspector] public ActiveAction originAction;
 
-	public Requirements(Requirements requirements){
+	public Requirements(Requirements requirements, ActiveAction originAction = null){
 		requirement = requirements.requirement;
 		subtypeRequirement = requirements.subtypeRequirement;
 		factionRequirement = requirements.factionRequirement;
@@ -152,7 +152,7 @@ public class Requirements{
 		comparison = requirements.comparison;
 		attributeValue = requirements.attributeValue;
 		targetOfRequirementIsTargetOfAttack = requirements.targetOfRequirementIsTargetOfAttack;
-		originAction = requirements.originAction;
+		this.originAction = originAction ?? requirements.originAction;
 	}
 }
 

@@ -188,7 +188,7 @@ MonoBehaviour:
         attribute: 0
         comparison: 0
         attributeValue: 0
-        targetOfRequirementIsTargetOfAttack: 0
+        targetOfRequirementIsTargetOfAttack: 1
       specialEffect: 0
       specialBehavior: 
       originAttack:
@@ -430,20 +430,19 @@ MonoBehaviour:
       or <b><color=#555>Independent units</color></b>.\n<b>Anti-motion</b>: Grants
       <b><color=#15c>+1</color></b> <b><color=#760>defense</color></b> to all allies.\n\U0001F517
       <b>Crushing</b>: When I <b>attack \U0001F4A5</b> I get <b><color=#15c>+4</color></b>
-      <b><color=#900>attack</color></b> <i>(for that attack)</i> if my target's <b><color=#583>HP</color></b>
+      <b><color=#900>attack</color></b> <i>(for that attack)</i> if my <b><color=#583>HP</color></b>
       is less than or equal to <b>10</b>.\n\U0001F4AB <b>Protector's insignia</b>:
       When the enemies who are <b><color=#714>\U0001F3F4 mercenaries</color></b>
       <b>attack \U0001F4A5</b> they get <b><color=#15c>-2</color></b> <b><color=#900>attack</color></b>
       <i>(for that attack)</i> when targetting <b><color=#555>Protectors</color></b>
       or <b><color=#555>Independent units</color></b>.\n"
     passiveBuffDescriptions: "<b><color=#15c>+1</color></b> <b><color=#900>attack</color></b>
-      from my passive <b></b>\n<b><color=#15c>+1</color></b> <b><color=#760>defense</color></b>
-      from my passive <b></b>\n<b>\U0001F4A5 On hit</b>: <b><color=#15c>+4</color></b>
-      <b><color=#900>attack</color></b> if my target's <b><color=#583>HP</color></b>
-      is less than or equal to <b>10</b>, from my passive <b></b>\n<b>\U0001F4A5
-      On hit</b>: <b><color=#15c>-2</color></b> <b><color=#900>attack</color></b>
+      from myself\n<b><color=#15c>+1</color></b> <b><color=#760>defense</color></b>
+      from myself\n<b>\U0001F4A5 On hit</b>: <b><color=#15c>+4</color></b> <b><color=#900>attack</color></b>
+      if my <b><color=#583>HP</color></b> is less than or equal to <b>10</b>, from
+      myself\n<b>\U0001F4A5 On hit</b>: <b><color=#15c>-2</color></b> <b><color=#900>attack</color></b>
       when targetting <b><color=#555>Protectors</color></b> or <b><color=#555>Independent
-      units</color></b>, from my passive <b></b>\n"
+      units</color></b>, from myself\n"
     actionsDescription: "\u2694\uFE0F Melee attack.\nGrants <b><color=#15c>+2</color></b>
       <b><color=#760>defense</color></b> to all allies.\n\u2694\uFE0F Melee or \u2728
       energy attack.\n"

@@ -404,7 +404,7 @@ public static class CardTranslator
 			TargetTypes target;
 			BuffAction originBuff = requirement.originAction as BuffAction;
 			AttackAction originAttack = requirement.originAction as AttackAction;
-			Debug.Log($"{requirement.originAction?.source?.card.Name} {originBuff?.originPassive?.title ?? ""} --> Origin buff: {originBuff} | Origin attack: {originAttack} ");
+			//Debug.Log($"{requirement.originAction?.source?.card.Name} {originBuff?.originPassive?.title ?? ""} --> Origin buff: {originBuff} | Origin attack: {originAttack} ");
 			if(originAttack != null && requirement.targetOfRequirementIsTargetOfAttack)
 			{
 				target = originAttack.target;

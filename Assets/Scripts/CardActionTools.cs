@@ -200,15 +200,26 @@ public static class CardActionTools
 
 				BuffAction originBuff = requirement.originAction as BuffAction;
                 AttackAction originAttack = requirement.originAction as AttackAction;
+				//if (originAttack != null && requirement.targetOfRequirementIsTargetOfAttack)
+				//{
+				//	target = actionTarget;
+				//} else
+				//{
+				//	target = requirement.originAction?.source;
+				//}
 				if (originBuff != null)
 				{
-					if ( !originBuff.activatesOnHit || (originBuff.activatesOnHit && (requirement.targetOfRequirementIsTargetOfAttack && requirement.requirement == RequirementTypes.TargetAttributeIs)) )
+					if (!originBuff.activatesOnHit || (originBuff.originAttack != null && requirement.targetOfRequirementIsTargetOfAttack))
 					{
 						target = actionTarget;
-					} else {
+					}
+					else
+					{
 						target = requirement.originAction.source;
 					}
-				} else {
+				}
+				else
+				{
 					target = actionTarget;
 				}
 
@@ -356,11 +367,11 @@ public static class CardActionTools
 		var targetTempModifiers = new TempModifiers();
 		foreach (BuffAction buff in attackAction.temporaryBuffs)
 		{
-			if (attackAction.target == TargetTypes.Self) /* The modifiers apply to myself */
+			if (buff.target == TargetTypes.Self) /* The modifiers apply to myself */
 			{
 				attackerTempModifiers.SetModifiersFromBuff(buff);
 			}
-			else if (attackAction.target == TargetTypes.SingleEnemy)
+			else if (buff.target == TargetTypes.SingleEnemy || buff.target == TargetTypes.SameTarget)
 			{
 				targetTempModifiers.SetModifiersFromBuff(buff);
 			}
