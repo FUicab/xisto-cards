@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Guardian
   m_EditorClassIdentifier: 
   Name: Keranean Guardian
-  CardCount: 10
+  CardCount: 100
   Type: 0
   Subtypes: 00000000
   Cost: 1
@@ -240,7 +240,6 @@ MonoBehaviour:
     actionsDescription: "Grants <b><color=#15c>+1</color></b> <b><color=#760>defense</color></b>
       and heals <b><color=#15c>+1</color></b> <b><color=#583>HP</color></b> to me.\n\u2694\uFE0F
       Melee attack, with <b><color=#15c>+2</color></b> <b><color=#900>attack</color></b>
-      if my target's <b><color=#900>attack</color></b> is less than <b>0</b>.\nGrants
-      <b><color=#15c>+2</color></b> <b><color=#760>defense</color></b> to me and
-      I absorb attacks targetted to allies next to me who are <b><color=#714>\u2693
-      defenders</color></b>.\n"
+      if I have attacked before during this round.\nGrants <b><color=#15c>+2</color></b>
+      <b><color=#760>defense</color></b> to me and I absorb attacks targetted to
+      allies next to me who are <b><color=#714>\u2693 defenders</color></b>.\n"

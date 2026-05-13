@@ -100,12 +100,10 @@ public class DetailedInfo : MonoBehaviour
                     case 5: DiceNumbers.GetComponent<TextMeshProUGUI>().text += "5️"; break;
                     case 6: DiceNumbers.GetComponent<TextMeshProUGUI>().text += "6️"; break;
                 }
-                if(action.HasMatchingDice() && cardDisplay.CanActThisTurn)
+                if(action.canBeUsed)
                 {
-                    action.canBeUsed = true;
                     Overlay.gameObject.SetActive(false);
                 } else {
-                    action.canBeUsed = false;
                     Overlay.gameObject.SetActive(true);
                 }
             }

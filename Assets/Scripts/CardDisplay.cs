@@ -220,6 +220,10 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 	{
 		get { return GM.RoundActions.Exists(x => x.CardInAction == this && x.movementType == TurnMovementType.PerformAction ); }
 	}
+	public bool HasAttackedThisRound
+	{
+		get { return GM.RoundActions.Exists(x => x.CardInAction == this && x.movementType == TurnMovementType.PerformAction && x.actionObject.action.actionType == ActionTypes.Attack); }
+	}
 	public bool CanActThisTurn
 	{
 		get { return Owner.isMyTurnToPlay && HasBeenPlayed && (!HasActedThisRound || card.Subtypes.Contains(UnitSubtype.Combo)); }

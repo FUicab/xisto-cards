@@ -261,6 +261,9 @@ public static class CardActionTools
                                 }
                         }
                         break;
+					case RequirementTypes.TargetHasAttackedThisRound:
+						itDoes = target.HasAttackedThisRound;
+						break;
 					case RequirementTypes.TargetAttributeIs:
 						int attributeValueInTarget = 0;
 						switch (requirement.attribute)
@@ -367,11 +370,11 @@ public static class CardActionTools
 		var targetTempModifiers = new TempModifiers();
 		foreach (BuffAction buff in attackAction.temporaryBuffs)
 		{
-			if (buff.target == TargetTypes.Self) /* The modifiers apply to myself */
+			if (buff.target == TargetTypes.Self && buff.TargetMeetsRequirements(target)) /* The modifiers apply to myself */
 			{
 				attackerTempModifiers.SetModifiersFromBuff(buff);
 			}
-			else if (buff.target == TargetTypes.SingleEnemy || buff.target == TargetTypes.SameTarget)
+			else if ((buff.target == TargetTypes.SingleEnemy || buff.target == TargetTypes.SameTarget) && buff.TargetMeetsRequirements(target))
 			{
 				targetTempModifiers.SetModifiersFromBuff(buff);
 			}

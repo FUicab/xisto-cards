@@ -13,10 +13,11 @@ using System.Linq;
 
 [System.Serializable]
 public class PlayerAI{
-	public PlayerProfile Profile;
-	
-	/* --- AI personality properties --------------------------------------------- */
-	public bool PrioritizesDefendersForDefendingOnly = true; // Will place defenders only in defending positions if possible
+	public PlayerProfile MyProfile;
+    public PlayerProfile OpponentProfile;
+
+    /* --- AI personality properties --------------------------------------------- */
+    public bool PrioritizesDefendersForDefendingOnly = true; // Will place defenders only in defending positions if possible
 	public bool PrioritizesDefendedBackline = true; // Will try to leave no undefended backline card
 	public bool PrefersToSaveAtLeast2GoldPerTurn = true; // Would prioritize to have some gold saved for emergencies
 	public bool WouldNotLetOpponentOverwhelm = true; // Tries to have as many active cards as its opponent
@@ -52,9 +53,9 @@ public class PlayerAI{
 	public GameManager GM; // GM is designated during instatiation
 	public int TurnCount = 1;
 	
-	public void StartAI(){
-		if(Profile == null){ return; }
-		if(!Profile.useAI){ return; }
+	public async void StartAI(){
+		if(MyProfile == null){ return; }
+		if(!MyProfile.useAI){ return; }
 
 		MyActions.Clear();
 		for (int i = 0; i < GM.availableActionsForThisTurn; i++){
@@ -79,12 +80,13 @@ public class PlayerAI{
 					PlayAggresive();
 				break;
 
-				//case AIActionStrategy.Defensive:
-				//break;
+				case AIActionStrategy.Defensive:
+					PlayDefensive();
+					break;
 
-				//case AIActionStrategy.SaveGold:
-				//	// By saving gold the AI does nothing and ends its turn
-				//break;
+				case AIActionStrategy.SaveGold:
+                    GM.TurnEnd(); // By saving gold the AI does nothing and ends its turn
+                    break;
 
 				default:
 					GM.TurnEnd();
@@ -135,7 +137,7 @@ public class PlayerAI{
 	}
 	public async void PerformAction(){
 		bool Success = true;
-		if(Profile.actionPoints <= 0 || GM.availableActionsForThisTurn <= 0 || currentActionIndex >= MyActions.Count){
+		if(MyProfile.actionPoints <= 0 || GM.availableActionsForThisTurn <= 0 || currentActionIndex >= MyActions.Count){
 			await Task.Delay(200);
 			GM.TurnEnd();
 			return;
@@ -154,7 +156,7 @@ public class PlayerAI{
 	}
 
 	public void RandomlyPlaceCardsInHand(){
-		foreach (var cardInHand in Profile.Hand){
+		foreach (var cardInHand in MyProfile.Hand){
 			CardDisplay card = cardInHand.gameObject.GetComponentInChildren<CardDisplay>();
 		}
 
@@ -164,7 +166,7 @@ public class PlayerAI{
 		{
 			for (int i = 0; i < 3; i++)
 			{
-				RandomIndex = Random.Range(0,Profile.Hand.Count);
+				RandomIndex = Random.Range(0,MyProfile.Hand.Count);
 				do {
 					RandomSlot = Random.Range(0,MyCardSpaces.Count);
 				} while (MyCardSpaces[RandomSlot].Occupied);
@@ -199,8 +201,8 @@ public class PlayerAI{
 		List<CardDisplay> ValidCards = new List<CardDisplay>();
 		// Debug.Log("Picking...");
 		if(PrioritizesDefendersForDefendingOnly){
-			for (int i = 0; i < Profile.Hand.Count; i++){
-				CardDisplay card = Profile.Hand[i].gameObject.GetComponentInChildren<CardDisplay>();
+			for (int i = 0; i < MyProfile.Hand.Count; i++){
+				CardDisplay card = MyProfile.Hand[i].gameObject.GetComponentInChildren<CardDisplay>();
 				if(card != null && !ReservedCards.Contains(card)){
 					if(space.Line == CardLine.Defensive && card.card.Subtypes.Contains(UnitSubtype.Defender)){
 						ValidCards.Add(card); }
@@ -212,8 +214,8 @@ public class PlayerAI{
 			}
 		}
 		if(ValidCards.Count == 0 || !PrioritizesDefendersForDefendingOnly){
-			for (int i = 0; i < Profile.Hand.Count; i++){
-				CardDisplay card = Profile.Hand[i].gameObject.GetComponentInChildren<CardDisplay>();
+			for (int i = 0; i < MyProfile.Hand.Count; i++){
+				CardDisplay card = MyProfile.Hand[i].gameObject.GetComponentInChildren<CardDisplay>();
 				if(card != null && !ReservedCards.Contains(card)){
 					if(space.Line == CardLine.Trap && card.card.Type == UnitType.Trap){
 						ValidCards.Add(card);
@@ -245,45 +247,42 @@ public class PlayerAI{
 		return AttackerList;
 	}
 
-	public void PlayAggresive(){
-		List<CardDisplay> AttackableTargets = new List<CardDisplay>();
-		List<CardDisplay> Attackers = PickBestAttackers();
-		CardDisplay ChosenTarget = null;
-		// List<CardDisplay> ChosenTargets = new List<CardDisplay>();
-		foreach (var OSpace in OpponentSpaces){
-			if(OSpace.PlayingCard != null){
-				bool CanBeAttacked = true;
-				foreach (var defSpace in OSpace.Defenders){
-					if(defSpace.PlayingCard != null){ CanBeAttacked = false; }
-				}
-				if(OSpace.Line == CardLine.Trap){ CanBeAttacked = false; }
-				if(CanBeAttacked){ AttackableTargets.Add(OSpace.PlayingCard); }
-			}
-		}
-		AttackableTargets.Sort((a,b) => a.hp.CompareTo(b.hp));
-		foreach (var target in AttackableTargets){
-			int health = target.hp;
-			foreach (var attacker in Attackers){
-				// health -= attacker.GetDamageAgainstTarget(target);
-			}
-			if(health <= 0){
-				ChosenTarget = target;
-			}
-		}
-		if(ChosenTarget != null){
-			foreach (var attacker in Attackers){
-				// GM.SetAttacker(attacker);
-				// GM.SetAttackTarget(ChosenTarget);
-			}
-			GM.TurnEnd();
-		} else {
-			ChosenStrategy = AIActionStrategy.PlaceCards;
-			GenerateActions();
-			StartActions();
-			// RandomlyPlaceCardsInHand();
-			return;
-		}
+	public async void PlayAggresive(){
+		if(OpponentProfile.GetActiveCards().Count == 0) { GM.TurnEnd();  return; }
+
+		List<CardActionObject> attackActions = GetUsableAttacksOfTopWarriors();
+		if (attackActions.Count == 0) { GM.TurnEnd();  return; }
+
+		CardActionObject chosenAction = attackActions[Random.Range(0,attackActions.Count)];
+		GM.StartAction(chosenAction);
+		await Task.Delay(500);
+        foreach (AttackAction attack in chosenAction.action.attacks.Where(x => !x.isTargetImplicit).ToList())
+        {
+			List<CardDisplay> potentialTargets = GetMostVulnerableEnemies(attack);
+			potentialTargets[Random.Range(0,potentialTargets.Count)].TriggerClickEvent();
+			await Task.Delay(250);
+        }
+		GM.TurnEnd();
 	}
+
+	public async void PlayDefensive()
+	{
+        if (MyProfile.GetActiveCards().Count == 0) { GM.TurnEnd(); return; }
+
+        List<CardActionObject> buffActions = GetUsableBuffsOfTopAllies();
+		if(buffActions.Count == 0) { GM.TurnEnd(); return; }
+
+		CardActionObject chosenAction = buffActions[Random.Range(0,buffActions.Count)];
+        GM.StartAction(chosenAction);
+        await Task.Delay(500);
+        foreach (BuffAction buff in chosenAction.action.buffs.Where(x => !x.isTargetImplicit).ToList())
+        {
+            List<CardDisplay> potentialTargets = GetMostVulnerableAllies();
+            potentialTargets[Random.Range(0, potentialTargets.Count)].TriggerClickEvent();
+            await Task.Delay(250);
+        }
+        GM.TurnEnd();
+    }
 
 	public void PlaceStartingComp(){
 		CardSpace ChosenSpace = MyBackline[Random.Range(0,MyBackline.Count)];
@@ -328,7 +327,7 @@ public class PlayerAI{
 		OpponentSpaces.Clear();
 		for (int i = 0; i < AllSpaces.Length; i++)
 		{
-			if(AllSpaces[i].Owner == Profile){
+			if(AllSpaces[i].Owner == MyProfile){
 				MyCardSpaces.Add(AllSpaces[i]);
 				switch(AllSpaces[i].Line){
 					case CardLine.Backline: MyBackline.Add(AllSpaces[i]); break;
@@ -346,20 +345,66 @@ public class PlayerAI{
 
     /* -------------------------------- AI analyzing tasks -------------------------------- */
 
-	public List<CardDisplay> GetTopWarriors()
+	public List<CardDisplay> GetTopWarriors(int howMany = 3)
 	{
 		List<CardDisplay> theTop = new();
-		List<CardDisplay> myCards = Profile.GetActiveCards().OrderByDescending(x => x.power).ToList();
+		List<CardDisplay> myCards = MyProfile.GetActiveCards().OrderByDescending(x => x.power).ToList();
 
         foreach (CardDisplay cardDisplay in myCards)
         {
-            if(cardDisplay.card.Type == UnitType.Warrior && theTop.Count < 3) {
+            if(cardDisplay.card.Type == UnitType.Warrior && theTop.Count < howMany) {
 				theTop.Add(cardDisplay);
 			}
         }
 
         return theTop;
 	}
+
+    public List<CardActionObject> GetUsableActions(CardDisplay cardDisplay, ActionTypes actionType = ActionTypes.DoNothing)
+	{
+        List<CardActionObject> actions = new List<CardActionObject>();
+        CardActionMenu actionMenu = new(cardDisplay);
+        foreach (CardActionObject actionObj in actionMenu.actions)
+        {
+            if (actionObj.canBeUsed && (actionObj.action.actionType == actionType || actionType == ActionTypes.DoNothing ))
+            {
+                actions.Add(actionObj);
+            }
+        }
+        return actions;
+    }
+
+
+    public List<CardActionObject> GetUsableAttackActions(CardDisplay cardDisplay) {
+		return GetUsableActions(cardDisplay, ActionTypes.Attack);
+	}
+
+    public List<CardActionObject> GetUsableBuffActions(CardDisplay cardDisplay)
+    {
+        return GetUsableActions(cardDisplay, ActionTypes.Buff);
+    }
+
+	public List<CardActionObject> GetUsableAttacksOfTopWarriors()
+	{
+        List<CardActionObject> actions = GetTopWarriors().SelectMany(x => GetUsableAttackActions(x)).ToList();
+        return actions;
+    }
+
+    public List<CardActionObject> GetUsableBuffsOfTopAllies()
+    {
+        List<CardActionObject> actions = MyProfile.GetActiveCards().SelectMany(x => GetUsableBuffActions(x)).ToList();
+        return actions;
+    }
+
+    public List<CardDisplay> GetMostVulnerableEnemies(AttackAction attackAction)
+	{
+		return OpponentProfile.GetActiveCards().Where(x => attackAction.TargetCanBeReached(x)).ToList().OrderByDescending(x => CardActionTools.CalculateDamage(x, attackAction)).ToList();
+    }
+
+    public List<CardDisplay> GetMostVulnerableAllies()
+    {
+        return MyProfile.GetActiveCards().Where(x => !x.ProtectedByDefender).ToList().OrderByDescending(x => x.hp).Reverse().ToList();
+    }
 
 }
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Android.Gradle.Manifest;
 using Unity.VisualScripting;
 using UnityEngine;
 using static Card;
@@ -55,8 +56,16 @@ public class CardActionMenu
 			{
 				action.diceAverageValue = action.diceValues[(action.diceValues.Count - 1) / 2];
 			}
+			if (action.HasMatchingDice() && sourceCard.CanActThisTurn)
+			{
+				action.canBeUsed = true;
+			}
+			else
+			{
+				action.canBeUsed = false;
+			}
 		}
-	}
+    }
 }
 
 [System.Serializable]
@@ -959,7 +968,7 @@ public class CardActionObject : CardSkillObject
 
 	public bool HasMatchingDice()
 	{
-		return sourceCard.mySpace?.Owner.HasDiceForAction(this) ?? false;
+		return sourceCard?.mySpace?.Owner.HasDiceForAction(this) ?? false;
 	}
 
 	public string TranslateActionToText(){

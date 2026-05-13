@@ -380,7 +380,8 @@ public class GameManager : MonoBehaviour
 		Players.Add(Host);
 		Players.Add(Opponent);
 		OpponentAI.GM = this;
-		OpponentAI.Profile = Opponent;
+		OpponentAI.MyProfile = Opponent;
+		OpponentAI.OpponentProfile = Host;
 		MainTooltip.text = "";
 
 		PlayerAtPlay = Host;
