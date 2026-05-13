@@ -125,5 +125,4 @@ MonoBehaviour:
     passiveBuffDescriptions: 
     actionsDescription: "\u2694\uFE0F Melee attack with <b>50%</b> effectivity.\n\U0001F3AF
       Ranged attack.\n\U0001F3AF Ranged attack, with <b><color=#15c>+2</color></b>
-      <b><color=#900>attack</color></b> if my target's <b><color=#900>attack</color></b>
-      is less than <b>0</b>.\n"
+      <b><color=#900>attack</color></b> if I'm <b><color=#714>\u2693 defenders</color></b>.\n"

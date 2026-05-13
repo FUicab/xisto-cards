@@ -5984,6 +5984,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2991a9395ccf0c34b81bdea62038940b, type: 2}
   - {fileID: 11400000, guid: 07d6dbed67fabd545925ec58b974381e, type: 2}
   - {fileID: 11400000, guid: 0f32531c147d8e14cb13ac47a689165a, type: 2}
+  - {fileID: 11400000, guid: 0fa4fa5685c2a724cb866e9e6ab26137, type: 2}
+  - {fileID: 11400000, guid: 5e36415e5081a704f9f7e2f7549bed5b, type: 2}
   Deck: []
   Players: []
   RoundActions: []
@@ -6157,8 +6159,22 @@ MonoBehaviour:
   turnIndex: 0
   roundIndex: 0
   OpponentAI:
-    Profile:
-      Role: 1
+    MyProfile:
+      Role: 0
+      useAI: 0
+      Gold: 0
+      maxActionPoints: 3
+      actionPoints: 3
+      actionPointsTurnedToGold: 0
+      Hand: []
+      AvailableCardSlots: 
+      MyBoardRows: []
+      buffs: []
+      Dices: []
+      selectedDice: {fileID: 0}
+      GM: {fileID: 0}
+    OpponentProfile:
+      Role: 0
       useAI: 0
       Gold: 0
       maxActionPoints: 3
@@ -6182,10 +6198,7 @@ MonoBehaviour:
     currentActionIndex: 0
     MyCardSpaces: []
     MyBackline: []
-    MyTrapline: []
     MyDefline: []
-    OpponentSpaces: []
-    MyCards: []
     ReservedCards: []
     GM: {fileID: 0}
     TurnCount: 1

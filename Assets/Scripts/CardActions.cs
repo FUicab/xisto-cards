@@ -166,7 +166,7 @@ public class PassiveSkill : CardSkill{
 	public bool oncePerTurn = false;
 	//public bool buffsAreTemporary = false;
 	public bool requiresElementalExchange = false;
-	public List<BuffAction> buffs;
+	public List<BuffAction> buffs = new();
 	[HideInInspector] public CardDisplay source;
 
 	public PassiveSkill(PassiveSkill passiveSkill) {
@@ -175,9 +175,10 @@ public class PassiveSkill : CardSkill{
 		trigger = passiveSkill.trigger;
 		canBeShared = passiveSkill.canBeShared;
 		oncePerTurn = passiveSkill.oncePerTurn;
-		buffs = new List<BuffAction>();
+		//buffs = new List<BuffAction>();
 		source = passiveSkill.source;
-		requiresElementalExchange = passiveSkill.requiresElementalExchange;
+        passiveSkill.buffs.ForEach(buff => { buffs.Add(new BuffAction(buff, null) { source = source, originPassive = this }); });
+        requiresElementalExchange = passiveSkill.requiresElementalExchange;
 	}
 }
 

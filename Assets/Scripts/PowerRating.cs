@@ -118,8 +118,8 @@ public class PowerRating
 						actionPower += GetBuffPowerBonus(actionObj.action.buffs);
 						break;
 				}
-				bonusPerAction.Add((actionPower * dicePower) / 6);
 			}
+			bonusPerAction.Add((actionPower * dicePower) / 6);
 			actionsDescription += actionObj.description+"\n";
 		}
 	}

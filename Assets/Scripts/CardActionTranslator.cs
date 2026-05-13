@@ -66,7 +66,7 @@ public class CardActionMenu
 				action.canBeUsed = false;
 			}
 		}
-    }
+	}
 }
 
 [System.Serializable]
@@ -184,10 +184,10 @@ public static class CardTranslator
 						if(attack.temporaryBuffs.Count > 1 && attack.temporaryBuffs.Count-1 == subIndex)
 						{
 							text += " and ";
-                        } else if (attack.temporaryBuffs.Count > 2 && subIndex != 0){
+						} else if (attack.temporaryBuffs.Count > 2 && subIndex != 0){
 							text += ", ";
-                        }
-                        text += AttributeAndValue(tempBuff);
+						}
+						text += AttributeAndValue(tempBuff);
 
 						// Lists the requirements for the temporary buffs on an attack.
 						if(tempBuff.requirements.Count > 0)
@@ -245,8 +245,8 @@ public static class CardTranslator
 						case TargetTypes.AllEnemies:
 							text += "the enemies";
 							break;
-                        case TargetTypes.SingleAlly:
-                        case TargetTypes.AllAllies:
+						case TargetTypes.SingleAlly:
+						case TargetTypes.AllAllies:
 							text += "my allies";
 							break;
 						case TargetTypes.AlliesNextToMe:
@@ -257,10 +257,10 @@ public static class CardTranslator
 							break;
 					}
 					if(buff.requirements.Count > 0)
-                    text += RequirementDescription(buff.requirements, buff.target, buff.source?.card);
+					text += RequirementDescription(buff.requirements, buff.target, buff.source?.card);
 					text += " <b>attack 💥</b> ";
 
-                    switch (buff.Attribute)
+					switch (buff.Attribute)
 					{
 						case Attributes.Health: text += "heals "; break;
 						default:
@@ -286,8 +286,8 @@ public static class CardTranslator
 				}
 				if(buff.amount != 0)
 				{
-                    text += AttributeAndValue(buff);
-                    if ((!allSameTarget || buffs.Count == 1) && !buff.activatesOnHit)
+					text += AttributeAndValue(buff);
+					if ((!allSameTarget || buffs.Count == 1) && !buff.activatesOnHit)
 					{
 						text += " ";
 						text += TargetTypeDescription(buff.target);
@@ -307,8 +307,8 @@ public static class CardTranslator
 					}
 					if(buff.amount != 0)
 					{
-                        text += AttributeAndValue(buff);
-                        text += " ";
+						text += AttributeAndValue(buff);
+						text += " ";
 						text += TargetTypeDescription(buff.target);
 					}
 					text += BuffEffectDescription(buff);
@@ -345,17 +345,17 @@ public static class CardTranslator
 	{
 		string text = "";
 		if (number > 0) { text += $"+{number}"; }
-        if (number < 0) { text += $"{number}"; }
-        return text;
+		if (number < 0) { text += $"{number}"; }
+		return text;
 	}
 
 	public static string AttributeAndValue(BuffAction buff)
 	{
 		string text = "";
-        text += TextFormat(NumberWithSign(buff.amount), null, buff.amountCanBeAugmented) + " ";
-        text += TextFormat(BuffAttributeDescription(buff.Attribute), buff.Attribute);
+		text += TextFormat(NumberWithSign(buff.amount), null, buff.amountCanBeAugmented) + " ";
+		text += TextFormat(BuffAttributeDescription(buff.Attribute), buff.Attribute);
 		return text;
-    }
+	}
 
 	public static string TextFormat(string textToFormat = "", object colorTag = null, bool canBeAugmented = false)
 	{
@@ -414,24 +414,35 @@ public static class CardTranslator
 			TargetTypes target;
 			BuffAction originBuff = requirement.originAction as BuffAction;
 			AttackAction originAttack = requirement.originAction as AttackAction;
+			//Debug.Log($"{card?.Name} -> {providedTarget} . Origin buff: {(originBuff != null? "✅": "❌")} | Attack in buff: {(originBuff?.originAttack != null ? "✅" : "❌")} | Origin attack: {(originAttack != null ? "✅" : "❌")}");
 
-            if (originBuff != null)
-            {
-                if (!originBuff.activatesOnHit || (originBuff.originAttack != null && requirement.targetOfRequirementIsTargetOfAttack))
-                {
-                    target = providedTarget;
-                }
-                else
-                {
-                    target = requirement.originAction.target;
-                }
-            }
-            else
-            {
-                target = providedTarget;
-            }
+			if(formattingFor == "onHit")
+			{
+				target = TargetTypes.SingleEnemy;
+			} else if (originBuff != null)
+			{
+				if (originBuff.activatesOnHit)
+				{
+					target = TargetTypes.SingleEnemy;
+				} else if (originBuff.originAttack != null && requirement.targetOfRequirementIsTargetOfAttack)
+				{
+					target = providedTarget;
+				}
+				else
+				{
+					target = originBuff?.originAttack?.target ?? TargetTypes.SingleEnemy;
+				}
+			}
+			else if (originAttack != null && requirement.targetOfRequirementIsTargetOfAttack && originAttack.target != TargetTypes.Self)
+			{
+				target = originAttack.target;
+			}
+			else
+			{
+				target = providedTarget;
+			}
 
-            switch (target)
+			switch (target)
 				{
 					case TargetTypes.Self:
 						switch (requirement.requirement)
@@ -530,7 +541,7 @@ public static class CardTranslator
 										text += " when the target's ";
 										break;
 									case "buff":
-										text += " if their ";
+										text += " if target's ";
 										break;
 								}
 								text += TextFormat(BuffAttributeDescription(requirement.attribute), requirement.attribute);
@@ -744,36 +755,36 @@ public static class CardTranslator
 		string text = "";
 		switch (faction)
 		{
-            case Faction.Protectors:
-                if (!plural) { text += "Protector"; } else { text += "Protectors"; }
-                break;
-            case Faction.Saggists:
-                if (!plural) { text += "Saggist"; } else { text += "Saggists"; }
-                break;
-            case Faction.Keraneans:
-                if (!plural) { text += "Keranean"; } else { text += "Keraneans"; }
-                break;
-            case Faction.Voucari:
-                if (!plural) { text += "Voucarian"; } else { text += "Voucarians"; }
-                break;
-            case Faction.Auro:
-                if (!plural) { text += "Auroran"; } else { text += "Aurorans"; }
-                break;
-            case Faction.Independent:
-                if (!plural) { text += "Independent unit"; } else { text += "Independent units"; }
-                break;
-            case Faction.Fennraign:
-                if (!plural) { text += "Fennraigner"; } else { text += "Fennraigners"; }
-                break;
+			case Faction.Protectors:
+				if (!plural) { text += "Protector"; } else { text += "Protectors"; }
+				break;
+			case Faction.Saggists:
+				if (!plural) { text += "Saggist"; } else { text += "Saggists"; }
+				break;
+			case Faction.Keraneans:
+				if (!plural) { text += "Keranean"; } else { text += "Keraneans"; }
+				break;
+			case Faction.Voucari:
+				if (!plural) { text += "Voucarian"; } else { text += "Voucarians"; }
+				break;
+			case Faction.Auro:
+				if (!plural) { text += "Auroran"; } else { text += "Aurorans"; }
+				break;
+			case Faction.Independent:
+				if (!plural) { text += "Independent unit"; } else { text += "Independent units"; }
+				break;
+			case Faction.Fennraign:
+				if (!plural) { text += "Fennraigner"; } else { text += "Fennraigners"; }
+				break;
 			case Faction.Zikin:
-                if (!plural) { text += "Zikinite"; } else { text += "Zikinites"; }
-                break;
+				if (!plural) { text += "Zikinite"; } else { text += "Zikinites"; }
+				break;
 			case Faction.Tekvault:
-                if (!plural) { text += "Tekvault associate"; } else { text += "Tekvault associates"; }
-                break;
+				if (!plural) { text += "Tekvault associate"; } else { text += "Tekvault associates"; }
+				break;
 			default:
-                if (!plural) { text += "extradimensional being"; } else { text += "extradimensional beings"; }
-                break;
+				if (!plural) { text += "extradimensional being"; } else { text += "extradimensional beings"; }
+				break;
 		}
 		return text;
 	}
@@ -843,19 +854,19 @@ public static class CardTranslator
 					if(index == 0){
 						text += "removes ";
 						text += AttributeAndValue(buff);
-                        switch (buff.target)
+						switch (buff.target)
 						{
 							case TargetTypes.SameTarget: text += " from the target"; break;
 						}
 					} else {
 						if(effect.buffs.Count-1 == index){
 							text += " and ";
-                            text += AttributeAndValue(buff);
-                            text += " ";
+							text += AttributeAndValue(buff);
+							text += " ";
 						} else {
 							text += ", ";
-                            text += AttributeAndValue(buff);
-                        }
+							text += AttributeAndValue(buff);
+						}
 					}
 					index += 1;
 				}
@@ -892,7 +903,7 @@ public static class CardTranslator
 				if (buff.activatesOnHit)
 				{
 					text += RequirementDescription(buff.onHitRequirements, buff.target, buff.source?.card, "onHit")+",";
-                }
+				}
 				text += " from ";
 				if (buff.originPassive.title == "")
 				{
@@ -991,6 +1002,9 @@ public class CardActionObject : CardSkillObject
 			case ActionTypes.Buff:
 				text += CardTranslator.GenerateSkillBuffText(action.buffs);
 			break;
+			case ActionTypes.DoNothing:
+				text += "Do nothing.";
+				break;
 		}
 
 		text += ".";
