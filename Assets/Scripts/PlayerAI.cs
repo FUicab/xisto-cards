@@ -43,10 +43,7 @@ public class PlayerAI{
 	/* --- AI card management --------------------------------------------- */
 	public List<CardSpace> MyCardSpaces = new List<CardSpace>();
 	public List<CardSpace> MyBackline = new List<CardSpace>();
-	public List<CardSpace> MyTrapline = new List<CardSpace>();
 	public List<CardSpace> MyDefline = new List<CardSpace>();
-	public List<CardSpace> OpponentSpaces = new List<CardSpace>();
-	public List<CardDisplay> MyCards = new List<CardDisplay>();
 	public List<CardDisplay> ReservedCards = new List<CardDisplay>(); // These cards are currently being used in other actions within this same turn and will not be considered for other actions
 
 	/* --- Other variables --------------------------------------------- */
@@ -233,19 +230,19 @@ public class PlayerAI{
 		}
 	}
 
-	public List<CardDisplay> PickBestAttackers(){
-		List<CardDisplay> AttackerList = new List<CardDisplay>();
-		foreach (var card in MyCards){
-			if(card.attack > 0 && AttackerList.Count < GM.availableActionsForThisTurn){
-				AttackerList.Add(card);
-				// Debug.Log(card.card.Name);
-			}
-		}
-		AttackerList.Sort((a,b) => {
-			return b.attack.CompareTo(a.attack);
-		});
-		return AttackerList;
-	}
+	//public List<CardDisplay> PickBestAttackers(){
+	//	List<CardDisplay> AttackerList = new List<CardDisplay>();
+	//	foreach (var card in MyCards){
+	//		if(card.attack > 0 && AttackerList.Count < GM.availableActionsForThisTurn){
+	//			AttackerList.Add(card);
+	//			// Debug.Log(card.card.Name);
+	//		}
+	//	}
+	//	AttackerList.Sort((a,b) => {
+	//		return b.attack.CompareTo(a.attack);
+	//	});
+	//	return AttackerList;
+	//}
 
 	public async void PlayAggresive(){
 		if(OpponentProfile.GetActiveCards().Count == 0) { GM.TurnEnd();  return; }
@@ -318,27 +315,19 @@ public class PlayerAI{
 	}
 
 	public void LookAtSpaces(){
-		CardSpace[] AllSpaces = Object.FindObjectsOfType<CardSpace>();
+		MyCardSpaces = MyProfile.mySpaces;
 		MyBackline.Clear();
 		MyDefline.Clear();
-		MyTrapline.Clear();
-		MyCards.Clear();
-		MyCardSpaces.Clear();
-		OpponentSpaces.Clear();
-		for (int i = 0; i < AllSpaces.Length; i++)
+		//MyTrapline.Clear();
+		//MyCards.Clear();
+		//MyCardSpaces.Clear();
+		//OpponentSpaces.Clear();
+		for (int i = 0; i < MyCardSpaces.Count; i++)
 		{
-			if(AllSpaces[i].Owner == MyProfile){
-				MyCardSpaces.Add(AllSpaces[i]);
-				switch(AllSpaces[i].Line){
-					case CardLine.Backline: MyBackline.Add(AllSpaces[i]); break;
-					case CardLine.Defensive: MyDefline.Add(AllSpaces[i]); break;
-					case CardLine.Trap: MyTrapline.Add(AllSpaces[i]); break;
-				}
-				if(AllSpaces[i].PlayingCard != null){
-					MyCards.Add(AllSpaces[i].PlayingCard);
-				}
-			} else {
-				OpponentSpaces.Add(AllSpaces[i]);
+			switch(MyCardSpaces[i].Line){
+				case CardLine.Backline: MyBackline.Add(MyCardSpaces[i]); break;
+				case CardLine.Defensive: MyDefline.Add(MyCardSpaces[i]); break;
+				//case CardLine.Trap: MyTrapline.Add(MyCardSpaces[i]); break;
 			}
 		}
 	}

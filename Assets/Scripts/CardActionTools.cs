@@ -200,13 +200,6 @@ public static class CardActionTools
 
 				BuffAction originBuff = requirement.originAction as BuffAction;
                 AttackAction originAttack = requirement.originAction as AttackAction;
-				//if (originAttack != null && requirement.targetOfRequirementIsTargetOfAttack)
-				//{
-				//	target = actionTarget;
-				//} else
-				//{
-				//	target = requirement.originAction?.source;
-				//}
 				if (originBuff != null)
 				{
 					if (!originBuff.activatesOnHit || (originBuff.originAttack != null && requirement.targetOfRequirementIsTargetOfAttack))
@@ -359,92 +352,102 @@ public static class CardActionTools
         return itCan;
 	}
 
-	public static int CalculateDamage(CardDisplay target, AttackAction attackAction)
+	public static AttackActionOutput GetAttackActionOutput(CardDisplay target, AttackAction attackAction)
 	{
+		AttackActionOutput output = new AttackActionOutput();
+        CardDisplay attacker = attackAction.source;
+        List<BuffAction> onHitBuffs = attackAction.source.appliedBuffs.Where(x => x.activatesOnHit).ToList();
 
-		CardDisplay attacker = attackAction.source;
-		List<BuffAction> onHitBuffs = attackAction.source.appliedBuffs.Where(x => x.activatesOnHit).ToList();
-
-		/* Calculation of temporary buffs and debuffs */
-		var attackerTempModifiers = new TempModifiers();
-		var targetTempModifiers = new TempModifiers();
-		foreach (BuffAction buff in attackAction.temporaryBuffs)
-		{
-			if (buff.target == TargetTypes.Self && buff.TargetMeetsRequirements(target)) /* The modifiers apply to myself */
-			{
-				attackerTempModifiers.SetModifiersFromBuff(buff);
-			}
-			else if ((buff.target == TargetTypes.SingleEnemy || buff.target == TargetTypes.SameTarget) && buff.TargetMeetsRequirements(target))
-			{
-				targetTempModifiers.SetModifiersFromBuff(buff);
-			}
-		}
+        /* Calculation of temporary buffs and debuffs */
+        var attackerTempModifiers = new TempModifiers();
+        var targetTempModifiers = new TempModifiers();
+        foreach (BuffAction buff in attackAction.temporaryBuffs)
+        {
+            if (buff.target == TargetTypes.Self && buff.TargetMeetsRequirements(target)) /* The modifiers apply to myself */
+            {
+                attackerTempModifiers.SetModifiersFromBuff(buff);
+            }
+            else if ((buff.target == TargetTypes.SingleEnemy || buff.target == TargetTypes.SameTarget) && buff.TargetMeetsRequirements(target))
+            {
+                targetTempModifiers.SetModifiersFromBuff(buff);
+            }
+        }
         foreach (BuffAction buff in onHitBuffs)
         {
-			if (buff.TargetMeetsOnHitRequirements(target))
-			{
-				attackerTempModifiers.SetModifiersFromBuff(buff);
-			}
+            if (buff.TargetMeetsOnHitRequirements(target))
+            {
+                attackerTempModifiers.SetModifiersFromBuff(buff);
+            }
         }
 
         int targetArmor = 0;
-		string damageType = "melee";
-		switch (attackAction.damageType)
-		{
-			case DamageTypes.Melee: targetArmor = target.armor[0]; break;
-			case DamageTypes.Ranged: targetArmor = target.armor[1]; break;
-			case DamageTypes.Energy: targetArmor = target.armor[2]; break;
-			case DamageTypes.MeleeOrRanged:
-				if (target.armor[0] < target.armor[1])
-				{ targetArmor = target.armor[0]; }
-				else
-				{ targetArmor = target.armor[1]; damageType = "ranged"; }
-				break;
-			case DamageTypes.RangedOrEnergy:
-				if (target.armor[2] < target.armor[1])
-				{ targetArmor = target.armor[2]; damageType = "energy"; }
-				else
-				{ targetArmor = target.armor[1]; damageType = "ranged"; }
-				break;
-			case DamageTypes.MeleeOrEnergy:
-				if (target.armor[0] < target.armor[2])
-				{ targetArmor = target.armor[0]; }
-				else
-				{ targetArmor = target.armor[2]; damageType = "energy"; }
-				break;
-			case DamageTypes.MeleeOrRangedOrEnergy:
-				if (target.armor[0] < target.armor[1] && target.armor[0] < target.armor[2])
-				{ targetArmor = target.armor[0]; }
-				else if (target.armor[1] < target.armor[2])
-				{ targetArmor = target.armor[1]; damageType = "ranged"; }
-				else
-				{ targetArmor = target.armor[2]; damageType = "energy"; }
-				break;
-		}
-		switch (damageType)
-		{
-			case "melee": targetArmor += targetTempModifiers.Armor[0]; break;
-			case "ranged": targetArmor += targetTempModifiers.Armor[1]; break;
-			case "energy": targetArmor += targetTempModifiers.Armor[2]; break;
-		}
-		targetArmor -= attacker.armorPierce + attackerTempModifiers.ArmorPierce;
-		if (targetArmor < 0) { targetArmor = 0; }
+        DamageTypes damageType = DamageTypes.Melee;
+        switch (attackAction.damageType)
+        {
+            case DamageTypes.Melee: targetArmor = target.armor[0]; break;
+            case DamageTypes.Ranged: targetArmor = target.armor[1]; damageType = DamageTypes.Ranged; break;
+            case DamageTypes.Energy: targetArmor = target.armor[2]; damageType = DamageTypes.Energy;  break;
+            case DamageTypes.MeleeOrRanged:
+                if (target.armor[0] < target.armor[1])
+                { targetArmor = target.armor[0]; }
+                else
+                { targetArmor = target.armor[1]; damageType = DamageTypes.Ranged; }
+                break;
+            case DamageTypes.RangedOrEnergy:
+                if (target.armor[2] < target.armor[1])
+                { targetArmor = target.armor[2]; damageType = DamageTypes.Energy; }
+                else
+                { targetArmor = target.armor[1]; damageType = DamageTypes.Ranged; }
+                break;
+            case DamageTypes.MeleeOrEnergy:
+                if (target.armor[0] < target.armor[2])
+                { targetArmor = target.armor[0]; }
+                else
+                { targetArmor = target.armor[2]; damageType = DamageTypes.Energy; }
+                break;
+            case DamageTypes.MeleeOrRangedOrEnergy:
+                if (target.armor[0] < target.armor[1] && target.armor[0] < target.armor[2])
+                { targetArmor = target.armor[0]; }
+                else if (target.armor[1] < target.armor[2])
+                { targetArmor = target.armor[1]; damageType = DamageTypes.Ranged; }
+                else
+                { targetArmor = target.armor[2]; damageType = DamageTypes.Energy; }
+                break;
+        }
+        switch (damageType)
+        {
+            case DamageTypes.Melee: targetArmor += targetTempModifiers.Armor[0]; break;
+            case DamageTypes.Ranged: targetArmor += targetTempModifiers.Armor[1]; break;
+            case DamageTypes.Energy: targetArmor += targetTempModifiers.Armor[2]; break;
+        }
+        targetArmor -= attacker.armorPierce + attackerTempModifiers.ArmorPierce;
+        if (targetArmor < 0) { targetArmor = 0; }
 
-		int dmg = Mathf.FloorToInt((attacker.attack + attackerTempModifiers.Attack) * attackAction.damageMultiplier) - targetArmor;
-		if (attackAction.damageType == DamageTypes.SelfDamage)
-		{
-			targetArmor = 0;
+        int dmg = Mathf.FloorToInt((attacker.attack + attackerTempModifiers.Attack - target.damageReduction) * attackAction.damageMultiplier) - targetArmor;
+        if (attackAction.damageType == DamageTypes.SelfDamage)
+        {
+            targetArmor = 0;
+        }
+        if (attackAction.flatDamageOverwrite > 0)
+        {
+            dmg = attackAction.flatDamageOverwrite - targetArmor;
+        }
+        if (dmg <= 0)
+        {
+            dmg = 1;
+        }
+		output.damage = dmg;
+		output.damageType = damageType;
+		if (target.hp - dmg <= 0 || (target.hp - dmg <= 2 && attacker.card.Subtypes.Contains(UnitSubtype.Executioner))) {
+			output.resultsInDeath = true;
 		}
-		if (attackAction.flatDamageOverwrite > 0)
-		{
-			dmg = attackAction.flatDamageOverwrite - targetArmor;
-		}
-		if (dmg <= 0)
-		{
-			dmg = 1;
-		}
+        
+        return output;
+	}
 
-		return dmg;
+	public static int CalculateDamage(CardDisplay target, AttackAction attackAction)
+	{
+		return GetAttackActionOutput(target, attackAction).damage;
 	}
 
 	public static bool IsTargetImplicit(TargetTypes targetType)
@@ -535,4 +538,29 @@ class TempModifiers
             case Attributes.DamageReductionAfterArmor: DamageReductionAfterArmor += buff.amount; break;
         }
     }
+}
+
+public class AttackActionOutput
+{
+	public int damage = 0;
+	public bool resultsInDeath = false;
+	public DamageTypes damageType = DamageTypes.Melee;
+	public string damageTypeIcon {
+		get {
+			string character = "🥊";
+			switch (damageType)
+			{
+				case DamageTypes.Melee:
+					character = "⚔️";
+                    break;
+				case DamageTypes.Ranged:
+                    character = "🎯";
+                    break;
+				case DamageTypes.Energy:
+                    character = "✨";
+                    break;
+			}
+			return character;
+		}
+	}
 }

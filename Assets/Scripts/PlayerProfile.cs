@@ -39,7 +39,7 @@ public class PlayerProfile
 	}
 	public bool isMyTurnToPlay
 	{
-		get { return GM.PlayerAtPlay == this; }
+		get { return GM?.PlayerAtPlay == this; }
 	}
 
 	public PlayerProfile()
@@ -49,9 +49,9 @@ public class PlayerProfile
 
     private void UpdateDiceSelectionStatus(TurnAction turnAction)
     {
+		SelectDice(null);
         if(turnAction.CardInAction == null || GM?.PlayerAtPlay.Role != Role)
 		{
-			SelectDice(null);
 			return;
 		}
         foreach (Dice dice in Dices)

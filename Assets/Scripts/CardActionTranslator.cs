@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -413,16 +414,24 @@ public static class CardTranslator
 			TargetTypes target;
 			BuffAction originBuff = requirement.originAction as BuffAction;
 			AttackAction originAttack = requirement.originAction as AttackAction;
-			//Debug.Log($"{requirement.originAction?.source?.card.Name} {originBuff?.originPassive?.title ?? ""} --> Origin buff: {originBuff} | Origin attack: {originAttack} ");
-			if(originAttack != null && requirement.targetOfRequirementIsTargetOfAttack)
-			{
-				target = originAttack.target;
-			} else
-			{
-				target = providedTarget;
-			}
 
-			switch (target)
+            if (originBuff != null)
+            {
+                if (!originBuff.activatesOnHit || (originBuff.originAttack != null && requirement.targetOfRequirementIsTargetOfAttack))
+                {
+                    target = providedTarget;
+                }
+                else
+                {
+                    target = requirement.originAction.target;
+                }
+            }
+            else
+            {
+                target = providedTarget;
+            }
+
+            switch (target)
 				{
 					case TargetTypes.Self:
 						switch (requirement.requirement)

@@ -63,7 +63,8 @@ public class AttackAction : ActiveAction{
 	}
 
 	public int CalculateDamage(CardDisplay target) { return CardActionTools.CalculateDamage(target, this); }
-	public bool TargetCanBeReached(CardDisplay target) { return CardActionTools.TargetCanBeReachedByAttack(target, this); }
+    public AttackActionOutput GetAttackActionOutput(CardDisplay target) { return CardActionTools.GetAttackActionOutput(target, this); }
+    public bool TargetCanBeReached(CardDisplay target) { return CardActionTools.TargetCanBeReachedByAttack(target, this); }
 }
 
 [System.Serializable]

@@ -181,10 +181,11 @@ public class GameManager : MonoBehaviour
 					switch (tuAc.actionObject.action.actionType)
 					{
 						case ActionTypes.Attack:
-							info += $"⚔️ <b>{tuAc.Owner.Role}</b>'s <b>{tuAc.CardInAction.card.Name}</b> attacks ";
+							info += $"💥 <b>{tuAc.Owner.Role}</b>'s <b>{tuAc.CardInAction.card.Name}</b> attacks: \n";
 							for (int i = 0; i < tuAc.targets.Count; i++)
 							{
-								info += "<b>· "+tuAc.targets[i].card.name+"</b> <i>("+ tuAc.actionObject.action.attacks[i].CalculateDamage(tuAc.targets[i])+")</i> ";
+								AttackActionOutput attackOutput = tuAc.actionObject.action.attacks[i].GetAttackActionOutput(tuAc.targets[i]);
+								info += $" <b>· {tuAc.targets[i].card.name}</b> <i>({attackOutput.damageTypeIcon} {attackOutput.damage}) {(attackOutput.resultsInDeath?"FATAL":"")}</i> \n";
 							}
 							info += "\n";
 						break;

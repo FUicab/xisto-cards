@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Guardian
   m_EditorClassIdentifier: 
   Name: Keranean Guardian
-  CardCount: 100
+  CardCount: 10
   Type: 0
   Subtypes: 00000000
   Cost: 1

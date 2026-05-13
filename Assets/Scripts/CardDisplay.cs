@@ -738,12 +738,12 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		}
         int i = turnAction.nextNullIndex;
 		TextMeshProUGUI potentialDamage = PotentialDamageImage.GetComponentInChildren<TextMeshProUGUI>();
-        int incomingDamage = CardActionTools.CalculateDamage(this, turnAction.actionObject.action.attacks[i]);
-		if (this.hp <= incomingDamage) {
+        AttackActionOutput attackOutput = CardActionTools.GetAttackActionOutput(this, turnAction.actionObject.action.attacks[i]);
+		if (attackOutput.resultsInDeath) {
             potentialDamage.text = $"☠️";
         } else
 		{
-			potentialDamage.text = $"-{incomingDamage} ❤️";
+			potentialDamage.text = $"{attackOutput.damageTypeIcon} {attackOutput.damage}";
 		}
 	}
 
