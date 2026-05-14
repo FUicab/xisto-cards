@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Threading.Tasks;
 using Unity.VisualScripting;
+using System.Linq;
 //using UnityEngine.UIElements;
 //using UnityEngine.UI;
 
@@ -239,7 +240,7 @@ public class GameManager : MonoBehaviour
 	/** Starts an action event */
 	public void StartAction(CardActionObject action)
 	{
-		if(!CheckAvailableActions()){ return; }
+		if(!CheckAvailableActions() || !CheckAvailableTargetsForAction(action)){ return; }
 		CurrentAction.movementType = TurnMovementType.PerformAction;
 		switch (action.action.actionType)
 		{
@@ -268,12 +269,14 @@ public class GameManager : MonoBehaviour
 		{
 			turnStatus = TurnStatus.SelectingTargets;
 			tooltipMessage += CurrentAction.remainingTargets+" target(s) to select.";
-			switch (actionObject.action.actionType)
+			//actionObject.action.attacks.Concat<ActiveAction>(actionObject.action.buffs).ToList()[CurrentAction.nextNullIndex].GetPotentialTargets().ForEach(x => x.isPotentialTargetForPerformingAction = true);
+            switch (actionObject.action.actionType)
 			{
 				case ActionTypes.Attack:
 					if(CurrentAction.nextNullIndex >= 0)
 					{
-						switch (actionObject.action.attacks[CurrentAction.nextNullIndex].target)
+                        actionObject.action.attacks[CurrentAction.nextNullIndex].WarnPotentialTargetsAboutThisAction();
+                        switch (actionObject.action.attacks[CurrentAction.nextNullIndex].target)
 						{
 							case TargetTypes.SingleEnemy:
 								tooltipMessage += " Select 1 enemy for a "+CardTranslator.DamageTypeDescription(actionObject.action.attacks[CurrentAction.nextNullIndex].damageType)+" attack.";
@@ -284,13 +287,14 @@ public class GameManager : MonoBehaviour
 				case ActionTypes.Buff:
 					if(CurrentAction.nextNullIndex >= 0)
 					{
-						switch (actionObject.action.buffs[CurrentAction.nextNullIndex].target)
+                        actionObject.action.buffs[CurrentAction.nextNullIndex].WarnPotentialTargetsAboutThisAction();
+                        switch (actionObject.action.buffs[CurrentAction.nextNullIndex].target)
 						{
-							case TargetTypes.Self:
+							case TargetTypes.SingleEnemy:
 								// SelectCardAsTargetOfAction(CurrentAction.CardInAction);
 								// UpdateTargetSelectionStatus();
 								// return;
-								// tooltipMessage += " Select 1 enemy for a "+actionObject.DamageTypeDescription(actionObject.action.attacks[CurrentAction.nextNullIndex].damageType)+" attack.";
+								tooltipMessage += " Select 1 enemy to apply "+ CardTranslator.AttributeAndValue(actionObject.action.buffs[CurrentAction.nextNullIndex])+".";
 							break;
 						}
 					}
@@ -562,6 +566,23 @@ public class GameManager : MonoBehaviour
 		}
 		return isOk;
 	}
+
+	public bool CheckAvailableTargetsForAction(CardActionObject actionObject)
+	{
+		bool isOk = true;
+        foreach (ActiveAction action in actionObject.action.attacks.Concat<ActiveAction>(actionObject.action.buffs).ToList())
+        {
+			if (action.GetPotentialTargets().Count == 0) {
+				isOk = false;
+			}
+        }
+		if (!isOk)
+		{
+            DisplayFloatingMessage("This action would not reach anyone", Camera.main.ScreenToWorldPoint(Input.mousePosition), "red");
+        }
+        return isOk;
+	}
+
 	public bool CheckAvailableActions(int requirement = 1){
 		bool isOk = false;
 		if(availableActionsForThisTurn >= requirement){

@@ -274,7 +274,13 @@ public class PlayerAI{
         await Task.Delay(500);
         foreach (BuffAction buff in chosenAction.action.buffs.Where(x => !x.isTargetImplicit).ToList())
         {
-            List<CardDisplay> potentialTargets = GetMostVulnerableAllies();
+			Debug.Log($"{GM.CurrentAction.CardInAction.card.Name} wants to give {CardTranslator.AttributeAndValue(buff)}");
+			List<CardDisplay> potentialTargets = new();
+			if (buff.targetIsFromMyTeam) {
+                potentialTargets.AddRange(GetMostVulnerableAllies());
+            } else {
+                potentialTargets.AddRange(GetMostVulnerableEnemies(buff));
+            }
             potentialTargets[Random.Range(0, potentialTargets.Count)].TriggerClickEvent();
             await Task.Delay(250);
         }
@@ -385,9 +391,15 @@ public class PlayerAI{
         return actions;
     }
 
-    public List<CardDisplay> GetMostVulnerableEnemies(AttackAction attackAction)
+    public List<CardDisplay> GetMostVulnerableEnemies(ActiveAction action)
 	{
-		return OpponentProfile.GetActiveCards().Where(x => attackAction.TargetCanBeReached(x)).ToList().OrderByDescending(x => CardActionTools.CalculateDamage(x, attackAction)).ToList();
+		if (action is AttackAction attackAction) {
+			return OpponentProfile.GetActiveCards().Where(x => action.TargetCanBeReached(x)).ToList().OrderByDescending(x => CardActionTools.CalculateDamage(x, attackAction)).ToList();
+		}
+        else
+        {
+            return OpponentProfile.GetActiveCards().Where(x => action.TargetCanBeReached(x)).ToList().OrderByDescending(x => x.power).Reverse().ToList();
+        }
     }
 
     public List<CardDisplay> GetMostVulnerableAllies()

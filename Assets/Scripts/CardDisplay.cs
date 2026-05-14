@@ -24,6 +24,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		get { return !HasBeenPlayed && Owner.Role == PlayerRole.Host; }
 	}
 	public int HandIndex;
+	public bool isPotentialTargetForPerformingAction = false;
 	public PlayerProfile Owner;
 
 	/* Card values calculated after all modifiers and other independent values */
@@ -685,7 +686,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		{
 			if (mySpace == null || mySpace?.Owner.Role == GM.PlayerAtPlay.Role) { clickable = false; }
 			if (ProtectedByDefender) { clickable = false; }
-			if (!CanBeTargetOfAction(currentTurn)) { clickable = false; }
+			if (!isPotentialTargetForPerformingAction) {  clickable = false; }
 		}
 
 		if (clickable)
@@ -698,33 +699,6 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
             PotentialDamageImage.gameObject.SetActive(false);
             Overlay.enabled = true;
 		}
-	}
-
-	public bool CanBeTargetOfAction(TurnAction turnAction)
-	{
-		bool itCan = false;
-		int i = turnAction.nextNullIndex;
-
-		if (turnAction.movementType == TurnMovementType.PerformAction)
-		{
-			switch (turnAction.actionObject.action.actionType)
-			{
-				case ActionTypes.Attack:
-					AttackAction attack = turnAction.actionObject.action.attacks[i];
-					//Debug.Log($"Checking if {card.Name} meets the requirements: {attack.TargetMeetsRequirements(this)}");
-					if (attack.TargetMeetsRequirements(this) && attack.TargetCanBeReached(this))
-					{
-						itCan = true;
-					}
-					break;
-				case ActionTypes.Buff:
-					BuffAction buff = turnAction.actionObject.action.buffs[i];
-					itCan = buff.TargetMeetsRequirements(this);
-					break;
-			}
-		}
-
-		return itCan;
 	}
 
 	public void SetPotentialDamageDisplay(TurnAction turnAction)

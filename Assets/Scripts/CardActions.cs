@@ -34,9 +34,15 @@ public class ActiveAction
 
     public bool isTargetImplicit { get { return CardActionTools.IsTargetImplicit(target); } }
 	public List<CardDisplay> GetImplicitTargetsOfAction() { return CardActionTools.GetImplicitTargetsOfAction(this); }
-	public bool TargetMeetsRequirements(CardDisplay targetCard) { return CardActionTools.TargetMeetsRequirementsOfAction(targetCard, this); }
+    public List<CardDisplay> GetPotentialTargets() { return CardActionTools.GetPotentialTargetsForAction(this); }
+    public bool TargetMeetsRequirements(CardDisplay targetCard) { return CardActionTools.TargetMeetsRequirementsOfAction(targetCard, this); }
 	public bool targetIsFromMyTeam { get { return CardActionTools.TargetIsFromMyTeam(target); } }
 	public bool isTargetPlural { get { return CardActionTools.IsTargetPlural(target); }  }
+    public bool TargetCanBeReached(CardDisplay target) { return CardActionTools.TargetCanBeReachedByAction(target, this); }
+    public void WarnPotentialTargetsAboutThisAction() {
+		List<CardDisplay> potentialTargets = new(CardActionTools.GetPotentialTargetsForAction(this));
+		CardActionTools.AllPlayingCards.ForEach(x => x.isPotentialTargetForPerformingAction = potentialTargets.Contains(x));
+	}
 }
 
 [System.Serializable]
@@ -64,7 +70,6 @@ public class AttackAction : ActiveAction{
 
 	public int CalculateDamage(CardDisplay target) { return CardActionTools.CalculateDamage(target, this); }
     public AttackActionOutput GetAttackActionOutput(CardDisplay target) { return CardActionTools.GetAttackActionOutput(target, this); }
-    public bool TargetCanBeReached(CardDisplay target) { return CardActionTools.TargetCanBeReachedByAttack(target, this); }
 }
 
 [System.Serializable]

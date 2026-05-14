@@ -10,6 +10,12 @@ using static UnityEngine.GraphicsBuffer;
 
 public static class CardActionTools
 {
+	public static List<CardDisplay> AllPlayingCards {
+		get {
+			GameManager GM = GameObject.FindAnyObjectByType<GameManager>();
+            return GM.Host.GetActiveCards().Concat(GM.Opponent.GetActiveCards()).ToList();
+		}
+	}
 
 	public static CardDisplay GetActualTarget(CardDisplay target)
 	{
@@ -30,6 +36,28 @@ public static class CardActionTools
 			}
 		}
 		return actualTarget;
+	}
+
+	public static List<CardDisplay> GetPotentialTargetsForAction(ActiveAction action)
+	{
+		List<CardDisplay> potentialTargets = new();
+		//AttackAction attackAction = action as AttackAction;
+		if(action is BuffAction buffAction)
+        Debug.Log($"{action.source.card.Name} wants to target {action.target} to {CardTranslator.AttributeAndValue(action as BuffAction)}...");
+		if(action is AttackAction attackAction)
+        Debug.Log($"{action.source.card.Name} wants to target {action.target} for a {CardTranslator.DamageTypeDescription(attackAction.damageType)} attack...");
+
+        foreach (CardDisplay playingCard in AllPlayingCards)
+		{
+			//Debug.Log($"Checking {playingCard.card.Name}...");
+            if (action.TargetMeetsRequirements(playingCard)) 
+            {
+                potentialTargets.Add(playingCard);
+				Debug.Log($"{playingCard.card.Name} is potential target for this action.");
+            }
+        }
+
+		return potentialTargets;
 	}
 
 	public static void PerformAttackAction(CardDisplay target, TurnAction ActionData, int i = 0)
@@ -184,7 +212,13 @@ public static class CardActionTools
 
 	public static bool TargetMeetsRequirementsOfAction(CardDisplay target, ActiveAction action)
 	{
-		return TargetMeetsRequirements(target, action.requirements);
+		bool itDoes = false;
+		//AttackAction attackAction = action as AttackAction;
+		if( ( (action.targetIsFromMyTeam && target.Owner?.Role == action.source?.Owner?.Role) || (!action.targetIsFromMyTeam && target.Owner?.Role != action.source?.Owner?.Role) ) && (action.TargetCanBeReached(target)) )
+		{
+			itDoes = true;
+		}
+		return itDoes && TargetMeetsRequirements(target, action.requirements);
 	}
 	public static bool TargetMeetsRequirements(CardDisplay actionTarget, List<Requirements> requirements)
 	{
@@ -319,33 +353,56 @@ public static class CardActionTools
         return itDoes;
 	}
 
-	public static bool TargetCanBeReachedByAttack(CardDisplay target, AttackAction attack)
+	public static bool TargetCanBeReachedByAction(CardDisplay target, ActiveAction action)
 	{
 		bool itCan = true;
         bool targetIsDefended = false;
         bool targetIsCovered = false;
-        if (target.mySpace != null)
+        if (target.HasBeenPlayed)
         {
-            foreach (CardSpace defenderSpace in target.mySpace.Defenders)
-            {
-                if (defenderSpace.PlayingCard != null)
+			if (action is AttackAction attackAction)
+			{
+				if(target.Owner.Role == action.source.Owner.Role)
+				{
+					itCan = true;
+				} else  {
+					foreach (CardSpace defenderSpace in target.mySpace.Defenders)
+					{
+						if (defenderSpace.HasCard)
+						{
+							targetIsCovered = true;
+							if (defenderSpace.PlayingCard.card.Subtypes.Contains(UnitSubtype.Defender))
+							{
+								targetIsDefended = true;
+							}
+						}
+					}
+					switch (attackAction.damageType)
+					{
+						case DamageTypes.Melee: if (targetIsCovered) { itCan = false; } break;
+						case DamageTypes.Ranged: if (targetIsDefended) { itCan = false; } break;
+						case DamageTypes.Energy: if (targetIsCovered) { itCan = false; } break;
+						case DamageTypes.MeleeOrRanged: if (targetIsDefended) { itCan = false; } break;
+						case DamageTypes.RangedOrEnergy: if (targetIsDefended) { itCan = false; } break;
+						case DamageTypes.MeleeOrEnergy: if (targetIsCovered) { itCan = false; } break;
+						case DamageTypes.MeleeOrRangedOrEnergy: if (targetIsDefended) { itCan = false; } break;
+					}
+				}
+			}
+			else if (action is BuffAction buffAction) {
+                if (target.Owner.Role == action.source.Owner.Role)
                 {
-                    targetIsCovered = true;
-                    if (defenderSpace.PlayingCard.card.Subtypes.Contains(UnitSubtype.Defender))
-                    {
-                        targetIsDefended = true;
-                    }
+                    itCan = true;
+                } else {
+					foreach (CardSpace defenderSpace in target.mySpace.Defenders)
+					{
+						if (defenderSpace.HasCard)
+						{
+							targetIsCovered = true;
+							itCan = false;
+						}
+					}
                 }
-            }
-            switch (attack.damageType)
-            {
-                case DamageTypes.Melee: if (targetIsCovered) { itCan = false; } break;
-                case DamageTypes.Ranged: if (targetIsDefended) { itCan = false; } break;
-                case DamageTypes.Energy: if (targetIsCovered) { itCan = false; } break;
-                case DamageTypes.MeleeOrRanged: if (targetIsDefended) { itCan = false; } break;
-                case DamageTypes.RangedOrEnergy: if (targetIsDefended) { itCan = false; } break;
-                case DamageTypes.MeleeOrEnergy: if (targetIsCovered) { itCan = false; } break;
-                case DamageTypes.MeleeOrRangedOrEnergy: if (targetIsDefended) { itCan = false; } break;
             }
         } else { return false; }
 
