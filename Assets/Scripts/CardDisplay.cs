@@ -47,6 +47,17 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 	public List<PassiveSkill> cardPassives;
 
 	/* Get functions. They apply buffs to properties and make the calculation before hand. These values cannot be changed by code and should only be manipulated by buffs or by modifying the card itself. */
+	public List<UnitSubtype> acquiredSubtypes {
+		get
+		{
+			List<UnitSubtype> subtypes = new();
+            foreach (BuffAction buff in appliedBuffs.Where(x => !x.activatesOnHit && x.specialEffect == BuffSpecialEffects.GrantSubtypes))
+            {
+				subtypes.AddRange(buff.grantedSubtypes);
+			}
+			return subtypes;
+        }
+	}
 	public int maxHP
 	{
 		get
@@ -227,7 +238,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 	}
 	public bool CanActThisTurn
 	{
-		get { return Owner.isMyTurnToPlay && HasBeenPlayed && (!HasActedThisRound || card.Subtypes.Contains(UnitSubtype.Combo)); }
+		get { return Owner.isMyTurnToPlay && HasBeenPlayed && (!HasActedThisRound || card.Subtypes.Concat(acquiredSubtypes).Contains(UnitSubtype.Combo) ); }
 	}
 
 	void OnEnable()

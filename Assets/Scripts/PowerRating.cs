@@ -26,46 +26,7 @@ public class PowerRating
 			float theBonus = 0f;
 			foreach (UnitSubtype subtype in card.Subtypes)
 			{
-				switch (subtype)
-				{
-					case UnitSubtype.Defender:
-						theBonus += baseBonus / 2;
-						break;
-					case UnitSubtype.Dual:
-						theBonus += card.Attack * 1.25f; // This unit subtype is no longer at use but we'll see what this could be used for
-						break;
-					case UnitSubtype.Mercenary:
-						theBonus += card.Attack * 0.25f;
-						break;
-					case UnitSubtype.Assistant:
-						theBonus += 1; // This unit subtype is no longer at use but we'll see what this could be used for
-						break;
-					case UnitSubtype.Pacifist:
-						theBonus -= card.Attack * 1.25f;
-						break;
-					case UnitSubtype.Combo:
-						theBonus += card.Attack;
-						break;
-					case UnitSubtype.Executioner:
-						theBonus += card.Attack;
-						break;
-					case UnitSubtype.Noble:
-						theBonus += 2;
-						break;
-					case UnitSubtype.Solitary:
-						theBonus += 1.5f;
-						break;
-					case UnitSubtype.Inheritor:
-						theBonus += (armorBonus.Sum() + HPBonus) * 0.66f;
-						break;
-					case UnitSubtype.Opportunist:
-						theBonus += (armorBonus.Sum() + HPBonus) * (0.15f * card.Origin.Count);
-						break;
-					case UnitSubtype.Yatza:
-					case UnitSubtype.Doragon:
-						theBonus += (baseBonus + card.Attack) / 2;
-						break;
-				}
+				theBonus += GetSubtypeBonus(subtype);
 			}
 			return theBonus;
 		}
@@ -122,6 +83,54 @@ public class PowerRating
 			bonusPerAction.Add((actionPower * dicePower) / 6);
 			actionsDescription += actionObj.description+"\n";
 		}
+	}
+
+	public float GetSubtypeBonus(UnitSubtype subtype)
+	{
+		float bonus = 0f;
+
+        switch (subtype)
+        {
+            case UnitSubtype.Defender:
+                bonus += baseBonus / 2;
+                break;
+            case UnitSubtype.Dual:
+                bonus += card.Attack * 1.25f; // This unit subtype is no longer at use but we'll see what this could be used for
+                break;
+            case UnitSubtype.Mercenary:
+                bonus += card.Attack * 0.25f;
+                break;
+            case UnitSubtype.Assistant:
+                bonus += 1; // This unit subtype is no longer at use but we'll see what this could be used for
+                break;
+            case UnitSubtype.Pacifist:
+                bonus -= card.Attack * 1.25f;
+                break;
+            case UnitSubtype.Combo:
+                bonus += card.Attack;
+                break;
+            case UnitSubtype.Executioner:
+                bonus += card.Attack;
+                break;
+            case UnitSubtype.Noble:
+                bonus += 2;
+                break;
+            case UnitSubtype.Solitary:
+                bonus += 1.5f;
+                break;
+            case UnitSubtype.Inheritor:
+                bonus += (armorBonus.Sum() + HPBonus) * 0.66f;
+                break;
+            case UnitSubtype.Opportunist:
+                bonus += (armorBonus.Sum() + HPBonus) * (0.15f * card.Origin.Count);
+                break;
+            case UnitSubtype.Yatza:
+            case UnitSubtype.Doragon:
+                bonus += (baseBonus + card.Attack) / 2;
+                break;
+        }
+
+        return bonus;
 	}
 
 	public void SetPassiveBonus()
@@ -248,6 +257,18 @@ public class PowerRating
 			case Attributes.MaxHealth:
 				buffPower += (buff.amount * augmentationBonus) * 1.25f;
 				break;
+		}
+		switch (buff.specialEffect)
+		{
+			case BuffSpecialEffects.RedirectAttacksTowardsMe:
+				buffPower += baseBonus / 2;
+				break;
+			case BuffSpecialEffects.GrantSubtypes:
+                foreach (UnitSubtype subtype in buff.grantedSubtypes)
+                {
+					buffPower += GetSubtypeBonus(subtype);
+                }
+                break;
 		}
 		if (!buff.targetIsFromMyTeam) { buffPower *= -1f; }
 		float temporaryBuffRequirementNerf = GetRequirementsNerf(buff.requirements);

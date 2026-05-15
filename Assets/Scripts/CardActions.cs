@@ -81,6 +81,7 @@ public class BuffAction : ActiveAction{
 	public bool activatesOnHit = false; /* Check this if the buff is meant to only activate during attacks. As if it was a temporary buff. */
 	public List<Requirements> onHitRequirements = new(); /* The buff will not activate its "on hit" benefits if these requirements are not met. */
 	public BuffSpecialEffects specialEffect;
+	public List<UnitSubtype> grantedSubtypes = new();
 	public List<SpecialBehavior> specialBehavior = new();
 	public AttackAction originAttack;
 	public PassiveSkill originPassive;
@@ -100,6 +101,7 @@ public class BuffAction : ActiveAction{
 		originAttack = sourceAttack ?? values.originAttack;
 		isDebuff = values.isDebuff;
 		activatesOnHit = values.activatesOnHit;
+		grantedSubtypes = values.grantedSubtypes;
 		values.requirements.ForEach(req => { requirements?.Add(new Requirements(req, (originAttack != null ? originAttack : this) ) ); });
         values.onHitRequirements.ForEach(req => { onHitRequirements?.Add(new Requirements(req, (originAttack != null ? originAttack : this) ) ); });
 		//onHitRequirements = values.onHitRequirements;
@@ -134,7 +136,8 @@ public class AttackEffect
 
 public enum BuffSpecialEffects{
 	None,
-	RedirectAttacksTowardsMe
+	RedirectAttacksTowardsMe,
+	GrantSubtypes
 }
 
 [System.Serializable]

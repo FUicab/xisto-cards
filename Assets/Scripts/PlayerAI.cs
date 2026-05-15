@@ -271,19 +271,22 @@ public class PlayerAI{
 
 		CardActionObject chosenAction = buffActions[Random.Range(0,buffActions.Count)];
         GM.StartAction(chosenAction);
-        await Task.Delay(500);
-        foreach (BuffAction buff in chosenAction.action.buffs.Where(x => !x.isTargetImplicit).ToList())
-        {
-			Debug.Log($"{GM.CurrentAction.CardInAction.card.Name} wants to give {CardTranslator.AttributeAndValue(buff)}");
-			List<CardDisplay> potentialTargets = new();
-			if (buff.targetIsFromMyTeam) {
-                potentialTargets.AddRange(GetMostVulnerableAllies());
-            } else {
-                potentialTargets.AddRange(GetMostVulnerableEnemies(buff));
-            }
-            potentialTargets[Random.Range(0, potentialTargets.Count)].TriggerClickEvent();
-            await Task.Delay(250);
-        }
+		await Task.Delay(500);
+		if(GM.CurrentAction.CardInAction != null) // If this property is null it means the chosen action could not go through
+		{
+			foreach (BuffAction buff in chosenAction.action.buffs.Where(x => !x.isTargetImplicit).ToList())
+			{
+				Debug.Log($"{GM.CurrentAction.CardInAction.card.Name} wants to give {CardTranslator.AttributeAndValue(buff)}");
+				List<CardDisplay> potentialTargets = new();
+				if (buff.targetIsFromMyTeam) {
+					potentialTargets.AddRange(GetMostVulnerableAllies());
+				} else {
+					potentialTargets.AddRange(GetMostVulnerableEnemies(buff));
+				}
+				potentialTargets[Random.Range(0, potentialTargets.Count)].TriggerClickEvent();
+				await Task.Delay(250);
+			}
+		}
         GM.TurnEnd();
     }
 

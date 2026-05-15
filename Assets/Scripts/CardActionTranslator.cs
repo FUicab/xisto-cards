@@ -297,6 +297,25 @@ public static class CardTranslator
 					else if (passiveSkill != null && (passiveSkill.trigger == TriggerTypes.OnAttack || buff.activatesOnHit) )
 					{ text += " <i>(until the end of the round)</i>"; }
 					text += BuffEffectDescription(buff);
+				} else
+				{
+					if(buff.specialEffect == BuffSpecialEffects.GrantSubtypes)
+					{
+                        for (int i = 0; i < buff.grantedSubtypes.Count; i++)
+                        {
+							text += TextFormat(TargetSubtypeDescription(buff.grantedSubtypes[i], true), "subtype");
+
+                            if (i < buff.grantedSubtypes.Count - 2)
+							{
+								text += ", ";
+							} else if (i == buff.grantedSubtypes.Count - 2)
+							{
+								text += " and ";
+							}
+                        }
+                        text += " ";
+                        text += TargetTypeDescription(buff.target);
+                    }
 				}
 			} else {
 				if(buffs.Count-1 == index){
@@ -894,12 +913,31 @@ public static class CardTranslator
 		for (int i = 0; i < buffs.Count; i++)
 		{
 			BuffAction buff = buffs[i];
-			if(buff.specialEffect == BuffSpecialEffects.None){
+			if(buff.specialEffect == BuffSpecialEffects.None || buff.specialEffect == BuffSpecialEffects.GrantSubtypes){
 				if (buff.activatesOnHit)
 				{
 					text += "<b>💥 On hit</b>: ";
 				}
-				text += AttributeAndValue(buff);
+				if(buff.specialEffect == BuffSpecialEffects.GrantSubtypes)
+				{
+					text += "I have acquired ";
+                    for (int j = 0; j < buff.grantedSubtypes.Count; j++)
+                    {
+                        text += TextFormat(TargetSubtypeDescription(buff.grantedSubtypes[j], true), "subtype");
+
+                        if (j < buff.grantedSubtypes.Count - 2)
+                        {
+                            text += ", ";
+                        }
+                        else if (j == buff.grantedSubtypes.Count - 2)
+                        {
+                            text += " and ";
+                        }
+                    }
+                } else
+				{
+					text += AttributeAndValue(buff);
+				}
 				if (buff.activatesOnHit)
 				{
 					text += RequirementDescription(buff.onHitRequirements, buff.target, buff.source?.card, "onHit")+",";
