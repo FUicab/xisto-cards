@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Watcher
   m_EditorClassIdentifier: Assembly-CSharp::Card
   Name: Saggist Watcher
-  CardCount: 100
+  CardCount: 10
   Type: 0
   Subtypes: 00000000
   Cost: 2
@@ -49,6 +49,7 @@ MonoBehaviour:
         attributeValue: 0
         targetOfRequirementIsTargetOfAttack: 0
       specialEffect: 0
+      grantedSubtypes: 
       specialBehavior: 
       originAttack:
         target: 0
@@ -149,6 +150,38 @@ MonoBehaviour:
       temporaryBuffs: []
     attackCountCanBeAugmented: 0
     buffs:
+    - target: 0
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      Attribute: 2
+      amount: 0
+      isDebuff: 1
+      amountCanBeAugmented: 0
+      activatesOnHit: 0
+      onHitRequirements: []
+      specialEffect: 2
+      grantedSubtypes: 05000000
+      specialBehavior: 
+      originAttack:
+        target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        damageType: 0
+        damageMultiplier: 0
+        flatDamageOverwrite: 0
+        attackEffect: []
+        temporaryBuffs: []
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerTurn: 0
+        requiresElementalExchange: 0
+        buffs: []
+        source: {fileID: 0}
     - target: 2
       requirements:
       - requirement: 1
@@ -168,6 +201,7 @@ MonoBehaviour:
       activatesOnHit: 0
       onHitRequirements: []
       specialEffect: 0
+      grantedSubtypes: 
       specialBehavior: 
       originAttack:
         target: 0
@@ -193,7 +227,7 @@ MonoBehaviour:
     bonusPerAction:
     - 0.8500001
     - 3.1499999
-    - 0.06875
+    - 0.81875
     bonusPerPassive:
     - 2.2
     passiveDescription: "<b>Routine pursuit</b>: When I <b>attack \U0001F4A5</b>
@@ -205,6 +239,6 @@ MonoBehaviour:
       mercenaries</color></b> or <b><color=#555>Independent units</color></b>, from
       myself\n"
     actionsDescription: "\U0001F3AF Ranged attack.\n\u2694\uFE0F Melee or \U0001F3AF
-      ranged attack.\nGrants <b><color=#15c>-1</color></b> <b><color=#760>defense</color></b>
-      to an enemy if they're <b><color=#714>\U0001F3F4 mercenaries</color></b> or
-      <b><color=#555>Independent units</color></b>.\n"
+      ranged attack.\nGrants <b><color=#714>\u26D3 combo</color></b> to me and <b><color=#15c>-1</color></b>
+      <b><color=#760>defense</color></b> to an enemy if they're <b><color=#714>\U0001F3F4
+      mercenaries</color></b> or <b><color=#555>Independent units</color></b>.\n"

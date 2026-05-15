@@ -1,0 +1,105 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e4e87ef44ac0934298d8773e4605e72, type: 3}
+  m_Name: Keranean Warhammer
+  m_EditorClassIdentifier: Assembly-CSharp::Card
+  Name: Keranean Warhammer
+  CardCount: 10
+  Type: 0
+  Subtypes: 00000000
+  Cost: 2
+  Artwork: {fileID: 21300000, guid: dd274b91e59e06f40b58e8be60843d37, type: 3}
+  Origin: 02000000
+  MaxHP: 6
+  Armor: 030000000100000003000000
+  Attack: 5
+  Passives: []
+  CardActions:
+  - actionType: 0
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
+    attackCountCanBeAugmented: 0
+    buffs: []
+  - actionType: 1
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
+    attackCountCanBeAugmented: 0
+    buffs: []
+  - actionType: 1
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
+    attackCountCanBeAugmented: 0
+    buffs: []
+  - actionType: 0
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 5
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect:
+      - effectType: 0
+        useAttackValue: 0
+        value: 2
+        valueCanBeAugmented: 1
+        buffs: []
+        requirements: []
+        originAttack:
+          target: 0
+          requirements: []
+          source: {fileID: 0}
+          receiver: {fileID: 0}
+          damageType: 0
+          damageMultiplier: 0
+          flatDamageOverwrite: 0
+          attackEffect: []
+          temporaryBuffs: []
+      temporaryBuffs: []
+    attackCountCanBeAugmented: 0
+    buffs: []
+  powerRating:
+    card: {fileID: 11400000}
+    bonusPerAction:
+    - 1.721875
+    - 1.2395834
+    bonusPerPassive: []
+    passiveDescription: 
+    passiveBuffDescriptions: 
+    actionsDescription: "\u2694\uFE0F Melee attack.\n\u2694\uFE0F Melee or \u2728
+      energy attack and deals <b><color=#15c>+2</color></b> damage to enemies next
+      to the target.\n"

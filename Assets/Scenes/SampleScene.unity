@@ -5986,6 +5986,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0f32531c147d8e14cb13ac47a689165a, type: 2}
   - {fileID: 11400000, guid: 0fa4fa5685c2a724cb866e9e6ab26137, type: 2}
   - {fileID: 11400000, guid: 5e36415e5081a704f9f7e2f7549bed5b, type: 2}
+  - {fileID: 11400000, guid: 4f06cf404b7779d46850fb74f24192ae, type: 2}
+  - {fileID: 11400000, guid: 07afec2c6cd3d2a4bb66aac7a0f701df, type: 2}
   Deck: []
   Players: []
   RoundActions: []

@@ -1,0 +1,187 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e4e87ef44ac0934298d8773e4605e72, type: 3}
+  m_Name: Emperor Escort
+  m_EditorClassIdentifier: Assembly-CSharp::Card
+  Name: Emperor's Escort
+  CardCount: 10
+  Type: 0
+  Subtypes: 00000000
+  Cost: 2
+  Artwork: {fileID: -240521360, guid: bb675e33e1fbe814ea207ed3d7d43672, type: 3}
+  Origin: 03000000
+  MaxHP: 7
+  Armor: 050000000400000002000000
+  Attack: 4
+  Passives:
+  - title: Honorable
+    description: 
+    trigger: 1
+    canBeShared: 1
+    oncePerTurn: 0
+    requiresElementalExchange: 0
+    buffs:
+    - target: 0
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      Attribute: 2
+      amount: 1
+      isDebuff: 0
+      amountCanBeAugmented: 0
+      activatesOnHit: 0
+      onHitRequirements: []
+      specialEffect: 0
+      grantedSubtypes: 
+      specialBehavior: 
+      originAttack:
+        target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        damageType: 0
+        damageMultiplier: 0
+        flatDamageOverwrite: 0
+        attackEffect: []
+        temporaryBuffs: []
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerTurn: 0
+        requiresElementalExchange: 0
+        buffs: []
+        source: {fileID: 0}
+    - target: 0
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      Attribute: 0
+      amount: 1
+      isDebuff: 0
+      amountCanBeAugmented: 0
+      activatesOnHit: 0
+      onHitRequirements: []
+      specialEffect: 0
+      grantedSubtypes: 
+      specialBehavior: 
+      originAttack:
+        target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        damageType: 0
+        damageMultiplier: 0
+        flatDamageOverwrite: 0
+        attackEffect: []
+        temporaryBuffs: []
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerTurn: 0
+        requiresElementalExchange: 0
+        buffs: []
+        source: {fileID: 0}
+    source: {fileID: 0}
+  CardActions:
+  - actionType: 4
+    attacks: []
+    attackCountCanBeAugmented: 0
+    buffs: []
+  - actionType: 0
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
+    attackCountCanBeAugmented: 0
+    buffs: []
+  - actionType: 1
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
+    attackCountCanBeAugmented: 0
+    buffs: []
+  - actionType: 1
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
+    attackCountCanBeAugmented: 0
+    buffs: []
+  - actionType: 1
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
+    attackCountCanBeAugmented: 0
+    buffs: []
+  - actionType: 0
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
+    attackCountCanBeAugmented: 0
+    buffs: []
+  powerRating:
+    card: {fileID: 11400000}
+    bonusPerAction:
+    - 0
+    - 1.6916666
+    - 0.3625
+    bonusPerPassive:
+    - 2.1
+    passiveDescription: "\U0001F517 <b>Honorable</b>: Grants <b><color=#222>+1</color></b>
+      <b><color=#760>defense</color></b> and <b><color=#222>+1</color></b> <b><color=#900>attack</color></b>
+      to me.\n"
+    passiveBuffDescriptions: '<b><color=#222>+1</color></b> <b><color=#760>defense</color></b>
+      from myself
+
+      <b><color=#222>+1</color></b> <b><color=#900>attack</color></b>
+      from myself
+
+'
+    actionsDescription: "Do nothing..\n\u2694\uFE0F Melee attack.\n\u2694\uFE0F Melee
+      attack.\n"

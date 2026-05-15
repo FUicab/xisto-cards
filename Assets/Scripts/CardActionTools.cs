@@ -42,10 +42,10 @@ public static class CardActionTools
 	{
 		List<CardDisplay> potentialTargets = new();
 		//AttackAction attackAction = action as AttackAction;
-		if(action is BuffAction buffAction)
-        Debug.Log($"{action.source.card.Name} wants to target {action.target} to {CardTranslator.AttributeAndValue(action as BuffAction)}...");
-		if(action is AttackAction attackAction)
-        Debug.Log($"{action.source.card.Name} wants to target {action.target} for a {CardTranslator.DamageTypeDescription(attackAction.damageType)} attack...");
+		//if(action is BuffAction buffAction)
+        //Debug.Log($"{action.source.card.Name} wants to target {action.target} to {CardTranslator.AttributeAndValue(action as BuffAction)}...");
+		//if(action is AttackAction attackAction)
+        //Debug.Log($"{action.source.card.Name} wants to target {action.target} for a {CardTranslator.DamageTypeDescription(attackAction.damageType)} attack...");
 
         foreach (CardDisplay playingCard in AllPlayingCards)
 		{
@@ -53,7 +53,7 @@ public static class CardActionTools
             if (action.TargetMeetsRequirements(playingCard)) 
             {
                 potentialTargets.Add(playingCard);
-				Debug.Log($"{playingCard.card.Name} is potential target for this action.");
+				//Debug.Log($"{playingCard.card.Name} is potential target for this action.");
             }
         }
 
@@ -214,10 +214,11 @@ public static class CardActionTools
 	{
 		bool itDoes = false;
 		//AttackAction attackAction = action as AttackAction;
-		if( ( (action.targetIsFromMyTeam && target.Owner?.Role == action.source?.Owner?.Role) || (!action.targetIsFromMyTeam && target.Owner?.Role != action.source?.Owner?.Role) ) && (action.TargetCanBeReached(target)) )
+		if( ( (action.targetIsFromMyTeam && target.Owner?.Role == action.source?.Owner?.Role) || (!action.targetIsFromMyTeam && target.Owner?.Role != action.source?.Owner?.Role) || action.target == TargetTypes.Self) && (action.TargetCanBeReached(target)) )
 		{
 			itDoes = true;
 		}
+		Debug.Log($"<b>{action.source?.card.Name}</b>: Does target of buff meet all requirements? -> {itDoes} { TargetMeetsRequirements(target, action.requirements)}");
 		return itDoes && TargetMeetsRequirements(target, action.requirements);
 	}
 	public static bool TargetMeetsRequirements(CardDisplay actionTarget, List<Requirements> requirements)
@@ -226,6 +227,7 @@ public static class CardActionTools
 
         if (requirements.Count > 0) // Check attack requirements
         {
+			Debug.Log($"<b>{requirements[0].originAction?.source?.card.Name}</b>: <color=red>There is indeed some requirements for this action.</color>");
             itDoes = false;
 
             foreach (Requirements requirement in requirements)
@@ -250,7 +252,7 @@ public static class CardActionTools
 					target = actionTarget;
 				}
 
-				//Debug.Log($"{target.card.Name} seems to be the target of this action.");
+				Debug.Log($"{target.card.Name} seems to be the target of this action.");
 
 				switch (requirement.requirement)
                 {
@@ -350,7 +352,8 @@ public static class CardActionTools
             }
         }
 
-        return itDoes;
+        Debug.Log($"Trying to reach {actionTarget.card.Name}: {itDoes}");
+		return itDoes;
 	}
 
 	public static bool TargetCanBeReachedByAction(CardDisplay target, ActiveAction action)
@@ -390,7 +393,7 @@ public static class CardActionTools
 				}
 			}
 			else if (action is BuffAction buffAction) {
-                if (target.Owner.Role == action.source.Owner.Role)
+                if (target.Owner.Role == action.source?.Owner.Role)
                 {
                     itCan = true;
                 } else {
@@ -420,8 +423,10 @@ public static class CardActionTools
         var targetTempModifiers = new TempModifiers();
         foreach (BuffAction buff in attackAction.temporaryBuffs)
         {
+			Debug.Log($"<b>{attackAction.source.card.Name}</b>: Checking buff to {buff.target} that gives {CardTranslator.AttributeAndValue(buff)} -> {buff.target == TargetTypes.Self} {buff.TargetMeetsRequirements(target)}");
             if (buff.target == TargetTypes.Self && buff.TargetMeetsRequirements(target)) /* The modifiers apply to myself */
             {
+				Debug.Log($"I deserve {CardTranslator.AttributeAndValue(buff)}");
                 attackerTempModifiers.SetModifiersFromBuff(buff);
             }
             else if ((buff.target == TargetTypes.SingleEnemy || buff.target == TargetTypes.SameTarget) && buff.TargetMeetsRequirements(target))

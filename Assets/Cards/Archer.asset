@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Archer
   m_EditorClassIdentifier: 
   Name: Voucarian bowman
-  CardCount: 100
+  CardCount: 10
   Type: 0
   Subtypes: 02000000
   Cost: 1
@@ -54,6 +54,7 @@ MonoBehaviour:
         activatesOnHit: 0
         onHitRequirements: []
         specialEffect: 0
+        grantedSubtypes: 
         specialBehavior: 
         originAttack:
           target: 0
