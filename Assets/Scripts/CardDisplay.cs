@@ -521,7 +521,13 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		UpdateCardUI();
 	}
 
-	public void ReceiveActiveBuff(BuffAction newBuff)
+    public void ReceiveDamageFromAttack(AttackAction attack)
+    {
+		attack.attackActionOutput = attack.GetAttackActionOutput(this);
+		ReceiveDamage(attack.attackActionOutput.damage);
+    }
+
+    public void ReceiveActiveBuff(BuffAction newBuff)
 	{
 		BuffAction buff = new BuffAction(newBuff)
 		{

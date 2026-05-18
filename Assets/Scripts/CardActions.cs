@@ -52,6 +52,7 @@ public class AttackAction : ActiveAction{
 	public int flatDamageOverwrite = 0; //This overwrite will make attacks deal a given amount of damage without taking into account the attack value of the card nor any modifiers
 	public List<AttackEffect> attackEffect = new();
 	public List<BuffAction> temporaryBuffs = new(); //Temporary buffs are applied during the attack
+	public AttackActionOutput attackActionOutput;
 
 	public AttackAction(AttackAction values)
 	{
@@ -81,6 +82,7 @@ public class BuffAction : ActiveAction{
 	public bool activatesOnHit = false; /* Check this if the buff is meant to only activate during attacks. As if it was a temporary buff. */
 	public List<Requirements> onHitRequirements = new(); /* The buff will not activate its "on hit" benefits if these requirements are not met. */
 	public BuffSpecialEffects specialEffect;
+	public List<AttackAction> extraAttacks = new(); /* Applying buffs with extra attacks will trigger the attack inmediatly at the moment of application and the buff effect will not stay. If OnHit is set then the buff stays and the extra attack performs on each hit of the target. */
 	public List<UnitSubtype> grantedSubtypes = new();
 	public List<SpecialBehavior> specialBehavior = new();
 	public AttackAction originAttack;
@@ -104,8 +106,9 @@ public class BuffAction : ActiveAction{
 		grantedSubtypes = values.grantedSubtypes;
 		values.requirements.ForEach(req => { requirements?.Add(new Requirements(req, (originAttack != null ? originAttack : this) ) ); });
         values.onHitRequirements.ForEach(req => { onHitRequirements?.Add(new Requirements(req, (originAttack != null ? originAttack : this) ) ); });
-		//onHitRequirements = values.onHitRequirements;
-	}
+        values.extraAttacks.ForEach(atk => { extraAttacks?.Add(new AttackAction(atk) { source = values.source } ); });
+        //onHitRequirements = values.onHitRequirements;
+    }
 
     public bool TargetMeetsOnHitRequirements(CardDisplay target) { return CardActionTools.TargetMeetsRequirements(target, onHitRequirements); }
 }
@@ -137,7 +140,8 @@ public class AttackEffect
 public enum BuffSpecialEffects{
 	None,
 	RedirectAttacksTowardsMe,
-	GrantSubtypes
+	GrantSubtypes,
+	TriggerExtraAttack
 }
 
 [System.Serializable]

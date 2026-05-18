@@ -63,7 +63,27 @@ public static class CardActionTools
 	public static void PerformAttackAction(CardDisplay target, TurnAction ActionData, int i = 0)
 	{
 		AttackAction attack = ActionData.actionObject.action.attacks[i];
-		GetActualTarget(target).ReceiveDamage(CalculateDamage(GetActualTarget(target), attack));
+
+		CardDisplay actualTarget = GetActualTarget(target);
+		actualTarget.ReceiveDamageFromAttack(attack);
+		if (attack.attackActionOutput.resultsInDeath)
+		{
+			actualTarget = GetActualTarget(target);
+		}
+		if(actualTarget != null)
+		{
+            foreach (BuffAction buff in ActionData.CardInAction.appliedBuffs.Where(x => x.specialEffect == BuffSpecialEffects.TriggerExtraAttack && x.extraAttacks.Count > 0))
+            {
+				if(buff.TargetMeetsOnHitRequirements(actualTarget))
+				foreach (AttackAction extraAttack in ActionData.CardInAction.appliedBuffs.Where(x => x.specialEffect == BuffSpecialEffects.TriggerExtraAttack).SelectMany(x => x.extraAttacks))
+					{
+						if (extraAttack.TargetMeetsRequirements(actualTarget))
+						{
+							actualTarget.ReceiveDamageFromAttack(extraAttack);
+						}
+					}
+            }
+        }
 
 		foreach (AttackEffect effect in attack.attackEffect)
 		{

@@ -269,10 +269,14 @@ public class PowerRating
 					buffPower += GetSubtypeBonus(subtype);
                 }
                 break;
+			case BuffSpecialEffects.TriggerExtraAttack:
+				buffPower += GetPowerOfAttacks(buff.extraAttacks);
+				break;
 		}
 		if (!buff.targetIsFromMyTeam) { buffPower *= -1f; }
 		float temporaryBuffRequirementNerf = GetRequirementsNerf(buff.requirements);
-		return buffPower * temporaryBuffRequirementNerf;
+		float onHitBuffRequirementNerf = GetRequirementsNerf(buff.onHitRequirements);
+		return buffPower * temporaryBuffRequirementNerf * onHitBuffRequirementNerf;
 	}
 	public float GetBuffPowerBonus(List<BuffAction> buffs)
 	{
@@ -322,15 +326,22 @@ public class PowerRating
 		{
 			augmentationBonus += card.Attack * augmentationBonus_scaling;
 		}
-		foreach (AttackAction attack in actionObject.action.attacks)
-		{
-			float damagePower = card.Attack * attack.damageMultiplier;
-			float attackTypeMultiplier = GetAttackTypeBonus(attack.damageType);
-			float requirementsPowerNerf = GetRequirementsNerf(attack.requirements);
-			actionPower += GetBuffPowerBonus(attack.temporaryBuffs);
-			actionPower += GetAttackEffectPowerBonus(attack.attackEffect);
-			actionPower += damagePower * attackTypeMultiplier * requirementsPowerNerf * augmentationBonus;
-		}
+		actionPower += GetPowerOfAttacks(actionObject.action.attacks, augmentationBonus);
 		return actionPower;
 	}
+
+	public float GetPowerOfAttacks(List<AttackAction> attacks, float augmentationBonus = 1f)
+	{
+		float powerBonus = 0f;
+        foreach (AttackAction attack in attacks)
+        {
+            float damagePower = card.Attack * attack.damageMultiplier;
+            float attackTypeMultiplier = GetAttackTypeBonus(attack.damageType);
+            float requirementsPowerNerf = GetRequirementsNerf(attack.requirements);
+            powerBonus += GetBuffPowerBonus(attack.temporaryBuffs);
+            powerBonus += GetAttackEffectPowerBonus(attack.attackEffect);
+            powerBonus += damagePower * attackTypeMultiplier * requirementsPowerNerf * augmentationBonus;
+        }
+		return powerBonus;
+    }
 }

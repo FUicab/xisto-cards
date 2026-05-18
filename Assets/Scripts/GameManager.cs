@@ -185,10 +185,21 @@ public class GameManager : MonoBehaviour
 							info += $"💥 <b>{tuAc.Owner.Role}</b>'s <b>{tuAc.CardInAction.card.Name}</b> attacks: \n";
 							for (int i = 0; i < tuAc.targets.Count; i++)
 							{
-								AttackActionOutput attackOutput = tuAc.actionObject.action.attacks[i].GetAttackActionOutput(tuAc.targets[i]);
-								info += $" <b>· {tuAc.targets[i].card.name}</b> <i>({attackOutput.damageTypeIcon} {attackOutput.damage}) {(attackOutput.resultsInDeath?"FATAL":"")}</i> \n";
+								CardDisplay target = tuAc.targets[i];
+                                AttackActionOutput attackOutput = tuAc.actionObject.action.attacks[i].attackActionOutput;
+								info += $" <b>· {target.card.name}</b> <i>({attackOutput.damageTypeIcon} {attackOutput.damage}) {(attackOutput.resultsInDeath?"FATAL":"")}</i> \n";
+
+								List<AttackAction> extraAttacks = tuAc.CardInAction.appliedBuffs.Where(x => x.specialEffect == BuffSpecialEffects.TriggerExtraAttack).Where(x => x.TargetMeetsOnHitRequirements(target)).SelectMany(x => x.extraAttacks).ToList();
+								if(extraAttacks.Count > 0) {
+									foreach (AttackAction extraAttack in extraAttacks)
+									{
+										AttackActionOutput extraAttackOutput = extraAttack.attackActionOutput;
+										info += $"    <b>·</b> <i>({extraAttackOutput.damageTypeIcon} {extraAttackOutput.damage}) {(extraAttackOutput.resultsInDeath ? "FATAL" : "")}</i> \n";
+									}
+
+								}
 							}
-							info += "\n";
+							//info += "\n";
 						break;
 						case ActionTypes.Buff:
 							info += $"⏫ <b>{tuAc.Owner.Role}</b>'s <b>{tuAc.CardInAction.card.Name}</b> applies buffs: ";

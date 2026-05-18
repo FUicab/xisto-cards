@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Android.Gradle.Manifest;
 using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using static Card;
 using static CardDisplay;
@@ -96,120 +97,138 @@ public static class CardTranslator
 {
 	public static string GenerateSkillAttackText(CardAction skill)
 	{
-		string text = "";
-		int index = 0;
-		int subIndex = 0;
-		// Checks if all attacks are the same. This is to list each one separately or just display the number of attacks.
-		bool allSameAttackTypes = true;
-		foreach (var attack in skill.attacks)
-		{
-			if(attack.damageType != skill.attacks[0].damageType)
-			{
-				allSameAttackTypes = false;
-			}
-		}
-		if (allSameAttackTypes && skill.attacks.Count > 1) {
-			AttackAction attack = skill.attacks[0];
-			text += TextFormat(skill.attacks.Count.ToString(),null,skill.attackCountCanBeAugmented) + " ";
-			text += DamageTypeDescription(attack.damageType);
-			text += " attacks";
-		} else {
-			index = 0;
-			foreach (var attack in skill.attacks)
-			{
-				if(index == 0)
-				{
-					if(skill.attacks.Count > 1)
-					{
-						text += "A ";
-					}
-					text += DamageTypeDescription(attack.damageType);
-					text += " attack";
-				} else {
-					if(skill.attacks.Count-1 == index)
-					{
-						text += " and a ";
-						text += DamageTypeDescription(attack.damageType);
-						text += " attack";
-					} else {
-						text += ", a";
-						text += DamageTypeDescription(attack.damageType);
-						text += " attack";
-					}
-				}
-
-				if(attack.damageMultiplier != 1f)
-				{
-					text += " with <b>"+(attack.damageMultiplier*100)+"%</b> effectivity";
-				}
-
-				// Lists all attack effects
-				subIndex = 0;
-				if (attack.attackEffect.Count > 0)
-				{
-					text += " and ";
-					foreach (var effect in attack.attackEffect)
-					{
-						if(subIndex == 0)
-						{
-							text += AttackEffectDescription(effect);
-						} else {
-							if(attack.temporaryBuffs.Count-1 == subIndex)
-							{
-								text += " and ";
-								text += AttackEffectDescription(effect);
-							} else {
-								text += ", ";
-								text += AttackEffectDescription(effect);
-							}
-						}
-
-						// Lists the requirements for those attack effects
-						if(effect.requirements.Count > 0)
-						{
-							text += text += RequirementDescription(effect.requirements, attack.target, attack.source?.card, "effectOrTempBuff");
-						}
-
-						subIndex += 1;
-					}
-				}
-
-				// Lists the temporary buffs of an attack. These buffs only apply while performing the skill.
-				subIndex = 0;
-				if (attack.temporaryBuffs.Count > 0)
-				{
-					text += ", with ";
-					foreach (var tempBuff in attack.temporaryBuffs)
-					{
-						if(attack.temporaryBuffs.Count > 1 && attack.temporaryBuffs.Count-1 == subIndex)
-						{
-							text += " and ";
-						} else if (attack.temporaryBuffs.Count > 2 && subIndex != 0){
-							text += ", ";
-						}
-						text += AttributeAndValue(tempBuff);
-
-						// Lists the requirements for the temporary buffs on an attack.
-						if(tempBuff.requirements.Count > 0)
-						{
-							text += RequirementDescription(tempBuff.requirements, tempBuff.target, attack.source?.card, "effectOrTempBuff");
-						}
-
-						subIndex += 1;
-					}
-				}
-
-				// Lists the requirements of an attack.
-				if (attack.requirements.Count > 0)
-				{
-					text += RequirementDescription(attack.requirements, attack.target, attack.source?.card, "attack");
-				}
-
-				index += 1;
-			}
-		}
-		return text;
+		return GenerateAttacksDescription(skill.attacks, skill.attackCountCanBeAugmented);
 	}
+
+	public static string GenerateAttacksDescription(List<AttackAction> attacks, bool attackCountCanBeAugmented = false)
+	{
+        string text = "";
+        int index = 0;
+        int subIndex = 0;
+        // Checks if all attacks are the same. This is to list each one separately or just display the number of attacks.
+        bool allSameAttackTypes = true;
+        foreach (var attack in attacks)
+        {
+            if (attack.damageType != attacks[0].damageType)
+            {
+                allSameAttackTypes = false;
+            }
+        }
+        if (allSameAttackTypes && attacks.Count > 1)
+        {
+            AttackAction attack = attacks[0];
+            text += TextFormat(attacks.Count.ToString(), null, attackCountCanBeAugmented) + " ";
+            text += DamageTypeDescription(attack.damageType);
+            text += " attacks";
+        }
+        else
+        {
+            index = 0;
+            foreach (var attack in attacks)
+            {
+                if (index == 0)
+                {
+                    if (attacks.Count > 1)
+                    {
+                        text += "A ";
+                    }
+                    text += DamageTypeDescription(attack.damageType);
+                    text += " attack";
+                }
+                else
+                {
+                    if (attacks.Count - 1 == index)
+                    {
+                        text += " and a ";
+                        text += DamageTypeDescription(attack.damageType);
+                        text += " attack";
+                    }
+                    else
+                    {
+                        text += ", a";
+                        text += DamageTypeDescription(attack.damageType);
+                        text += " attack";
+                    }
+                }
+
+                if (attack.damageMultiplier != 1f)
+                {
+                    text += " with <b>" + (attack.damageMultiplier * 100) + "%</b> effectivity";
+                }
+
+                // Lists all attack effects
+                subIndex = 0;
+                if (attack.attackEffect.Count > 0)
+                {
+                    text += " and ";
+                    foreach (var effect in attack.attackEffect)
+                    {
+                        if (subIndex == 0)
+                        {
+                            text += AttackEffectDescription(effect);
+                        }
+                        else
+                        {
+                            if (attack.temporaryBuffs.Count - 1 == subIndex)
+                            {
+                                text += " and ";
+                                text += AttackEffectDescription(effect);
+                            }
+                            else
+                            {
+                                text += ", ";
+                                text += AttackEffectDescription(effect);
+                            }
+                        }
+
+                        // Lists the requirements for those attack effects
+                        if (effect.requirements.Count > 0)
+                        {
+                            text += text += RequirementDescription(effect.requirements, attack.target, attack.source?.card, "effectOrTempBuff");
+                        }
+
+                        subIndex += 1;
+                    }
+                }
+
+                // Lists the temporary buffs of an attack. These buffs only apply while performing the skill.
+                subIndex = 0;
+                if (attack.temporaryBuffs.Count > 0)
+                {
+                    text += ", with ";
+                    foreach (var tempBuff in attack.temporaryBuffs)
+                    {
+                        if (attack.temporaryBuffs.Count > 1 && attack.temporaryBuffs.Count - 1 == subIndex)
+                        {
+                            text += " and ";
+                        }
+                        else if (attack.temporaryBuffs.Count > 2 && subIndex != 0)
+                        {
+                            text += ", ";
+                        }
+                        text += AttributeAndValue(tempBuff);
+
+                        // Lists the requirements for the temporary buffs on an attack.
+                        if (tempBuff.requirements.Count > 0)
+                        {
+                            text += RequirementDescription(tempBuff.requirements, tempBuff.target, attack.source?.card, "effectOrTempBuff");
+                        }
+
+                        subIndex += 1;
+                    }
+                }
+
+                // Lists the requirements of an attack.
+                if (attack.requirements.Count > 0)
+                {
+                    text += RequirementDescription(attack.requirements, attack.target, attack.source?.card, "attack");
+                }
+
+                index += 1;
+            }
+        }
+        return text;
+    }
 
 	public static string GenerateSkillBuffText(List<BuffAction> buffs, PassiveSkill passiveSkill = null)
 	{
@@ -260,22 +279,93 @@ public static class CardTranslator
 					text += RequirementDescription(buff.requirements, buff.target, buff.source?.card);
 					text += " <b>attack 💥</b> ";
 
-					switch (buff.Attribute)
+					switch (buff.specialEffect)
 					{
-						case Attributes.Health: text += "heals "; break;
-						default:
-							switch (buff.target)
+						case BuffSpecialEffects.TriggerExtraAttack:
+                            text += ", ";
+                            switch (buff.target)
+                            {
+                                case TargetTypes.Self:
+                                    text += "I";
+                                    break;
+                                default:
+                                    text += "they";
+                                    break;
+                            }
+                            text += " perform ";
+                            if (buff.extraAttacks.Count == 1)
+                            {
+                                text += "a ";
+                            }
+                            text += GenerateAttacksDescription(buff.extraAttacks);
+                            if (buff.extraAttacks.Count == 1)
+                            {
+                                text += " as an extra attack";
+                            } else
 							{
-								case TargetTypes.Self:
-									text += "I get ";
-									break;
+								text += " as extra attacks";
+							}
+                            break;
+						default:
+							switch (buff.Attribute)
+							{
+								case Attributes.Health: text += "heals "; break;
 								default:
-									text += "they get ";
+									switch (buff.target)
+									{
+										case TargetTypes.Self:
+											text += "I get ";
+											break;
+										default:
+											text += "they get ";
+											break;
+									}
 									break;
 							}
 							break;
 					}
-				}
+				} else if (buff.specialEffect == BuffSpecialEffects.TriggerExtraAttack)
+				{
+					text += "Make";
+                    switch (buff.target)
+                    {
+                        case TargetTypes.Self:
+                            text += "s me";
+                            break;
+                        case TargetTypes.AlliesInSameLine:
+                            text += " my allies on the same line";
+                            break;
+                        case TargetTypes.SingleEnemy:
+                        case TargetTypes.LineOfEnemies:
+                        case TargetTypes.AllEnemies:
+                            text += " the enemies";
+                            break;
+                        case TargetTypes.SingleAlly:
+                        case TargetTypes.AllAllies:
+                            text += " all my allies";
+                            break;
+                        case TargetTypes.AlliesNextToMe:
+                            text += "s the allies next to me";
+                            break;
+                        default:
+                            text += "s them";
+                            break;
+                    }
+					text += " perform ";
+					if(buff.extraAttacks.Count == 1)
+					{
+						text += "a ";
+					}
+					text += GenerateAttacksDescription(buff.extraAttacks);
+                    if (buff.extraAttacks.Count == 1)
+                    {
+                        text += " as an extra attack";
+                    }
+                    else
+                    {
+                        text += " as extra attacks";
+                    }
+                }
 				else
 				{
 					switch (buff.Attribute)
@@ -913,7 +1003,7 @@ public static class CardTranslator
 		for (int i = 0; i < buffs.Count; i++)
 		{
 			BuffAction buff = buffs[i];
-			if(buff.specialEffect == BuffSpecialEffects.None || buff.specialEffect == BuffSpecialEffects.GrantSubtypes){
+			if(buff.specialEffect != BuffSpecialEffects.RedirectAttacksTowardsMe){
 				if (buff.activatesOnHit)
 				{
 					text += "<b>💥 On hit</b>: ";
@@ -934,8 +1024,22 @@ public static class CardTranslator
                             text += " and ";
                         }
                     }
-                } else
-				{
+                } else if (buff.specialEffect == BuffSpecialEffects.TriggerExtraAttack)
+                {
+                    text += "Perform ";
+					if(buff.extraAttacks.Count > 0)
+					{
+						text += "a ";
+					}
+					text += GenerateAttacksDescription(buff.extraAttacks);
+					if(buff.extraAttacks.Count == 1)
+					{
+						text += " as an extra attack";
+					} else
+					{
+						text += " as extra attacks ";
+					}
+                } else {
 					text += AttributeAndValue(buff);
 				}
 				if (buff.activatesOnHit)

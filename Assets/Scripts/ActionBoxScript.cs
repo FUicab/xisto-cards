@@ -20,7 +20,7 @@ public class ActionBoxScript : MonoBehaviour, IPointerDownHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (action.canBeUsed)
+        if (action.canBeUsed && action.action.actionType != ActionTypes.DoNothing)
         {
             GM.StartAction(action);
         }
