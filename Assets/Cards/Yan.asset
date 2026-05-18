@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Yan
   m_EditorClassIdentifier: Assembly-CSharp::Card
   Name: Yan
-  CardCount: 5
+  CardCount: 50
   Type: 3
   Subtypes: 000000000c000000
   Cost: 5
@@ -49,6 +49,8 @@ MonoBehaviour:
       activatesOnHit: 0
       onHitRequirements: []
       specialEffect: 0
+      extraAttacks: []
+      grantedSubtypes: 
       specialBehavior: 
       originAttack:
         target: 0
@@ -88,6 +90,8 @@ MonoBehaviour:
       activatesOnHit: 0
       onHitRequirements: []
       specialEffect: 0
+      extraAttacks: []
+      grantedSubtypes: 
       specialBehavior: 
       originAttack:
         target: 0
@@ -135,6 +139,8 @@ MonoBehaviour:
         attributeValue: 10
         targetOfRequirementIsTargetOfAttack: 1
       specialEffect: 0
+      extraAttacks: []
+      grantedSubtypes: 
       specialBehavior: 
       originAttack:
         target: 0
@@ -190,6 +196,8 @@ MonoBehaviour:
         attributeValue: 0
         targetOfRequirementIsTargetOfAttack: 1
       specialEffect: 0
+      extraAttacks: []
+      grantedSubtypes: 
       specialBehavior: 
       originAttack:
         target: 0
@@ -262,6 +270,8 @@ MonoBehaviour:
       activatesOnHit: 0
       onHitRequirements: []
       specialEffect: 0
+      extraAttacks: []
+      grantedSubtypes: 
       specialBehavior: 
       originAttack:
         target: 0
@@ -306,6 +316,8 @@ MonoBehaviour:
       activatesOnHit: 0
       onHitRequirements: []
       specialEffect: 0
+      extraAttacks: []
+      grantedSubtypes: 
       specialBehavior: 
       originAttack:
         target: 0
@@ -350,6 +362,8 @@ MonoBehaviour:
       activatesOnHit: 0
       onHitRequirements: []
       specialEffect: 0
+      extraAttacks: []
+      grantedSubtypes: 
       specialBehavior: 
       originAttack:
         target: 0
@@ -394,6 +408,8 @@ MonoBehaviour:
       activatesOnHit: 0
       onHitRequirements: []
       specialEffect: 0
+      extraAttacks: []
+      grantedSubtypes: 
       specialBehavior: 
       originAttack:
         target: 0
@@ -423,8 +439,8 @@ MonoBehaviour:
     bonusPerPassive:
     - 4.84
     - 8.8
-    - 4.62
-    - 5.8080006
+    - 2.31
+    - 3.1944003
     passiveDescription: "<b>Leader of Protectors</b>: Grants <b><color=#15c>+1</color></b>
       <b><color=#900>attack</color></b> to all allies who are <b><color=#555>Protectors</color></b>
       or <b><color=#555>Independent units</color></b>.\n<b>Anti-motion</b>: Grants

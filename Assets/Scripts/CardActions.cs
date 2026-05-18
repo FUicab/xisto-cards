@@ -247,7 +247,8 @@ public enum RequirementTypes{
 	TargetIsNextTo,
 	TargetHasSubtypesOrFactions,
 	TargetHasAttackedThisRound,
-	TargetAttributeIs
+	TargetAttributeIs,
+	TargetIsInRowInFrontOf
 }
 public enum Comparison
 {
@@ -259,7 +260,8 @@ public enum Comparison
 	Not
 }
 public enum TargetUnitDefinition{
-	SameAsMyself
+	SameAsMyself,
+	TheLeader
 }
 public enum TriggerTypes{
 	OnAttack,

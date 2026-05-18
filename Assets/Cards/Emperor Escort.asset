@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Emperor Escort
   m_EditorClassIdentifier: Assembly-CSharp::Card
   Name: Emperor's Escort
-  CardCount: 10
+  CardCount: 100
   Type: 0
   Subtypes: 00000000
   Cost: 2
@@ -31,16 +31,25 @@ MonoBehaviour:
     requiresElementalExchange: 0
     buffs:
     - target: 0
-      requirements: []
+      requirements:
+      - requirement: 4
+        subtypeRequirement: 
+        factionRequirement: 
+        targetIs: 01000000
+        attribute: 0
+        comparison: 0
+        attributeValue: 0
+        targetOfRequirementIsTargetOfAttack: 0
       source: {fileID: 0}
       receiver: {fileID: 0}
       Attribute: 2
       amount: 1
       isDebuff: 0
-      amountCanBeAugmented: 0
+      amountCanBeAugmented: 1
       activatesOnHit: 0
       onHitRequirements: []
       specialEffect: 0
+      extraAttacks: []
       grantedSubtypes: 
       specialBehavior: 
       originAttack:
@@ -63,16 +72,25 @@ MonoBehaviour:
         buffs: []
         source: {fileID: 0}
     - target: 0
-      requirements: []
+      requirements:
+      - requirement: 4
+        subtypeRequirement: 
+        factionRequirement: 
+        targetIs: 01000000
+        attribute: 0
+        comparison: 0
+        attributeValue: 0
+        targetOfRequirementIsTargetOfAttack: 0
       source: {fileID: 0}
       receiver: {fileID: 0}
       Attribute: 0
       amount: 1
       isDebuff: 0
-      amountCanBeAugmented: 0
+      amountCanBeAugmented: 1
       activatesOnHit: 0
       onHitRequirements: []
       specialEffect: 0
+      extraAttacks: []
       grantedSubtypes: 
       specialBehavior: 
       originAttack:
@@ -172,14 +190,14 @@ MonoBehaviour:
     - 1.6916666
     - 0.3625
     bonusPerPassive:
-    - 2.1
-    passiveDescription: "\U0001F517 <b>Honorable</b>: Grants <b><color=#222>+1</color></b>
-      <b><color=#760>defense</color></b> and <b><color=#222>+1</color></b> <b><color=#900>attack</color></b>
-      to me.\n"
-    passiveBuffDescriptions: '<b><color=#222>+1</color></b> <b><color=#760>defense</color></b>
+    - 1.155
+    passiveDescription: "\U0001F517 <b>Honorable</b>: Grants <b><color=#15c>+1</color></b>
+      <b><color=#760>defense</color></b> and <b><color=#15c>+1</color></b> <b><color=#900>attack</color></b>
+      to me if I'm in the row in front of the <b><color=#714>leader</color></b>.\n"
+    passiveBuffDescriptions: '<b><color=#15c>+1</color></b> <b><color=#760>defense</color></b>
       from myself
 
-      <b><color=#222>+1</color></b> <b><color=#900>attack</color></b>
+      <b><color=#15c>+1</color></b> <b><color=#900>attack</color></b>
       from myself
 
 '

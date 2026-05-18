@@ -655,7 +655,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
                         foreach (CardDisplay target in buff.GetImplicitTargetsOfAction())
 						{
 							//Debug.Log($"{passive.title} from {passive.source.card.Name} is checking for validity on {target.card.Name}: {buff.TargetMeetsRequirements(target)}");
-							if (!target.passiveBuffs.Exists(x => x.originPassive.title == passive.title && x.originPassive.source == passive.source)) {
+							if (!target.passiveBuffs.Exists(x => x.originPassive.title == passive.title && x.originPassive.source == passive.source && buff.Attribute == x.Attribute && buff.amount == x.amount)) {
                                 //Debug.Log($"{passive.title} from {passive.source.card.Name} was successfully applied to {target.card.Name}");
                                 target.ReceivePassiveBuff(buff);
 							}

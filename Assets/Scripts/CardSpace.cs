@@ -22,7 +22,8 @@ public class CardSpace : MonoBehaviour, IDropHandler {
 		get { return PlayingCard != null; }
 	}
 	public List<CardSpace> Defenders = new List<CardSpace>();
-	public CardSpace AttachedTrap;
+    public List<CardSpace> Defendeds = new List<CardSpace>();
+    public CardSpace AttachedTrap;
 	public PlayerRole OwnerRole = PlayerRole.Host;
 	public PlayerProfile Owner;
 
@@ -100,6 +101,18 @@ public class CardSpace : MonoBehaviour, IDropHandler {
 		}
 		return itIs;
 	}
+
+	private bool IsInLineBehind(CardSpace cardSpace)
+	{
+        bool itIs = false;
+        if (Owner.MyBoardRows[myIndexInRow+1] != null)
+		{
+			if (Owner.MyBoardRows[myIndexInRow + 1].BoardSpaces.Contains(cardSpace)) {
+				itIs = true;
+			}
+		}
+		return itIs;
+    }
 
 	public bool IsNextToMe(CardSpace otherSpace)
 	{
@@ -180,11 +193,15 @@ public class CardSpace : MonoBehaviour, IDropHandler {
 		// GM = FindObjectOfType<GameManager>();
 		// GM = GameObject.Find("GameManager").GetComponent<GameManager>();
 		CardSocketImage = gameObject.GetComponent<Image>();
-		// if(Owner == PlayerRole.Opponent){
-		//     Debug.Log(CardSocketImage);
-		//     CardSocketImage.Colorize = new Color(255,238,238,255);
-		// }
-		outline = GetComponent<Outline>();
+        // if(Owner == PlayerRole.Opponent){
+        //     Debug.Log(CardSocketImage);
+        //     CardSocketImage.Colorize = new Color(255,238,238,255);
+        // }
+        foreach (CardSpace space in Defenders)
+        {
+			space.Defendeds.Add(this);
+        }
+        outline = GetComponent<Outline>();
 	}
 
 	private void AutoDraw(){

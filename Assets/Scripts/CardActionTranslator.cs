@@ -244,8 +244,28 @@ public static class CardTranslator
 				allSameTarget = false;
 			}
 		}
-		
-		foreach (var buff in buffs)
+
+		bool allSameRequirements = true;
+		if (buffs[0].requirements.Count > 0)
+        foreach (var buff in buffs)
+        {
+			if(buff.requirements.Count > 0)
+			{
+				for (int i = 0; i < buff.requirements.Count; i++)
+				{
+					if (buff.requirements[i]?.requirement != buffs[0].requirements[i]?.requirement)
+					{
+						allSameRequirements = false;
+					}
+				}
+			}
+            else
+            {
+                allSameRequirements = false;
+            }
+        }
+
+        foreach (var buff in buffs)
 		{
 			if(index == 0){
 				if (passiveSkill != null && (passiveSkill.trigger == TriggerTypes.OnAttack || buff.activatesOnHit))
@@ -435,12 +455,12 @@ public static class CardTranslator
 					text += BuffEffectDescription(buff);
 				}
 			}
-			if(buff.requirements.Count > 0 && !buff.activatesOnHit)
+			if(buff.requirements.Count > 0 && !buff.activatesOnHit && (index == buffs.Count-1 || !allSameRequirements))
 			{
 				text += RequirementDescription(buff.requirements, buff.target, buff.source?.card);
 			}
 
-			if (buff.onHitRequirements.Count > 0)
+			if (buff.onHitRequirements.Count > 0 && (index == buffs.Count - 1 || !allSameRequirements))
 			{
 				text += RequirementDescription(buff.onHitRequirements, buff.target, buff.source?.card, "onHit");
 			}
@@ -562,12 +582,7 @@ public static class CardTranslator
 								break;
 							case RequirementTypes.TargetIsNextTo:
 								text += " if I'm next to";
-								switch (requirement.targetIs[0])
-								{
-									case TargetUnitDefinition.SameAsMyself:
-										text += " another <b>" + (card?.Name ?? "card of my kind") + "</b>";
-										break;
-								}
+								text += UnitDefinitionDescription(requirement.targetIs, card);
 								break;
 							case RequirementTypes.TargetHasAttackedThisRound:
 								text += " if I have attacked before during this round";
@@ -578,7 +593,11 @@ public static class CardTranslator
 								text += " is ";
 								text += $"{ComparisonDescription(requirement.comparison)} <b>{requirement.attributeValue}</b>";
 								break;
-						}
+							case RequirementTypes.TargetIsInRowInFrontOf:
+								text += " if I'm in the row in front of";
+								text += UnitDefinitionDescription(requirement.targetIs, card);
+                            break;
+                    }
 						break;
 					case TargetTypes.SameTarget:
 					case TargetTypes.SingleEnemy:
@@ -602,71 +621,76 @@ public static class CardTranslator
 								}
 								text += FactionOrSubtypeRequirementDescription(requirement);
 								break;
-							case RequirementTypes.TargetIsNextTo:
-								switch (formattingFor)
-								{
-									case "attack":
-										text += ", but target must be next to ";
-										break;
-									case "effectOrTempBuff":
-									case "onHit":
-										text += " when target is next to ";
-										break;
-									case "buff":
-										text += " if they're next to ";
-										break;
-								}
-								switch (requirement.targetIs[0])
-								{
-									case TargetUnitDefinition.SameAsMyself:
-										text += " another <b>" + card?.Name + "</b>";
-										break;
-								}
-								break;
-							case RequirementTypes.TargetHasAttackedThisRound:
-								switch (formattingFor)
-								{
-									case "attack":
-										text += ", but target must have had ";
-										break;
-									case "effectOrTempBuff":
-									case "onHit":
-										text += " when the target has ";
-										break;
-									case "buff":
-										text += " if they have ";
-										break;
-								}
-								text += "attacked before during this round";
-								break;
-							case RequirementTypes.TargetAttributeIs:
-								switch (formattingFor)
-								{
-									case "attack":
-										text += ", but target's ";
-										break;
-									case "effectOrTempBuff":
-									case "onHit":
-										text += " when the target's ";
-										break;
-									case "buff":
-										text += " if target's ";
-										break;
-								}
-								text += TextFormat(BuffAttributeDescription(requirement.attribute), requirement.attribute);
-								switch (formattingFor)
-								{
-									case "attack":
-										text += " must be ";
-										break;
-									case "effectOrTempBuff":
-									case "onHit":
-									case "buff":
-										text += " is ";
-										break;
-								}
-								text += $"{ComparisonDescription(requirement.comparison)} <b>{requirement.attributeValue}</b>";
-								break;
+						case RequirementTypes.TargetIsNextTo:
+						case RequirementTypes.TargetIsInRowInFrontOf:
+							switch (formattingFor)
+							{
+								case "attack":
+									text += ", but target must be ";
+									break;
+								case "effectOrTempBuff":
+								case "onHit":
+									text += " when target is ";
+									break;
+								case "buff":
+									text += " if they're ";
+									break;
+							}
+							switch (requirement.requirement)
+							{
+								case RequirementTypes.TargetIsNextTo:
+									text += "next to ";
+									break;
+								case RequirementTypes.TargetIsInRowInFrontOf:
+									text += "in the row in front of ";
+									break;
+							}
+							text += UnitDefinitionDescription(requirement.targetIs, card);
+							break;
+						case RequirementTypes.TargetHasAttackedThisRound:
+							switch (formattingFor)
+							{
+								case "attack":
+									text += ", but target must have had ";
+									break;
+								case "effectOrTempBuff":
+								case "onHit":
+									text += " when the target has ";
+									break;
+								case "buff":
+									text += " if they have ";
+									break;
+							}
+							text += "attacked before during this round";
+							break;
+						case RequirementTypes.TargetAttributeIs:
+							switch (formattingFor)
+							{
+								case "attack":
+									text += ", but target's ";
+									break;
+								case "effectOrTempBuff":
+								case "onHit":
+									text += " when the target's ";
+									break;
+								case "buff":
+									text += " if target's ";
+									break;
+							}
+							text += TextFormat(BuffAttributeDescription(requirement.attribute), requirement.attribute);
+							switch (formattingFor)
+							{
+								case "attack":
+									text += " must be ";
+									break;
+								case "effectOrTempBuff":
+								case "onHit":
+								case "buff":
+									text += " is ";
+									break;
+							}
+							text += $"{ComparisonDescription(requirement.comparison)} <b>{requirement.attributeValue}</b>";
+							break;
 						}
 						break;
 					case TargetTypes.LineOfEnemies:
@@ -695,28 +719,33 @@ public static class CardTranslator
 								text += FactionOrSubtypeRequirementDescription(requirement);
 								break;
 							case RequirementTypes.TargetIsNextTo:
+							case RequirementTypes.TargetIsInRowInFrontOf:
 								switch (formattingFor)
 								{
 									case "attack":
-										text += ", but only hits if they're next to ";
+										text += ", but only hits if they're ";
 										break;
 									case "effectOrTempBuff":
-										text += " when they're next to ";
+										text += " when they're ";
 										break;
 									case "buff":
-										text += " who are next to";
+										text += " who are ";
 										break;
 									case "onHit":
-										text += " when the target is next to ";
+										text += " when the target is ";
 										break;
 								}
-								switch (requirement.targetIs[0])
+								switch (requirement.requirement)
 								{
-									case TargetUnitDefinition.SameAsMyself:
-										text += " another <b>" + card?.Name + "</b>";
+									case RequirementTypes.TargetIsNextTo:
+										text += "next to ";
+										break;
+									case RequirementTypes.TargetIsInRowInFrontOf:
+										text += "in the row in front of ";
 										break;
 								}
-								break;
+								text += UnitDefinitionDescription(requirement.targetIs, card);
+                            break;
 							case RequirementTypes.TargetHasAttackedThisRound:
 								switch (formattingFor)
 								{
@@ -1111,6 +1140,32 @@ public static class CardTranslator
 		}
 		return text;
 	}
+
+	public static string UnitDefinitionDescription(List<TargetUnitDefinition> unitDefinitions, Card card = null)
+	{
+        string text = "";
+		for (int i = 0; i < unitDefinitions.Count; i++)
+		{
+			switch (unitDefinitions[i])
+			{
+				case TargetUnitDefinition.SameAsMyself:
+					text += $" another <b>{(card?.Name ?? "card of my kind")}</b>";
+					break;
+				case TargetUnitDefinition.TheLeader:
+					text += $" the {TextFormat("leader","subtype")}";
+					break;
+			}
+            if (i < unitDefinitions.Count - 2)
+            {
+                text += ", ";
+            }
+            else if (i == unitDefinitions.Count - 2)
+            {
+                text += " or ";
+            }
+        }
+		return text;
+    }
 
 }
 

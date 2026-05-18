@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Keranean Warhammer
   m_EditorClassIdentifier: Assembly-CSharp::Card
   Name: Keranean Warhammer
-  CardCount: 100
+  CardCount: 10
   Type: 0
   Subtypes: 0000000005000000
   Cost: 2

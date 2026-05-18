@@ -293,7 +293,7 @@ public static class CardActionTools
                         }
                         break;
                     case RequirementTypes.TargetIsNextTo:
-                        foreach (CardSpace neighborSpace in target.mySpace.SpacesNextToMe())
+                        foreach (CardSpace neighborSpace in target.mySpace?.SpacesNextToMe())
                         {
                             if (neighborSpace.PlayingCard != null)
                                 foreach (TargetUnitDefinition neighborType in requirement.targetIs)
@@ -306,11 +306,42 @@ public static class CardActionTools
                                                 itDoes = true;
                                             }
                                             break;
+										case TargetUnitDefinition.TheLeader:
+                                            if (neighborSpace.PlayingCard.card.Type == UnitType.Leader)
+                                            {
+                                                itDoes = true;
+                                            }
+                                            break;
                                     }
                                 }
                         }
                         break;
-					case RequirementTypes.TargetHasAttackedThisRound:
+                    case RequirementTypes.TargetIsInRowInFrontOf:
+						if(target.mySpace.Defendeds.Count > 0)
+                        foreach (CardSpace spaceBehind in target.mySpace.Defendeds[0].myRow.BoardSpaces)
+                        {
+                            if (spaceBehind.PlayingCard != null)
+                                foreach (TargetUnitDefinition neighborType in requirement.targetIs)
+                                {
+                                    switch (neighborType)
+                                    {
+                                        case TargetUnitDefinition.SameAsMyself:
+                                            if (spaceBehind.PlayingCard.card.Name == target.card.Name)
+                                            {
+                                                itDoes = true;
+                                            }
+                                            break;
+                                        case TargetUnitDefinition.TheLeader:
+                                            if (spaceBehind.PlayingCard.card.Type == UnitType.Leader)
+                                            {
+                                                itDoes = true;
+                                            }
+                                            break;
+                                    }
+                                }
+                        }
+                        break;
+                    case RequirementTypes.TargetHasAttackedThisRound:
 						itDoes = target.HasAttackedThisRound;
 						break;
 					case RequirementTypes.TargetAttributeIs:
