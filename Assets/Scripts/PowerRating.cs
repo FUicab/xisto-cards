@@ -272,6 +272,9 @@ public class PowerRating
 			case BuffSpecialEffects.TriggerExtraAttack:
 				buffPower += GetPowerOfAttacks(buff.extraAttacks);
 				break;
+			case BuffSpecialEffects.EnableGuardingPose:
+				buffPower += (baseBonus / 2) + card.Attack;
+				break;
 		}
 		if (!buff.targetIsFromMyTeam) { buffPower *= -1f; }
 		float temporaryBuffRequirementNerf = GetRequirementsNerf(buff.requirements);

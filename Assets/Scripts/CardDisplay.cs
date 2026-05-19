@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -30,6 +31,9 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 	/* Card values calculated after all modifiers and other independent values */
 	public int hp;
 	public bool ProtectedByDefender = false;
+
+	/* Guarding pose prevents units from doing any other action until the round ends. While in this state they attack back those who inflict melee damage to them. */
+	public bool guardingPose = false;
 
 	/* Some cards allow to redirect attacks towards them. This variable defines who's doing it for this card. This works differently from defenders in the sense that attacks can be redirected regardless of the position, and affected cards can still be targetted.*/
 	public CardDisplay attackSponge = null;
@@ -212,6 +216,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
     public Image DamageReductionImage;
     public Image PotentialDamageImage;
     public Image DefenderBarrier;
+	public Image GuardingPoseIndicator;
 	// private TextMeshProUGUI BuffListText;
 
 	private GameManager GM;
@@ -482,6 +487,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		HPText.text = hpText;
 		ArmorText.text = armorText;
 		AttackText.text = attackText;
+		GuardingPoseIndicator.gameObject.SetActive(guardingPose);
 
         if (damageReduction <= 0)
         {
@@ -525,6 +531,11 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
     {
 		attack.attackActionOutput = attack.GetAttackActionOutput(this);
 		ReceiveDamage(attack.attackActionOutput.damage);
+		if (guardingPose && !attack.isExtra && attack.attackActionOutput.damageType == DamageTypes.Melee)
+		{
+			AttackAction counterAttack = new(this);
+			attack.source.ReceiveDamageFromAttack(counterAttack);
+		}
     }
 
     public void ReceiveActiveBuff(BuffAction newBuff)
@@ -533,15 +544,22 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		{
 			receiver = this
 		};
-		switch (buff.Attribute)
+
+		if(buff.specialEffect == BuffSpecialEffects.EnableGuardingPose)
 		{
-			case Attributes.Health: // Health buffs are actually just healing effects
-				hp += buff.amount;
-				if (hp > maxHP) { hp = maxHP; }
-			break;
-			default:
-				activeBuffs.Add(buff);
-			break;
+			guardingPose = true; // Guarding pose effects do not trigger anything else
+		} else
+		{
+			switch (buff.Attribute)
+			{
+				case Attributes.Health: // Health buffs are actually just healing effects
+					hp += buff.amount;
+					if (hp > maxHP) { hp = maxHP; }
+				break;
+				default:
+					activeBuffs.Add(buff);
+				break;
+			}
 		}
 		UpdateCardUI();
 	}
@@ -705,6 +723,10 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 			if (ProtectedByDefender) { clickable = false; }
 			if (!isPotentialTargetForPerformingAction) {  clickable = false; }
 		}
+		if (guardingPose && GM.PlayerAtPlay == Owner)
+		{
+			clickable = false;
+		}
 
 		if (clickable)
 		{
@@ -745,6 +767,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 
 	public void RoundEndCleanUp()
 	{
+		guardingPose = false;
 		activeBuffs.Clear();
 		UpdateActiveBuffStatus();
 	}

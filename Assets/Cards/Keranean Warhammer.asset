@@ -94,7 +94,40 @@ MonoBehaviour:
       attackEffect: []
       temporaryBuffs: []
     attackCountCanBeAugmented: 0
-    buffs: []
+    buffs:
+    - target: 0
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      Attribute: 0
+      amount: 0
+      isDebuff: 0
+      amountCanBeAugmented: 0
+      activatesOnHit: 0
+      onHitRequirements: []
+      specialEffect: 4
+      extraAttacks: []
+      grantedSubtypes: 
+      specialBehavior: 
+      originAttack:
+        target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        damageType: 0
+        damageMultiplier: 0
+        flatDamageOverwrite: 0
+        attackEffect: []
+        temporaryBuffs: []
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerTurn: 0
+        requiresElementalExchange: 0
+        buffs: []
+        source: {fileID: 0}
   - actionType: 1
     attacks:
     - target: 2

@@ -53,6 +53,7 @@ public class AttackAction : ActiveAction{
 	public List<AttackEffect> attackEffect = new();
 	public List<BuffAction> temporaryBuffs = new(); //Temporary buffs are applied during the attack
 	public AttackActionOutput attackActionOutput;
+	public bool isExtra = false; /* Extra attacks do not trigger counter attacks and other "on hit" effects. Armor pierce and executions work as normal. */
 
 	public AttackAction(AttackAction values)
 	{
@@ -64,9 +65,17 @@ public class AttackAction : ActiveAction{
 		//requirements = values.requirements;
 		source = values.source;
 		receiver = values.receiver;
+		isExtra = values.isExtra;
 		values.requirements.ForEach(req => { requirements.Add(new Requirements(req, this) ); });
 		values.attackEffect.ForEach(atkFx => { attackEffect.Add(new AttackEffect(atkFx, this));  } );
 		values.temporaryBuffs.ForEach(tempBuff => { temporaryBuffs.Add(new BuffAction(tempBuff, this)); });
+	}
+	public AttackAction(CardDisplay sourceCard) /* Will generate a single melee attack action. */
+	{
+		damageType = DamageTypes.Melee;
+		damageMultiplier = 1;
+		source = sourceCard;
+		isExtra = true;
 	}
 
 	public int CalculateDamage(CardDisplay target) { return CardActionTools.CalculateDamage(target, this); }
@@ -106,7 +115,7 @@ public class BuffAction : ActiveAction{
 		grantedSubtypes = values.grantedSubtypes;
 		values.requirements.ForEach(req => { requirements?.Add(new Requirements(req, (originAttack != null ? originAttack : this) ) ); });
         values.onHitRequirements.ForEach(req => { onHitRequirements?.Add(new Requirements(req, (originAttack != null ? originAttack : this) ) ); });
-        values.extraAttacks.ForEach(atk => { extraAttacks?.Add(new AttackAction(atk) { source = values.source } ); });
+        values.extraAttacks.ForEach(atk => { extraAttacks?.Add(new AttackAction(atk) { source = values.source, isExtra = true } ); });
         //onHitRequirements = values.onHitRequirements;
     }
 
@@ -141,7 +150,8 @@ public enum BuffSpecialEffects{
 	None,
 	RedirectAttacksTowardsMe,
 	GrantSubtypes,
-	TriggerExtraAttack
+	TriggerExtraAttack,
+	EnableGuardingPose
 }
 
 [System.Serializable]

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Emperor Escort
   m_EditorClassIdentifier: Assembly-CSharp::Card
   Name: Emperor's Escort
-  CardCount: 100
+  CardCount: 10
   Type: 0
   Subtypes: 00000000
   Cost: 2
@@ -62,6 +62,7 @@ MonoBehaviour:
         flatDamageOverwrite: 0
         attackEffect: []
         temporaryBuffs: []
+        isExtra: 0
       originPassive:
         title: 
         description: 
@@ -103,6 +104,7 @@ MonoBehaviour:
         flatDamageOverwrite: 0
         attackEffect: []
         temporaryBuffs: []
+        isExtra: 0
       originPassive:
         title: 
         description: 
@@ -114,9 +116,99 @@ MonoBehaviour:
         source: {fileID: 0}
     source: {fileID: 0}
   CardActions:
-  - actionType: 4
+  - actionType: 2
     attacks: []
     attackCountCanBeAugmented: 0
+    buffs:
+    - target: 0
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      Attribute: 0
+      amount: 0
+      isDebuff: 0
+      amountCanBeAugmented: 0
+      activatesOnHit: 0
+      onHitRequirements: []
+      specialEffect: 4
+      extraAttacks: []
+      grantedSubtypes: 
+      specialBehavior: 
+      originAttack:
+        target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        damageType: 0
+        damageMultiplier: 0
+        flatDamageOverwrite: 0
+        attackEffect: []
+        temporaryBuffs: []
+        isExtra: 0
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerTurn: 0
+        requiresElementalExchange: 0
+        buffs: []
+        source: {fileID: 0}
+  - actionType: 0
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
+      isExtra: 0
+    attackCountCanBeAugmented: 0
+    buffs: []
+  - actionType: 1
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
+      isExtra: 0
+    attackCountCanBeAugmented: 0
+    buffs: []
+  - actionType: 1
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
+      isExtra: 0
+    attackCountCanBeAugmented: 0
+    buffs: []
+  - actionType: 1
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
+      isExtra: 0
+    attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 0
     attacks:
@@ -129,64 +221,13 @@ MonoBehaviour:
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
-    attackCountCanBeAugmented: 0
-    buffs: []
-  - actionType: 1
-    attacks:
-    - target: 2
-      requirements: []
-      source: {fileID: 0}
-      receiver: {fileID: 0}
-      damageType: 0
-      damageMultiplier: 1
-      flatDamageOverwrite: 0
-      attackEffect: []
-      temporaryBuffs: []
-    attackCountCanBeAugmented: 0
-    buffs: []
-  - actionType: 1
-    attacks:
-    - target: 2
-      requirements: []
-      source: {fileID: 0}
-      receiver: {fileID: 0}
-      damageType: 0
-      damageMultiplier: 1
-      flatDamageOverwrite: 0
-      attackEffect: []
-      temporaryBuffs: []
-    attackCountCanBeAugmented: 0
-    buffs: []
-  - actionType: 1
-    attacks:
-    - target: 2
-      requirements: []
-      source: {fileID: 0}
-      receiver: {fileID: 0}
-      damageType: 0
-      damageMultiplier: 1
-      flatDamageOverwrite: 0
-      attackEffect: []
-      temporaryBuffs: []
-    attackCountCanBeAugmented: 0
-    buffs: []
-  - actionType: 0
-    attacks:
-    - target: 2
-      requirements: []
-      source: {fileID: 0}
-      receiver: {fileID: 0}
-      damageType: 0
-      damageMultiplier: 1
-      flatDamageOverwrite: 0
-      attackEffect: []
-      temporaryBuffs: []
+      isExtra: 0
     attackCountCanBeAugmented: 0
     buffs: []
   powerRating:
     card: {fileID: 11400000}
     bonusPerAction:
-    - 0
+    - 1.6277777
     - 1.6916666
     - 0.3625
     bonusPerPassive:
@@ -201,5 +242,5 @@ MonoBehaviour:
       from myself
 
 '
-    actionsDescription: "Do nothing..\n\u2694\uFE0F Melee attack.\n\u2694\uFE0F Melee
-      attack.\n"
+    actionsDescription: "I take <b><color=#775>guarding pose</color></b>.\n\u2694\uFE0F
+      Melee attack.\n\u2694\uFE0F Melee attack.\n"

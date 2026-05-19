@@ -58,7 +58,7 @@ public class CardActionMenu
 			{
 				action.diceAverageValue = action.diceValues[(action.diceValues.Count - 1) / 2];
 			}
-			if (action.HasMatchingDice() && sourceCard.CanActThisTurn)
+			if (action.HasMatchingDice() && sourceCard.CanActThisTurn && !sourceCard.guardingPose)
 			{
 				action.canBeUsed = true;
 			}
@@ -386,8 +386,34 @@ public static class CardTranslator
                         text += " as extra attacks";
                     }
                 }
-				else
+				else if (buff.specialEffect == BuffSpecialEffects.EnableGuardingPose)
 				{
+                    switch (buff.target)
+                    {
+                        case TargetTypes.Self:
+                            text += "I";
+                            break;
+                        case TargetTypes.AlliesInSameLine:
+                            text += "My allies on the same line";
+                            break;
+                        case TargetTypes.SingleEnemy:
+                        case TargetTypes.LineOfEnemies:
+                        case TargetTypes.AllEnemies:
+                            text += "The enemies";
+                            break;
+                        case TargetTypes.SingleAlly:
+                        case TargetTypes.AllAllies:
+                            text += "My allies";
+                            break;
+                        case TargetTypes.AlliesNextToMe:
+                            text += "The allies next to me";
+                            break;
+                        default:
+                            text += "They";
+                            break;
+                    }
+                    text += " take <b><color=#775>guarding pose</color></b>";
+				} else {
 					switch (buff.Attribute)
 					{
 						case Attributes.Health: text += "Heals "; break;

@@ -60,10 +60,8 @@ public static class CardActionTools
 		return potentialTargets;
 	}
 
-	public static void PerformAttackAction(CardDisplay target, TurnAction ActionData, int i = 0)
+	public static void PerformAttackAction(CardDisplay target, CardDisplay attacker, AttackAction attack)
 	{
-		AttackAction attack = ActionData.actionObject.action.attacks[i];
-
 		CardDisplay actualTarget = GetActualTarget(target);
 		actualTarget.ReceiveDamageFromAttack(attack);
 		if (attack.attackActionOutput.resultsInDeath)
@@ -72,10 +70,10 @@ public static class CardActionTools
 		}
 		if(actualTarget != null)
 		{
-            foreach (BuffAction buff in ActionData.CardInAction.appliedBuffs.Where(x => x.specialEffect == BuffSpecialEffects.TriggerExtraAttack && x.extraAttacks.Count > 0))
+            foreach (BuffAction buff in attacker.appliedBuffs.Where(x => x.specialEffect == BuffSpecialEffects.TriggerExtraAttack && x.extraAttacks.Count > 0))
             {
 				if(buff.TargetMeetsOnHitRequirements(actualTarget))
-				foreach (AttackAction extraAttack in ActionData.CardInAction.appliedBuffs.Where(x => x.specialEffect == BuffSpecialEffects.TriggerExtraAttack).SelectMany(x => x.extraAttacks))
+				foreach (AttackAction extraAttack in attacker.appliedBuffs.Where(x => x.specialEffect == BuffSpecialEffects.TriggerExtraAttack).SelectMany(x => x.extraAttacks))
 					{
 						if (extraAttack.TargetMeetsRequirements(actualTarget))
 						{
@@ -163,7 +161,7 @@ public static class CardActionTools
 					}
 					if (ActionData.targets[i] != null && ActionData.CardInAction != null)
 					{
-						PerformAttackAction(ActionData.targets[i], ActionData, i);
+						PerformAttackAction(ActionData.targets[i], ActionData.CardInAction, ActionData.actionObject.action.attacks[i]);
 					}
 				}
 				break;

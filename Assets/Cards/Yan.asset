@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Yan
   m_EditorClassIdentifier: Assembly-CSharp::Card
   Name: Yan
-  CardCount: 50
+  CardCount: 5
   Type: 3
   Subtypes: 000000000c000000
-  Cost: 5
+  Cost: 6
   Artwork: {fileID: 21300000, guid: b734b3715652f814eb259edb93b6ac8b, type: 3}
   Origin: 00000000
   MaxHP: 18
@@ -62,6 +62,7 @@ MonoBehaviour:
         flatDamageOverwrite: 0
         attackEffect: []
         temporaryBuffs: []
+        isExtra: 0
       originPassive:
         title: 
         description: 
@@ -103,6 +104,7 @@ MonoBehaviour:
         flatDamageOverwrite: 0
         attackEffect: []
         temporaryBuffs: []
+        isExtra: 0
       originPassive:
         title: 
         description: 
@@ -152,6 +154,7 @@ MonoBehaviour:
         flatDamageOverwrite: 0
         attackEffect: []
         temporaryBuffs: []
+        isExtra: 0
       originPassive:
         title: 
         description: 
@@ -209,6 +212,7 @@ MonoBehaviour:
         flatDamageOverwrite: 0
         attackEffect: []
         temporaryBuffs: []
+        isExtra: 0
       originPassive:
         title: 
         description: 
@@ -231,6 +235,7 @@ MonoBehaviour:
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
+      isExtra: 0
     attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 1
@@ -244,6 +249,7 @@ MonoBehaviour:
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
+      isExtra: 0
     attackCountCanBeAugmented: 0
     buffs: []
   - actionType: 2
@@ -257,6 +263,7 @@ MonoBehaviour:
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
+      isExtra: 0
     attackCountCanBeAugmented: 0
     buffs:
     - target: 4
@@ -283,6 +290,7 @@ MonoBehaviour:
         flatDamageOverwrite: 0
         attackEffect: []
         temporaryBuffs: []
+        isExtra: 0
       originPassive:
         title: 
         description: 
@@ -303,6 +311,7 @@ MonoBehaviour:
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
+      isExtra: 0
     attackCountCanBeAugmented: 0
     buffs:
     - target: 4
@@ -329,6 +338,7 @@ MonoBehaviour:
         flatDamageOverwrite: 0
         attackEffect: []
         temporaryBuffs: []
+        isExtra: 0
       originPassive:
         title: 
         description: 
@@ -349,6 +359,7 @@ MonoBehaviour:
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
+      isExtra: 0
     attackCountCanBeAugmented: 0
     buffs:
     - target: 4
@@ -375,6 +386,7 @@ MonoBehaviour:
         flatDamageOverwrite: 0
         attackEffect: []
         temporaryBuffs: []
+        isExtra: 0
       originPassive:
         title: 
         description: 
@@ -395,6 +407,7 @@ MonoBehaviour:
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
+      isExtra: 0
     attackCountCanBeAugmented: 0
     buffs:
     - target: 4
@@ -421,6 +434,7 @@ MonoBehaviour:
         flatDamageOverwrite: 0
         attackEffect: []
         temporaryBuffs: []
+        isExtra: 0
       originPassive:
         title: 
         description: 
