@@ -32,6 +32,11 @@ public class ActiveAction
     public CardDisplay source;
     [HideInInspector] public CardDisplay receiver;
 
+	public ActiveAction()
+	{
+
+	}
+
     public bool isTargetImplicit { get { return CardActionTools.IsTargetImplicit(target); } }
 	public List<CardDisplay> GetImplicitTargetsOfAction() { return CardActionTools.GetImplicitTargetsOfAction(this); }
     public List<CardDisplay> GetPotentialTargets() { return CardActionTools.GetPotentialTargetsForAction(this); }
@@ -68,7 +73,7 @@ public class AttackAction : ActiveAction{
 		isExtra = values.isExtra;
 		values.requirements.ForEach(req => { requirements.Add(new Requirements(req, this) ); });
 		values.attackEffect.ForEach(atkFx => { attackEffect.Add(new AttackEffect(atkFx, this));  } );
-		values.temporaryBuffs.ForEach(tempBuff => { temporaryBuffs.Add(new BuffAction(tempBuff, this)); });
+		values.temporaryBuffs.ForEach(tempBuff => { temporaryBuffs.Add(new BuffAction(tempBuff, this) { source = source }); });
 	}
 	public AttackAction(CardDisplay sourceCard) /* Will generate a single melee attack action. */
 	{

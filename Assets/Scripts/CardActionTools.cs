@@ -83,7 +83,16 @@ public static class CardActionTools
             }
         }
 
-		foreach (AttackEffect effect in attack.attackEffect)
+        foreach (BuffAction instantEffectBuff in attack.temporaryBuffs.Where(x => x.Attribute == Attributes.Health).Concat(attacker.appliedBuffs.Where(x => x.activatesOnHit && (x.Attribute == Attributes.Health || x.specialEffect == BuffSpecialEffects.EnableGuardingPose) )).ToList())
+        {
+			BuffAction buff = new(instantEffectBuff) { activatesOnHit = false, source = attacker };
+            foreach (CardDisplay buffTarget in buff.GetImplicitTargetsOfAction())
+            {
+				buffTarget.ReceiveActiveBuff(buff);
+            }
+        }
+
+        foreach (AttackEffect effect in attack.attackEffect)
 		{
 			switch (effect.effectType)
 			{
@@ -186,8 +195,8 @@ public static class CardActionTools
 
 	public static List<CardDisplay> GetImplicitTargetsOfAction(ActiveAction action)
 	{
-		if (!action.isTargetImplicit) {  return null; }
 		List<CardDisplay> targets = new();
+		if (!action.isTargetImplicit) {  return targets; }
         switch (action.target)
         {
 			case TargetTypes.Self:
@@ -232,11 +241,15 @@ public static class CardActionTools
 	{
 		bool itDoes = false;
 		//AttackAction attackAction = action as AttackAction;
-		if( ( (action.targetIsFromMyTeam && target.Owner?.Role == action.source?.Owner?.Role) || (!action.targetIsFromMyTeam && target.Owner?.Role != action.source?.Owner?.Role) || action.target == TargetTypes.Self) && (action.TargetCanBeReached(target)) )
+		Debug.Log($"<b>{action.source?.card.Name}</b>: Does target of buff meet all requirements? -> {itDoes} { TargetMeetsRequirements(target, action.requirements)}");
+		bool isFromMyTeam = (action.targetIsFromMyTeam && target.Owner?.Role == action.source?.Owner?.Role);
+		bool isFromOtherTeam = (!action.targetIsFromMyTeam && target.Owner?.Role != action.source?.Owner?.Role);
+		bool isMyself = action.target == TargetTypes.Self;
+
+        if ( ( isFromMyTeam || isFromOtherTeam || isMyself) && (action.TargetCanBeReached(target)) )
 		{
 			itDoes = true;
 		}
-		Debug.Log($"<b>{action.source?.card.Name}</b>: Does target of buff meet all requirements? -> {itDoes} { TargetMeetsRequirements(target, action.requirements)}");
 		return itDoes && TargetMeetsRequirements(target, action.requirements);
 	}
 	public static bool TargetMeetsRequirements(CardDisplay actionTarget, List<Requirements> requirements)
@@ -415,7 +428,7 @@ public static class CardActionTools
             }
         }
 
-        Debug.Log($"Trying to reach {actionTarget.card.Name}: {itDoes}");
+        Debug.Log($"Trying to reach {actionTarget?.card?.Name}: {itDoes}");
 		return itDoes;
 	}
 

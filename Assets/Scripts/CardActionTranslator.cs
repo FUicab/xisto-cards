@@ -192,20 +192,15 @@ public static class CardTranslator
                 }
 
                 // Lists the temporary buffs of an attack. These buffs only apply while performing the skill.
-                subIndex = 0;
+                //subIndex = 0;
                 if (attack.temporaryBuffs.Count > 0)
                 {
-                    text += ", with ";
-                    foreach (var tempBuff in attack.temporaryBuffs)
-                    {
-                        if (attack.temporaryBuffs.Count > 1 && attack.temporaryBuffs.Count - 1 == subIndex)
-                        {
-                            text += " and ";
-                        }
-                        else if (attack.temporaryBuffs.Count > 2 && subIndex != 0)
-                        {
-                            text += ", ";
-                        }
+					List<BuffAction> tempBuffs = attack.temporaryBuffs.Where(x => x.Attribute != Attributes.Health).ToList();
+                    List<BuffAction> healingBuffs = attack.temporaryBuffs.Where(x => x.Attribute == Attributes.Health).ToList();
+                    if(tempBuffs.Count > 0){ text += ", with "; }
+					for (int i = 0; i < tempBuffs.Count; i++)
+					{
+						BuffAction tempBuff = tempBuffs[i];
                         text += AttributeAndValue(tempBuff);
 
                         // Lists the requirements for the temporary buffs on an attack.
@@ -213,8 +208,56 @@ public static class CardTranslator
                         {
                             text += RequirementDescription(tempBuff.requirements, tempBuff.target, attack.source?.card, "effectOrTempBuff");
                         }
+                        if (i < tempBuffs.Count - 2)
+                        {
+                            text += ", ";
+                        }
+                        else if (i == tempBuffs.Count - 2)
+                        {
+                            text += " and ";
+                        }
+                    }
+                    //foreach (var tempBuff in tempBuffs)
+                    //{
+                        //if (attack.temporaryBuffs.Count > 1 && attack.temporaryBuffs.Count - 1 == subIndex)
+                        //{
+                        //    text += " and ";
+                        //}
+                        //else if (attack.temporaryBuffs.Count > 2 && subIndex != 0)
+                        //{
+                        //    text += ", ";
+                        //}
+                        //text += AttributeAndValue(tempBuff);
 
-                        subIndex += 1;
+                        //// Lists the requirements for the temporary buffs on an attack.
+                        //if (tempBuff.requirements.Count > 0)
+                        //{
+                        //    text += RequirementDescription(tempBuff.requirements, tempBuff.target, attack.source?.card, "effectOrTempBuff");
+                        //}
+
+                        //subIndex += 1;
+                    //}
+                    if (tempBuffs.Count > 0 && healingBuffs.Count > 0) { text += ","; }
+                    if (healingBuffs.Count > 0) { text += " and heals "; }
+                    for (int i = 0; i < healingBuffs.Count; i++)
+                    {
+                        BuffAction healingBuff = healingBuffs[i];
+                        text += AttributeAndValue(healingBuff)+" ";
+						text += TargetTypeDescription(healingBuff.target);
+
+                        // Lists the requirements for the temporary buffs on an attack.
+                        if (healingBuff.requirements.Count > 0)
+                        {
+                            text += RequirementDescription(healingBuff.requirements, healingBuff.target, attack.source?.card, "effectOrTempBuff");
+                        }
+                        if (i < tempBuffs.Count - 2)
+                        {
+                            text += ", ";
+                        }
+                        else if (i == tempBuffs.Count - 2)
+                        {
+                            text += " and ";
+                        }
                     }
                 }
 

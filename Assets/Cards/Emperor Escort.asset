@@ -262,7 +262,41 @@ MonoBehaviour:
       damageMultiplier: 1
       flatDamageOverwrite: 0
       attackEffect: []
-      temporaryBuffs: []
+      temporaryBuffs:
+      - target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        Attribute: 1
+        amount: 2
+        isDebuff: 0
+        amountCanBeAugmented: 1
+        activatesOnHit: 0
+        onHitRequirements: []
+        specialEffect: 0
+        extraAttacks: []
+        grantedSubtypes: 
+        specialBehavior: 
+        originAttack:
+          target: 0
+          requirements: []
+          source: {fileID: 0}
+          receiver: {fileID: 0}
+          damageType: 0
+          damageMultiplier: 0
+          flatDamageOverwrite: 0
+          attackEffect: []
+          temporaryBuffs: []
+          isExtra: 0
+        originPassive:
+          title: 
+          description: 
+          trigger: 0
+          canBeShared: 0
+          oncePerTurn: 0
+          requiresElementalExchange: 0
+          buffs: []
+          source: {fileID: 0}
       isExtra: 0
     attackCountCanBeAugmented: 0
     buffs: []
@@ -271,7 +305,7 @@ MonoBehaviour:
     bonusPerAction:
     - 1.6277777
     - 1.6916666
-    - 0.3625
+    - 0.63750005
     bonusPerPassive:
     - 1.155
     passiveDescription: "\U0001F517 <b>Honorable</b>: Grants <b><color=#15c>+1</color></b>
@@ -287,4 +321,4 @@ MonoBehaviour:
     actionsDescription: "I take <b><color=#775>guarding pose</color></b>.\n\u2694\uFE0F
       Melee attack, with <b><color=#15c>\xD71</color></b> <b><color=#900>damage</color></b>
       if I have performed an action that affects  the <b><color=#714>leader</color></b>.\n\u2694\uFE0F
-      Melee attack.\n"
+      Melee attack, with <b><color=#15c>+2</color></b> <b><color=#583>HP</color></b>.\n"
