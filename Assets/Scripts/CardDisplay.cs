@@ -233,17 +233,22 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 
 	public GameObject UndoButtonObject;
 	public TurnAction PurchaseAction;
+
+	public List<TurnAction> MyActionsOfThisRound
+	{
+		get { return GM.RoundActions.Where(x => x.CardInAction == this && x.movementType == TurnMovementType.PerformAction).ToList(); }
+	}
 	public bool HasActedThisRound
 	{
-		get { return GM.RoundActions.Exists(x => x.CardInAction == this && x.movementType == TurnMovementType.PerformAction ); }
+		get { return MyActionsOfThisRound.Count > 0; }
 	}
 	public bool HasAttackedThisRound
 	{
-		get { return GM.RoundActions.Exists(x => x.CardInAction == this && x.movementType == TurnMovementType.PerformAction && x.actionObject.action.actionType == ActionTypes.Attack); }
+		get { return MyActionsOfThisRound.Exists(x => x.actionObject.action.actionType == ActionTypes.Attack); }
 	}
 	public bool CanActThisTurn
 	{
-		get { return Owner.isMyTurnToPlay && HasBeenPlayed && (!HasActedThisRound || card.Subtypes.Concat(acquiredSubtypes).Contains(UnitSubtype.Combo) ); }
+		get { return Owner.isMyTurnToPlay && HasBeenPlayed && !guardingPose && (!HasActedThisRound || card.Subtypes.Concat(acquiredSubtypes).Contains(UnitSubtype.Combo) ); }
 	}
 
 	void OnEnable()

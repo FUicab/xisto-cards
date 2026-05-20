@@ -397,6 +397,20 @@ public static class CardActionTools
                                 break;
 						}
 						break;
+					case RequirementTypes.TargetHasAffectedUnitDefinition:
+                        foreach (TargetUnitDefinition targetUnitDefinition in requirement.targetIs)
+                        {
+							switch (targetUnitDefinition)
+							{
+								case TargetUnitDefinition.SameAsMyself:
+									itDoes = target.MyActionsOfThisRound.Where(tuAc => tuAc.targets.Where(x => x.card.Name == requirement.originAction.source.card.Name).ToList().Count > 0).ToList().Count > 0;
+									break;
+								case TargetUnitDefinition.TheLeader:
+                                    itDoes = target.MyActionsOfThisRound.Where(tuAc => tuAc.targets.Where(x => x.card.Type == UnitType.Leader && x.Owner == requirement.originAction.source.Owner).ToList().Count > 0).ToList().Count > 0;
+                                    break;
+							}
+						}
+                        break;
                 }
             }
         }
@@ -534,7 +548,7 @@ public static class CardActionTools
         targetArmor -= attacker.armorPierce + attackerTempModifiers.ArmorPierce;
         if (targetArmor < 0) { targetArmor = 0; }
 
-        int dmg = Mathf.FloorToInt((attacker.attack + attackerTempModifiers.Attack - target.damageReduction) * attackAction.damageMultiplier) - targetArmor;
+        int dmg = Mathf.FloorToInt((attacker.attack + attackerTempModifiers.Attack - target.damageReduction) * (attackAction.damageMultiplier + attackerTempModifiers.DamageMultiplier)) - targetArmor;
         if (attackAction.damageType == DamageTypes.SelfDamage)
         {
             targetArmor = 0;
@@ -632,6 +646,7 @@ class TempModifiers
 	public int ArmorPierce = 0;
 	public int DamageReductionBeforeArmor = 0;
 	public int DamageReductionAfterArmor = 0;
+	public float DamageMultiplier = 0;
 
 	public void SetModifiersFromBuff(BuffAction buff)
 	{
@@ -647,6 +662,7 @@ class TempModifiers
             case Attributes.ArmorPierce: ArmorPierce += buff.amount; break;
             case Attributes.DamageReductionBeforeArmor: DamageReductionBeforeArmor += buff.amount; break;
             case Attributes.DamageReductionAfterArmor: DamageReductionAfterArmor += buff.amount; break;
+            case Attributes.DamageMultiplier: DamageMultiplier += buff.amount; break;
         }
     }
 }

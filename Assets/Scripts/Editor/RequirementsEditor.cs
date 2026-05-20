@@ -47,6 +47,11 @@ public class RequirementsDrawer : PropertyDrawer
                 GUIContent customLabel = new GUIContent("Neighbor type");
                 EditorGUI.PropertyField(new Rect(position.x, currentY, position.width, height), targetIs, customLabel, true);
                 currentY += height + 2;
+            } else if (requirement.enumValueIndex == (int)RequirementTypes.TargetHasAffectedUnitDefinition) {
+                float height = EditorGUI.GetPropertyHeight(targetIs, true);
+                GUIContent customLabel = new GUIContent("Affected's type");
+                EditorGUI.PropertyField(new Rect(position.x, currentY, position.width, height), targetIs, customLabel, true);
+                currentY += height + 2;
             } else if (requirement.enumValueIndex == (int)RequirementTypes.TargetAttributeIs) {
                 float height = EditorGUI.GetPropertyHeight(attribute, true);
                 EditorGUI.PropertyField(new Rect(position.x, currentY, position.width, height), attribute, true);
@@ -78,7 +83,7 @@ public class RequirementsDrawer : PropertyDrawer
         if (requirement.enumValueIndex == (int)RequirementTypes.TargetHasSubtypesOrFactions) {
             height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("subtypeRequirement"), true) + 2;
             height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("factionRequirement"), true) + 2;
-        } else if (requirement.enumValueIndex == (int)RequirementTypes.TargetIsNextTo || requirement.enumValueIndex == (int)RequirementTypes.TargetIsInRowInFrontOf) {
+        } else if (requirement.enumValueIndex == (int)RequirementTypes.TargetIsNextTo || requirement.enumValueIndex == (int)RequirementTypes.TargetIsInRowInFrontOf || requirement.enumValueIndex == (int)RequirementTypes.TargetHasAffectedUnitDefinition) {
             height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("targetIs"), true) + 2;
         } else if (requirement.enumValueIndex == (int)RequirementTypes.TargetAttributeIs) {
             height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("attribute"), true) + 2;

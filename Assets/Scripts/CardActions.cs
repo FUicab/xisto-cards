@@ -215,7 +215,8 @@ public enum Attributes{
 	DamageReductionBeforeArmor,
 	DamageReductionAfterArmor,
 	MaxHealth,
-	Cost
+	Cost,
+	DamageMultiplier
 }
 public enum ActionTypes{
 	Attack,
@@ -258,7 +259,8 @@ public enum RequirementTypes{
 	TargetHasSubtypesOrFactions,
 	TargetHasAttackedThisRound,
 	TargetAttributeIs,
-	TargetIsInRowInFrontOf
+	TargetIsInRowInFrontOf,
+	TargetHasAffectedUnitDefinition
 }
 public enum Comparison
 {

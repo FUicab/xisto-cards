@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Yan
   m_EditorClassIdentifier: Assembly-CSharp::Card
   Name: Yan
-  CardCount: 5
+  CardCount: 50
   Type: 3
   Subtypes: 000000000c000000
-  Cost: 6
+  Cost: 3
   Artwork: {fileID: 21300000, guid: b734b3715652f814eb259edb93b6ac8b, type: 3}
   Origin: 00000000
   MaxHP: 18

@@ -496,18 +496,24 @@ public static class CardTranslator
 		return text;
 	}
 
-	public static string NumberWithSign(int number)
+	public static string NumberWithSign(BuffAction buff)
 	{
 		string text = "";
-		if (number > 0) { text += $"+{number}"; }
-		if (number < 0) { text += $"{number}"; }
+		if(buff.Attribute == Attributes.DamageMultiplier)
+		{
+			text += "×" + (buff.amount + (buff.originAttack != null? buff.originAttack.damageMultiplier : 0));
+		} else
+		{
+			if (buff.amount > 0) { text += $"+{buff.amount}"; }
+			if (buff.amount < 0) { text += $"{buff.amount}"; }
+		}
 		return text;
 	}
 
 	public static string AttributeAndValue(BuffAction buff)
 	{
 		string text = "";
-		text += TextFormat(NumberWithSign(buff.amount), null, buff.amountCanBeAugmented) + " ";
+		text += TextFormat(NumberWithSign(buff), null, buff.amountCanBeAugmented) + " ";
 		text += TextFormat(BuffAttributeDescription(buff.Attribute), buff.Attribute);
 		return text;
 	}
@@ -532,7 +538,8 @@ public static class CardTranslator
 				case Attributes.DamageReductionBeforeArmor: text += "760"; break;
 				case Attributes.DamageReductionAfterArmor: text += "760"; break;
 				case Attributes.ArmorPierce: text += "b50"; break;
-				case "faction": text += "555"; break;
+                case Attributes.DamageMultiplier: text += "900"; break;
+                case "faction": text += "555"; break;
 				case "subtype": text += "714"; break;
 				case "self-damage": text += "c42"; break;
 				default: text += "222"; break;
@@ -620,7 +627,11 @@ public static class CardTranslator
 								text += $"{ComparisonDescription(requirement.comparison)} <b>{requirement.attributeValue}</b>";
 								break;
 							case RequirementTypes.TargetIsInRowInFrontOf:
-								text += " if I'm in the row in front of";
+								text += " if I'm in the row in front of ";
+								text += UnitDefinitionDescription(requirement.targetIs, card);
+                            break;
+							case RequirementTypes.TargetHasAffectedUnitDefinition:
+								text += " if I have performed an action that affects ";
 								text += UnitDefinitionDescription(requirement.targetIs, card);
                             break;
                     }
@@ -716,8 +727,25 @@ public static class CardTranslator
 									break;
 							}
 							text += $"{ComparisonDescription(requirement.comparison)} <b>{requirement.attributeValue}</b>";
-							break;
-						}
+						break;
+                        case RequirementTypes.TargetHasAffectedUnitDefinition:
+                            switch (formattingFor)
+                            {
+                                case "attack":
+                                    text += ", but target must have had";
+                                    break;
+                                case "effectOrTempBuff":
+                                case "onHit":
+                                    text += " when the target has";
+                                    break;
+                                case "buff":
+                                    text += " if the target has";
+                                    break;
+                            }
+                            text += " performed an action that affects ";
+                            text += UnitDefinitionDescription(requirement.targetIs, card);
+                        break;
+                    }
 						break;
 					case TargetTypes.LineOfEnemies:
 					case TargetTypes.AlliesInSameLine:
@@ -808,6 +836,21 @@ public static class CardTranslator
 								text += " is ";
 								text += $"{ComparisonDescription(requirement.comparison)} <b>{requirement.attributeValue}</b>";
 								break;
+							case RequirementTypes.TargetHasAffectedUnitDefinition:
+								switch (formattingFor)
+								{
+									case "attack":
+										text += ", but hits only those who have";
+										break;
+									case "effectOrTempBuff":
+									case "onHit":
+									case "buff":
+										text += " when they have";
+										break;
+								}
+								text += " performed an action that affects ";
+								text += UnitDefinitionDescription(requirement.targetIs, card);
+								break;
 						}
 						break;
 				}
@@ -878,7 +921,13 @@ public static class CardTranslator
 			case Attributes.MaxHealth:
 				text += "max HP";
 			break;
-		}
+            case Attributes.Cost:
+                text += "cost";
+            break;
+            case Attributes.DamageMultiplier:
+                text += "damage";
+            break;
+        }
 		return text;
 	}
 
@@ -1175,7 +1224,7 @@ public static class CardTranslator
 			switch (unitDefinitions[i])
 			{
 				case TargetUnitDefinition.SameAsMyself:
-					text += $" another <b>{(card?.Name ?? "card of my kind")}</b>";
+					text += $" any <b>{(card?.Name ?? "card of my kind")}</b>";
 					break;
 				case TargetUnitDefinition.TheLeader:
 					text += $" the {TextFormat("leader","subtype")}";
