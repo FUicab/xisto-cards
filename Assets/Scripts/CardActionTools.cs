@@ -83,7 +83,7 @@ public static class CardActionTools
             }
         }
 
-        foreach (BuffAction instantEffectBuff in attack.temporaryBuffs.Where(x => x.Attribute == Attributes.Health).Concat(attacker.appliedBuffs.Where(x => x.activatesOnHit && (x.Attribute == Attributes.Health || x.specialEffect == BuffSpecialEffects.EnableGuardingPose) )).ToList())
+        foreach (BuffAction instantEffectBuff in attack.temporaryBuffs.Where(x => x.Attribute == Attributes.Health).Concat(attacker.appliedBuffs.Where(x => x.activatesOnHit && x.IsBuffEffectOfInstantEffect() )).ToList())
         {
 			BuffAction buff = new(instantEffectBuff) { activatesOnHit = false, source = attacker };
             foreach (CardDisplay buffTarget in buff.GetImplicitTargetsOfAction())
@@ -647,6 +647,31 @@ public static class CardActionTools
 		}
 		return itIs;
 	}
+
+    public static bool IsBuffEffectOfInstantEffect(BuffAction buff)
+    {
+        bool itIs = false;
+		switch (buff.specialEffect)
+		{
+			case BuffSpecialEffects.None:
+			case BuffSpecialEffects.RedirectAttacksTowardsMe:
+			case BuffSpecialEffects.GrantSubtypes:
+			case BuffSpecialEffects.EnableGuardingPose:
+			case BuffSpecialEffects.Stun:
+			case BuffSpecialEffects.Disarm:
+			case BuffSpecialEffects.Disrupt:
+				itIs = false;
+				break;
+			case BuffSpecialEffects.TriggerExtraAttack:
+				itIs = true;
+				break;
+		}
+		if(buff.Attribute == Attributes.Health)
+		{
+			itIs = true;
+		}
+		return itIs;
+    }
 }
 
 class TempModifiers

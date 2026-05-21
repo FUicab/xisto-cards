@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -248,22 +249,25 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 	}
 	public bool CanActThisTurn
 	{
-		get { return Owner.isMyTurnToPlay && HasBeenPlayed && !guardingPose && (!HasActedThisRound || card.Subtypes.Concat(acquiredSubtypes).Contains(UnitSubtype.Combo) ); }
+		get { return Owner.isMyTurnToPlay && HasBeenPlayed && !guardingPose && !IsStunned && (!HasActedThisRound || card.Subtypes.Concat(acquiredSubtypes).Contains(UnitSubtype.Combo) ); }
 	}
+	public bool IsStunned { get { return appliedBuffs.Exists(x => x.specialEffect == BuffSpecialEffects.Stun); } }
+    public bool IsDisarmed { get { return appliedBuffs.Exists(x => x.specialEffect == BuffSpecialEffects.Disarm); } }
+    public bool IsDisrupted { get { return appliedBuffs.Exists(x => x.specialEffect == BuffSpecialEffects.Disrupt); } }
 
-	void OnEnable()
+    void OnEnable()
 	{
 		EventManager.BoardUpdate += UpdateActiveBuffStatus;
 		EventManager.BoardUpdate += UpdatePassiveBuffStatus;
-		EventManager.TurnActionChange += UpdateClickabilityStatus;
+        EventManager.TurnActionChange += UpdateClickabilityStatus;
 		EventManager.RoundEnd += RoundEndCleanUp;
 	}
 
-	void OnDisable()
+    void OnDisable()
 	{
 		EventManager.BoardUpdate -= UpdateActiveBuffStatus;
 		EventManager.BoardUpdate -= UpdatePassiveBuffStatus;
-		EventManager.TurnActionChange -= UpdateClickabilityStatus;
+        EventManager.TurnActionChange -= UpdateClickabilityStatus;
 		EventManager.RoundEnd -= RoundEndCleanUp;
 	}
 
@@ -550,22 +554,38 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 			receiver = this
 		};
 
-		if(buff.specialEffect == BuffSpecialEffects.EnableGuardingPose)
-		{
-			guardingPose = true; // Guarding pose effects do not trigger anything else
+		if(buff.IsBuffEffectOfInstantEffect()) // Instant effects do not trigger anything else nor get saved as persistent buffs
+        {
+			if(buff.Attribute == Attributes.Health)
+			{
+                hp += buff.amount;
+                if (hp > maxHP) { hp = maxHP; }
+            }
+			switch (buff.specialEffect)
+			{
+				case BuffSpecialEffects.TriggerExtraAttack:
+					// This may get added later on
+					break;
+				case BuffSpecialEffects.EnableGuardingPose:
+					guardingPose = true;
+					break;
+				//case BuffSpecialEffects.Stun:
+				//	break;
+				//case BuffSpecialEffects.Disarm:
+				//	break;
+				//case BuffSpecialEffects.Disrupt:
+				//	break;
+			}
 		} else
 		{
-			switch (buff.Attribute)
-			{
-				case Attributes.Health: // Health buffs are actually just healing effects
-					hp += buff.amount;
-					if (hp > maxHP) { hp = maxHP; }
-				break;
-				default:
-					activeBuffs.Add(buff);
+			activeBuffs.Add(buff);
+            switch (buff.specialEffect)
+            {
+                case BuffSpecialEffects.Disrupt:
+					RemovePassiveBuffsFromMe();
 				break;
 			}
-		}
+        }
 		UpdateCardUI();
 	}
 
@@ -665,7 +685,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 
 	public void UpdatePassiveBuffStatus()
 	{
-		if (!HasBeenPlayed) { return; }
+		if (!HasBeenPlayed || !IsDisrupted) { return; }
 		//passiveBuffs.Clear();
 		foreach (PassiveSkill passive in cardPassives)
 		{
@@ -678,7 +698,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
                         foreach (CardDisplay target in buff.GetImplicitTargetsOfAction())
 						{
 							//Debug.Log($"{passive.title} from {passive.source.card.Name} is checking for validity on {target.card.Name}: {buff.TargetMeetsRequirements(target)}");
-							if (!target.passiveBuffs.Exists(x => x.originPassive.title == passive.title && x.originPassive.source == passive.source && buff.Attribute == x.Attribute && buff.amount == x.amount)) {
+							if (!target.passiveBuffs.Exists(x => x.originPassive.title == passive.title && x.originPassive.source == passive.source && buff.Attribute == x.Attribute && buff.amount == x.amount) ) {
                                 //Debug.Log($"{passive.title} from {passive.source.card.Name} was successfully applied to {target.card.Name}");
                                 target.ReceivePassiveBuff(buff);
 							}
@@ -689,7 +709,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 							{
 								BuffAction theirBuff = cardSpace.PlayingCard.passiveBuffs[i];
                                 //Debug.Log($"{theirBuff.originPassive.source.card.Name} applied {theirBuff.originPassive.title} to {passive.source.card.Name}. Can they keep it? : {theirBuff.TargetMeetsRequirements(cardSpace.PlayingCard)}");
-                                if (theirBuff.originPassive.source == this && !theirBuff.TargetMeetsRequirements(cardSpace.PlayingCard))
+                                if ( (theirBuff.originPassive.source == this && !theirBuff.TargetMeetsRequirements(cardSpace.PlayingCard)) || IsDisrupted )
 								{
                                     //Debug.Log($"{passive.title} from {passive.source.card.Name} can no longer be applied to {cardSpace.PlayingCard.card.Name}");
                                     cardSpace.PlayingCard.passiveBuffs.RemoveAt(i);
@@ -728,10 +748,10 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 			if (ProtectedByDefender) { clickable = false; }
 			if (!isPotentialTargetForPerformingAction) {  clickable = false; }
 		}
-		if (guardingPose && GM.PlayerAtPlay == Owner)
-		{
-			clickable = false;
-		}
+		//if (GM.PlayerAtPlay == Owner)
+		//{
+		//	clickable = false;
+		//}
 
 		if (clickable)
 		{
@@ -745,7 +765,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		}
 	}
 
-	public void SetPotentialDamageDisplay(TurnAction turnAction)
+    public void SetPotentialDamageDisplay(TurnAction turnAction)
 	{
 		if (turnAction.movementType == TurnMovementType.PerformAction && turnAction.actionObject?.action?.actionType == ActionTypes.Attack && GM.turnStatus == TurnStatus.SelectingTargets) {
 			PotentialDamageImage.gameObject.SetActive(true);

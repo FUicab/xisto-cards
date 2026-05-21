@@ -123,8 +123,8 @@ public class BuffAction : ActiveAction{
         values.extraAttacks.ForEach(atk => { extraAttacks?.Add(new AttackAction(atk) { source = values.source, isExtra = true } ); });
         //onHitRequirements = values.onHitRequirements;
     }
-
     public bool TargetMeetsOnHitRequirements(CardDisplay target) { return CardActionTools.TargetMeetsRequirements(target, onHitRequirements); }
+    public bool IsBuffEffectOfInstantEffect() { return CardActionTools.IsBuffEffectOfInstantEffect(this); }
 }
 
 [System.Serializable]
@@ -149,14 +149,6 @@ public class AttackEffect
 		values.buffs.ForEach(buff => { buffs.Add(new BuffAction(buff, originAttack){ source = attackSource.source }); });
         values.requirements.ForEach(req => { requirements?.Add(new Requirements(req, originAttack) ); });
     }
-}
-
-public enum BuffSpecialEffects{
-	None,
-	RedirectAttacksTowardsMe,
-	GrantSubtypes,
-	TriggerExtraAttack,
-	EnableGuardingPose
 }
 
 [System.Serializable]
@@ -240,11 +232,6 @@ public enum DamageTypes{
 	MeleeOrRangedOrEnergy,
 	SelfDamage
 }
-public enum AttackEffects{
-	SplashDamage,
-	SelfDamage,
-	ApplyDebuff
-}
 public enum TargetTypes{
 	Self,
 	AlliesInSameLine,
@@ -256,6 +243,22 @@ public enum TargetTypes{
 	SingleAlly,
 	AllEnemies
 }
+public enum AttackEffects{
+	SplashDamage,
+	SelfDamage,
+	ApplyDebuff
+}
+public enum BuffSpecialEffects
+{
+    None,
+    RedirectAttacksTowardsMe,
+    GrantSubtypes,
+    TriggerExtraAttack,
+    EnableGuardingPose,
+	Stun,
+	Disarm,
+	Disrupt
+}
 public enum SpecialBehavior{
 	OnlyActivatesOnce
 }
@@ -265,7 +268,9 @@ public enum RequirementTypes{
 	TargetHasAttackedThisRound,
 	TargetAttributeIs,
 	TargetIsInRowInFrontOf,
-	TargetHasAffectedUnitDefinition
+	TargetHasAffectedUnitDefinition,
+	TargetIsStunned,
+	TargetIsDisarmed
 }
 public enum Comparison
 {

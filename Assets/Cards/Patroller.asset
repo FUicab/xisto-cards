@@ -1,0 +1,204 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e4e87ef44ac0934298d8773e4605e72, type: 3}
+  m_Name: Patroller
+  m_EditorClassIdentifier: Assembly-CSharp::Card
+  Name: Daytime patroller
+  CardCount: 10
+  Type: 0
+  Subtypes: 0000000009000000
+  Cost: 1
+  Artwork: {fileID: 21300000, guid: 5af1b235a9f232042a6da74a8252a82e, type: 3}
+  Origin: 04000000
+  MaxHP: 6
+  Armor: 020000000200000000000000
+  Attack: 2
+  Passives:
+  - title: Justice bringer
+    description: 
+    trigger: 1
+    canBeShared: 1
+    oncePerTurn: 0
+    requiresElementalExchange: 0
+    buffs:
+    - target: 0
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      Attribute: 0
+      amount: 2
+      isDebuff: 0
+      amountCanBeAugmented: 1
+      activatesOnHit: 1
+      onHitRequirements:
+      - requirement: 1
+        subtypeRequirement: 02000000
+        factionRequirement: 
+        targetIs: 
+        attribute: 0
+        comparison: 0
+        attributeValue: 0
+        targetOfRequirementIsTargetOfAttack: 0
+      specialEffect: 0
+      extraAttacks: []
+      grantedSubtypes: 
+      specialBehavior: 
+      originAttack:
+        target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        damageType: 0
+        damageMultiplier: 0
+        flatDamageOverwrite: 0
+        attackEffect: []
+        temporaryBuffs: []
+        isExtra: 0
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerTurn: 0
+        requiresElementalExchange: 0
+        buffs: []
+        source: {fileID: 0}
+    source: {fileID: 0}
+  CardActions:
+  - actionType: 0
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
+      isExtra: 0
+    attackCountCanBeAugmented: 0
+    buffs: []
+  - actionType: 1
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
+      isExtra: 0
+    attackCountCanBeAugmented: 0
+    buffs: []
+  - actionType: 1
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
+      isExtra: 0
+    attackCountCanBeAugmented: 0
+    buffs: []
+  - actionType: 1
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
+      isExtra: 0
+    attackCountCanBeAugmented: 0
+    buffs: []
+  - actionType: 2
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
+      isExtra: 0
+    attackCountCanBeAugmented: 0
+    buffs:
+    - target: 2
+      requirements:
+      - requirement: 1
+        subtypeRequirement: 02000000
+        factionRequirement: 05000000
+        targetIs: 
+        attribute: 0
+        comparison: 0
+        attributeValue: 0
+        targetOfRequirementIsTargetOfAttack: 0
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      Attribute: 0
+      amount: -1
+      isDebuff: 0
+      amountCanBeAugmented: 1
+      activatesOnHit: 0
+      onHitRequirements: []
+      specialEffect: 0
+      extraAttacks: []
+      grantedSubtypes: 
+      specialBehavior: 
+      originAttack:
+        target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        damageType: 0
+        damageMultiplier: 0
+        flatDamageOverwrite: 0
+        attackEffect: []
+        temporaryBuffs: []
+        isExtra: 0
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerTurn: 0
+        requiresElementalExchange: 0
+        buffs: []
+        source: {fileID: 0}
+  powerRating:
+    card: {fileID: 11400000}
+    bonusPerAction:
+    - 0.89416665
+    - 0.07333334
+    bonusPerPassive:
+    - 1.155
+    passiveDescription: "\U0001F517 <b>Justice bringer</b>: When I <b>attack \U0001F4A5</b>
+      I get <b><color=#15c>+2</color></b> <b><color=#900>attack</color></b> <i>(for
+      that attack)</i> when targetting <b><color=#714>\U0001F3F4 mercenaries</color></b>.\n"
+    passiveBuffDescriptions: "<b>\U0001F4A5 On hit</b>: <b><color=#15c>+2</color></b>
+      <b><color=#900>attack</color></b> when targetting <b><color=#714>\U0001F3F4
+      mercenaries</color></b>, from myself\n"
+    actionsDescription: "\u2694\uFE0F Melee attack.\nGrants <b><color=#15c>-1</color></b>
+      <b><color=#900>attack</color></b> to an enemy if they're <b><color=#714>\U0001F3F4
+      mercenaries</color></b> or <b><color=#555>Independent units</color></b>.\n"

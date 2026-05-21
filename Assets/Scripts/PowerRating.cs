@@ -233,6 +233,7 @@ public class PowerRating
 	{
 		float augmentationBonus = 1f;
 		float buffPower = 0f;
+		bool buffEffectIsPositive = true;
 		augmentationBonus *= GetTargetTypeBonus(buff.target);
 		if (buff.amountCanBeAugmented) { augmentationBonus *= 1.1f; }
 		switch (buff.Attribute)
@@ -275,8 +276,17 @@ public class PowerRating
 			case BuffSpecialEffects.EnableGuardingPose:
 				buffPower += (baseBonus / 2) + card.Attack;
 				break;
+			case BuffSpecialEffects.Stun:
+                buffPower += 8f;
+				buffEffectIsPositive = false;
+                break;
+			case BuffSpecialEffects.Disrupt:
+			case BuffSpecialEffects.Disarm:
+                buffPower += 3.5f;
+                buffEffectIsPositive = false;
+                break;
 		}
-		if (!buff.targetIsFromMyTeam) { buffPower *= -1f; }
+		if (!buff.targetIsFromMyTeam && buffEffectIsPositive) { buffPower *= -1f; }
 		float temporaryBuffRequirementNerf = GetRequirementsNerf(buff.requirements);
 		float onHitBuffRequirementNerf = GetRequirementsNerf(buff.onHitRequirements);
 		return buffPower * temporaryBuffRequirementNerf * onHitBuffRequirementNerf;

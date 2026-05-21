@@ -302,11 +302,26 @@ public class GameManager : MonoBehaviour
                         switch (actionObject.action.buffs[CurrentAction.nextNullIndex].target)
 						{
 							case TargetTypes.SingleEnemy:
-								// SelectCardAsTargetOfAction(CurrentAction.CardInAction);
-								// UpdateTargetSelectionStatus();
-								// return;
-								tooltipMessage += " Select 1 enemy to apply "+ CardTranslator.AttributeAndValue(actionObject.action.buffs[CurrentAction.nextNullIndex])+".";
+								tooltipMessage += " Select 1 enemy to ";
 							break;
+						}
+						if(actionObject.action.buffs[CurrentAction.nextNullIndex].amount > 0)
+						{
+							tooltipMessage += $"grant {CardTranslator.AttributeAndValue(actionObject.action.buffs[CurrentAction.nextNullIndex])}.";
+                        } else if(actionObject.action.buffs[CurrentAction.nextNullIndex].specialEffect != BuffSpecialEffects.None)
+                        {
+							switch (actionObject.action.buffs[CurrentAction.nextNullIndex].specialEffect)
+							{
+								case BuffSpecialEffects.Stun:
+									tooltipMessage += CardTranslator.TextFormat("stun","statusEffect")+".";
+									break;
+								case BuffSpecialEffects.Disarm:
+                                    tooltipMessage += CardTranslator.TextFormat("disarm", "statusEffect")+".";
+                                    break;
+								case BuffSpecialEffects.Disrupt:
+                                    tooltipMessage += CardTranslator.TextFormat("disrupt", "statusEffect")+".";
+                                    break;
+							}
 						}
 					}
 				break;
@@ -485,7 +500,7 @@ public class GameManager : MonoBehaviour
 		{
 			newRound = true;
 			RoundEnd();
-		}
+		}		
 		//Debug.Log($"Host: {Host.actionPoints} | Opponent: {Opponent.actionPoints} | {PlayerAtPlay.Role} will play now.");
 		if (!newRound)
 		{
@@ -500,7 +515,7 @@ public class GameManager : MonoBehaviour
 		if(PlayerAtPlay.useAI){
 			OpponentAI.StartAI();
 		}
-	}
+    }
 
 	public void SetConfirmationButton(string bigText = "", string smallText = "", bool enabled = true){
 		ConfirmationButtonText.text = bigText;

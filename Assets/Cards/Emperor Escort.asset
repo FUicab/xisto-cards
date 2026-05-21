@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Emperor Escort
   m_EditorClassIdentifier: Assembly-CSharp::Card
   Name: Emperor's Escort
-  CardCount: 100
+  CardCount: 10
   Type: 0
   Subtypes: 00000000
   Cost: 2
@@ -321,4 +321,5 @@ MonoBehaviour:
     actionsDescription: "I take <b><color=#775>guarding pose</color></b>.\n\u2694\uFE0F
       Melee attack, with <b><color=#15c>\xD71</color></b> <b><color=#900>damage</color></b>
       if I have performed an action that affects  the <b><color=#714>leader</color></b>.\n\u2694\uFE0F
-      Melee attack, with <b><color=#15c>+2</color></b> <b><color=#583>HP</color></b>.\n"
+      Melee attack and heals <b><color=#15c>+2</color></b> <b><color=#583>HP</color></b>
+      to me.\n"

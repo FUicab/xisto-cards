@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Yan
   m_EditorClassIdentifier: Assembly-CSharp::Card
   Name: Yan
-  CardCount: 50
+  CardCount: 5
   Type: 3
   Subtypes: 000000000c000000
   Cost: 3
