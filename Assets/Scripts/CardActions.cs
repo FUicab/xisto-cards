@@ -270,7 +270,8 @@ public enum RequirementTypes{
 	TargetIsInRowInFrontOf,
 	TargetHasAffectedUnitDefinition,
 	TargetIsStunned,
-	TargetIsDisarmed
+	TargetIsDisarmed,
+	TargetIsDisrupted
 }
 public enum Comparison
 {

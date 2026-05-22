@@ -424,6 +424,15 @@ public static class CardActionTools
 							}
 						}
                         break;
+					case RequirementTypes.TargetIsStunned:
+						itDoes = target.IsStunned;
+						break;
+                    case RequirementTypes.TargetIsDisarmed:
+						itDoes = target.IsDisarmed;
+                        break;
+                    case RequirementTypes.TargetIsDisrupted:
+						itDoes = target.IsDisrupted;
+                        break;
                 }
             }
         }

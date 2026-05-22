@@ -676,8 +676,17 @@ public static class CardTranslator
 								text += " if I have performed an action that affects ";
 								text += UnitDefinitionDescription(requirement.targetIs, card);
                             break;
-                    }
-						break;
+							case RequirementTypes.TargetIsStunned:
+								text += $" if I'm {TextFormat("stunned","statusEffect")}";
+                            break;
+							case RequirementTypes.TargetIsDisarmed:
+								text += $" if I'm {TextFormat("disarmed","statusEffect")}";
+								break;
+							case RequirementTypes.TargetIsDisrupted:
+								text += $" if I'm {TextFormat("disrupted","statusEffect")}";
+								break;
+						}
+                    break;
 					case TargetTypes.SameTarget:
 					case TargetTypes.SingleEnemy:
 					case TargetTypes.SingleAlly:
@@ -700,95 +709,124 @@ public static class CardTranslator
 								}
 								text += FactionOrSubtypeRequirementDescription(requirement);
 								break;
-						case RequirementTypes.TargetIsNextTo:
-						case RequirementTypes.TargetIsInRowInFrontOf:
-							switch (formattingFor)
-							{
-								case "attack":
-									text += ", but target must be ";
-									break;
-								case "effectOrTempBuff":
-								case "onHit":
-									text += " when target is ";
-									break;
-								case "buff":
-									text += " if they're ";
-									break;
-							}
-							switch (requirement.requirement)
-							{
-								case RequirementTypes.TargetIsNextTo:
-									text += "next to ";
-									break;
-								case RequirementTypes.TargetIsInRowInFrontOf:
-									text += "in the row in front of ";
-									break;
-							}
-							text += UnitDefinitionDescription(requirement.targetIs, card);
+							case RequirementTypes.TargetIsNextTo:
+							case RequirementTypes.TargetIsInRowInFrontOf:
+								switch (formattingFor)
+								{
+									case "attack":
+										text += ", but target must be ";
+										break;
+									case "effectOrTempBuff":
+									case "onHit":
+										text += " when target is ";
+										break;
+									case "buff":
+										text += " if they're ";
+										break;
+								}
+								switch (requirement.requirement)
+								{
+									case RequirementTypes.TargetIsNextTo:
+										text += "next to ";
+										break;
+									case RequirementTypes.TargetIsInRowInFrontOf:
+										text += "in the row in front of ";
+										break;
+								}
+								text += UnitDefinitionDescription(requirement.targetIs, card);
+								break;
+							case RequirementTypes.TargetHasAttackedThisRound:
+								switch (formattingFor)
+								{
+									case "attack":
+										text += ", but target must have had ";
+										break;
+									case "effectOrTempBuff":
+									case "onHit":
+										text += " when the target has ";
+										break;
+									case "buff":
+										text += " if they have ";
+										break;
+								}
+								text += "attacked before during this round";
+								break;
+							case RequirementTypes.TargetAttributeIs:
+								switch (formattingFor)
+								{
+									case "attack":
+										text += ", but target's ";
+										break;
+									case "effectOrTempBuff":
+									case "onHit":
+										text += " when the target's ";
+										break;
+									case "buff":
+										text += " if target's ";
+										break;
+								}
+								text += TextFormat(BuffAttributeDescription(requirement.attribute), requirement.attribute);
+								switch (formattingFor)
+								{
+									case "attack":
+										text += " must be ";
+										break;
+									case "effectOrTempBuff":
+									case "onHit":
+									case "buff":
+										text += " is ";
+										break;
+								}
+								text += $"{ComparisonDescription(requirement.comparison)} <b>{requirement.attributeValue}</b>";
 							break;
-						case RequirementTypes.TargetHasAttackedThisRound:
-							switch (formattingFor)
-							{
-								case "attack":
-									text += ", but target must have had ";
-									break;
-								case "effectOrTempBuff":
-								case "onHit":
-									text += " when the target has ";
-									break;
-								case "buff":
-									text += " if they have ";
-									break;
-							}
-							text += "attacked before during this round";
+							case RequirementTypes.TargetHasAffectedUnitDefinition:
+								switch (formattingFor)
+								{
+									case "attack":
+										text += ", but target must have had";
+										break;
+									case "effectOrTempBuff":
+									case "onHit":
+										text += " when the target has";
+										break;
+									case "buff":
+										text += " if the target has";
+										break;
+								}
+								text += " performed an action that affects ";
+								text += UnitDefinitionDescription(requirement.targetIs, card);
 							break;
-						case RequirementTypes.TargetAttributeIs:
-							switch (formattingFor)
-							{
-								case "attack":
-									text += ", but target's ";
+							case RequirementTypes.TargetIsStunned:
+							case RequirementTypes.TargetIsDisarmed:
+							case RequirementTypes.TargetIsDisrupted:
+								switch (formattingFor)
+								{
+									case "attack":
+										text += ", but target must be";
+										break;
+									case "effectOrTempBuff":
+									case "onHit":
+										text += " when the target is";
+										break;
+									case "buff":
+										text += " if the target is";
+										break;
+								}
+								switch (requirement.requirement)
+								{
+									case RequirementTypes.TargetIsStunned:
+										text += $" {TextFormat("stunned", "statusEffect")}";
 									break;
-								case "effectOrTempBuff":
-								case "onHit":
-									text += " when the target's ";
+									case RequirementTypes.TargetIsDisarmed:
+										text += $" {TextFormat("disarmed", "statusEffect")}";
 									break;
-								case "buff":
-									text += " if target's ";
+									case RequirementTypes.TargetIsDisrupted:
+										text += $" {TextFormat("disrupted", "statusEffect")}";
 									break;
-							}
-							text += TextFormat(BuffAttributeDescription(requirement.attribute), requirement.attribute);
-							switch (formattingFor)
-							{
-								case "attack":
-									text += " must be ";
-									break;
-								case "effectOrTempBuff":
-								case "onHit":
-								case "buff":
-									text += " is ";
-									break;
-							}
-							text += $"{ComparisonDescription(requirement.comparison)} <b>{requirement.attributeValue}</b>";
-						break;
-                        case RequirementTypes.TargetHasAffectedUnitDefinition:
-                            switch (formattingFor)
-                            {
-                                case "attack":
-                                    text += ", but target must have had";
-                                    break;
-                                case "effectOrTempBuff":
-                                case "onHit":
-                                    text += " when the target has";
-                                    break;
-                                case "buff":
-                                    text += " if the target has";
-                                    break;
-                            }
-                            text += " performed an action that affects ";
-                            text += UnitDefinitionDescription(requirement.targetIs, card);
-                        break;
-                    }
-						break;
+								}
+							break;
+						}
+					break;
 					case TargetTypes.LineOfEnemies:
 					case TargetTypes.AlliesInSameLine:
 					case TargetTypes.AllAllies:
@@ -893,8 +931,37 @@ public static class CardTranslator
 								text += " performed an action that affects ";
 								text += UnitDefinitionDescription(requirement.targetIs, card);
 								break;
+							case RequirementTypes.TargetIsStunned:
+							case RequirementTypes.TargetIsDisarmed:
+							case RequirementTypes.TargetIsDisrupted:
+								switch (formattingFor)
+								{
+									case "attack":
+										text += ", but target must be";
+										break;
+									case "effectOrTempBuff":
+									case "onHit":
+										text += " when the target is";
+										break;
+									case "buff":
+										text += " if the target is";
+										break;
+								}
+								switch (requirement.requirement)
+								{
+									case RequirementTypes.TargetIsStunned:
+										text += $" {TextFormat("stunned", "statusEffect")}";
+										break;
+									case RequirementTypes.TargetIsDisarmed:
+										text += $" {TextFormat("disarmed", "statusEffect")}";
+										break;
+									case RequirementTypes.TargetIsDisrupted:
+										text += $" {TextFormat("disrupted", "statusEffect")}";
+										break;
+								}
+								break;
 						}
-						break;
+					break;
 				}
 		}
 		return text;
