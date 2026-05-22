@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -105,150 +106,156 @@ public static class CardTranslator
         string text = "";
         int index = 0;
         int subIndex = 0;
-        // Checks if all attacks are the same. This is to list each one separately or just display the number of attacks.
-        bool allSameAttackTypes = true;
+        /* Checks if all attacks are the same. This is to list each one separately or just display the number of attacks.
+         * It also checks if all of those attacks share the same relevant data, like effects and requirements.
+         */
+        bool allSameAttackTypes = attacks.Count > 1;
         foreach (var attack in attacks)
         {
-            if (attack.damageType != attacks[0].damageType)
+            if (attack.damageType != attacks[0].damageType || attack.damageMultiplier != attacks[0].damageMultiplier || attack.requirements.Count != attacks[0].requirements.Count || attack.attackEffect.Count != attacks[0].attackEffect.Count)
             {
                 allSameAttackTypes = false;
             }
         }
-        if (allSameAttackTypes && attacks.Count > 1)
+        index = 0;
+        foreach (var attack in attacks)
         {
-            AttackAction attack = attacks[0];
-            text += TextFormat(attacks.Count.ToString(), null, attackCountCanBeAugmented) + " ";
-            text += DamageTypeDescription(attack.damageType);
-            text += " attacks";
-        }
-        else
-        {
-            index = 0;
-            foreach (var attack in attacks)
+			if (allSameAttackTypes && attacks.Count > 1 && index == 0)
+			{
+				text += TextFormat(attacks.Count.ToString(), null, attackCountCanBeAugmented) + " ";
+				text += DamageTypeDescription(attack.damageType);
+				text += " attacks";
+				if (attack.requirements.Count > 0)
+				{
+					text += RequirementDescription(attack.requirements, attack.target, attack.source?.card, "effectOrTempBuff");
+				}
+			} else if (!allSameAttackTypes) {
+				if (index == 0)
+				{
+					if (attacks.Count > 1)
+					{
+						text += "A ";
+					}
+					text += DamageTypeDescription(attack.damageType);
+					text += " attack";
+				}
+				else
+				{
+					if (attacks.Count - 1 == index)
+					{
+						text += " and a ";
+						text += DamageTypeDescription(attack.damageType);
+						text += " attack";
+					}
+					else
+					{
+						text += ", a";
+						text += DamageTypeDescription(attack.damageType);
+						text += " attack";
+					}
+				}
+			}
+
+            if (attack.damageMultiplier != 1f)
             {
-                if (index == 0)
+                text += " with <b>" + (attack.damageMultiplier * 100) + "%</b> effectivity";
+            }
+
+            // Lists all attack effects
+            subIndex = 0;
+            if (attack.attackEffect.Count > 0)
+            {
+                text += " and ";
+                foreach (var effect in attack.attackEffect)
                 {
-                    if (attacks.Count > 1)
+                    if (subIndex == 0)
                     {
-                        text += "A ";
-                    }
-                    text += DamageTypeDescription(attack.damageType);
-                    text += " attack";
-                }
-                else
-                {
-                    if (attacks.Count - 1 == index)
-                    {
-                        text += " and a ";
-                        text += DamageTypeDescription(attack.damageType);
-                        text += " attack";
+                        text += AttackEffectDescription(effect);
                     }
                     else
                     {
-                        text += ", a";
-                        text += DamageTypeDescription(attack.damageType);
-                        text += " attack";
-                    }
-                }
-
-                if (attack.damageMultiplier != 1f)
-                {
-                    text += " with <b>" + (attack.damageMultiplier * 100) + "%</b> effectivity";
-                }
-
-                // Lists all attack effects
-                subIndex = 0;
-                if (attack.attackEffect.Count > 0)
-                {
-                    text += " and ";
-                    foreach (var effect in attack.attackEffect)
-                    {
-                        if (subIndex == 0)
+                        if (attack.temporaryBuffs.Count - 1 == subIndex)
                         {
+                            text += " and ";
                             text += AttackEffectDescription(effect);
                         }
                         else
                         {
-                            if (attack.temporaryBuffs.Count - 1 == subIndex)
-                            {
-                                text += " and ";
-                                text += AttackEffectDescription(effect);
-                            }
-                            else
-                            {
-                                text += ", ";
-                                text += AttackEffectDescription(effect);
-                            }
-                        }
-
-                        // Lists the requirements for those attack effects
-                        if (effect.requirements.Count > 0)
-                        {
-                            text += text += RequirementDescription(effect.requirements, attack.target, attack.source?.card, "effectOrTempBuff");
-                        }
-
-                        subIndex += 1;
-                    }
-                }
-
-                // Lists the temporary buffs of an attack. These buffs only apply while performing the skill.
-                //subIndex = 0;
-                if (attack.temporaryBuffs.Count > 0)
-                {
-					List<BuffAction> tempBuffs = attack.temporaryBuffs.Where(x => x.Attribute != Attributes.Health).ToList();
-                    List<BuffAction> healingBuffs = attack.temporaryBuffs.Where(x => x.Attribute == Attributes.Health).ToList();
-                    if(tempBuffs.Count > 0){ text += ", with "; }
-					for (int i = 0; i < tempBuffs.Count; i++)
-					{
-						BuffAction tempBuff = tempBuffs[i];
-                        text += AttributeAndValue(tempBuff);
-
-                        // Lists the requirements for the temporary buffs on an attack.
-                        if (tempBuff.requirements.Count > 0)
-                        {
-                            text += RequirementDescription(tempBuff.requirements, tempBuff.target, attack.source?.card, "effectOrTempBuff");
-                        }
-                        if (i < tempBuffs.Count - 2)
-                        {
                             text += ", ";
-                        }
-                        else if (i == tempBuffs.Count - 2)
-                        {
-                            text += " and ";
+                            text += AttackEffectDescription(effect);
                         }
                     }
-                    if (tempBuffs.Count > 0 && healingBuffs.Count > 0) { text += ","; }
-                    if (healingBuffs.Count > 0) { text += " and heals "; }
-                    for (int i = 0; i < healingBuffs.Count; i++)
+
+                    // Lists the requirements for those attack effects
+                    if (effect.requirements.Count > 0)
                     {
-                        BuffAction healingBuff = healingBuffs[i];
-                        text += AttributeAndValue(healingBuff)+" from ";
-						text += TargetTypeDescription(healingBuff.target);
+                        text += RequirementDescription(effect.requirements, attack.target, attack.source?.card, "effectOrTempBuff");
+                    }
 
-                        // Lists the requirements for the temporary buffs on an attack.
-                        if (healingBuff.requirements.Count > 0)
-                        {
-                            text += RequirementDescription(healingBuff.requirements, healingBuff.target, attack.source?.card, "effectOrTempBuff");
-                        }
-                        if (i < tempBuffs.Count - 2)
-                        {
-                            text += ", ";
-                        }
-                        else if (i == tempBuffs.Count - 2)
-                        {
-                            text += " and ";
-                        }
+                    subIndex += 1;
+                }
+            }
+
+            // Lists the temporary buffs of an attack. These buffs only apply while performing the skill.
+            //subIndex = 0;
+            if (attack.temporaryBuffs.Count > 0)
+            {
+				List<BuffAction> tempBuffs = attack.temporaryBuffs.Where(x => x.Attribute != Attributes.Health).ToList();
+                List<BuffAction> healingBuffs = attack.temporaryBuffs.Where(x => x.Attribute == Attributes.Health).ToList();
+                if(tempBuffs.Count > 0){ text += ", with "; }
+				for (int i = 0; i < tempBuffs.Count; i++)
+				{
+					BuffAction tempBuff = tempBuffs[i];
+                    text += AttributeAndValue(tempBuff);
+
+                    // Lists the requirements for the temporary buffs on an attack.
+                    if (tempBuff.requirements.Count > 0)
+                    {
+                        text += RequirementDescription(tempBuff.requirements, tempBuff.target, attack.source?.card, "effectOrTempBuff");
+                    }
+                    if (i < tempBuffs.Count - 2)
+                    {
+                        text += ", ";
+                    }
+                    else if (i == tempBuffs.Count - 2)
+                    {
+                        text += " and ";
                     }
                 }
-
-                // Lists the requirements of an attack.
-                if (attack.requirements.Count > 0)
+                if (tempBuffs.Count > 0 && healingBuffs.Count > 0) { text += ","; }
+                if (healingBuffs.Count > 0) { text += " and heals "; }
+                for (int i = 0; i < healingBuffs.Count; i++)
                 {
-                    text += RequirementDescription(attack.requirements, attack.target, attack.source?.card, "attack");
-                }
+                    BuffAction healingBuff = healingBuffs[i];
+                    text += AttributeAndValue(healingBuff)+" from ";
+					text += TargetTypeDescription(healingBuff.target);
 
-                index += 1;
+                    // Lists the requirements for the temporary buffs on an attack.
+                    if (healingBuff.requirements.Count > 0)
+                    {
+                        text += RequirementDescription(healingBuff.requirements, healingBuff.target, attack.source?.card, "effectOrTempBuff");
+                    }
+                    if (i < tempBuffs.Count - 2)
+                    {
+                        text += ", ";
+                    }
+                    else if (i == tempBuffs.Count - 2)
+                    {
+                        text += " and ";
+                    }
+                }
             }
+
+            // Lists the requirements of an attack.
+            if (attack.requirements.Count > 0)
+            {
+                text += RequirementDescription(attack.requirements, attack.target, attack.source?.card, "attack");
+            }
+			if (allSameAttackTypes)
+			{
+				break;
+			}
+            index += 1;
         }
         return text;
     }
