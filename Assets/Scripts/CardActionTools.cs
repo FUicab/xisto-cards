@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -241,7 +242,6 @@ public static class CardActionTools
 	{
 		bool itDoes = false;
 		//AttackAction attackAction = action as AttackAction;
-		Debug.Log($"<b>{action.source?.card.Name}</b>: Does target of buff meet all requirements? -> {itDoes} { TargetMeetsRequirements(target, action.requirements)}");
 		bool isFromMyTeam = (action.targetIsFromMyTeam && target.Owner?.Role == action.source?.Owner?.Role);
 		bool isFromOtherTeam = (!action.targetIsFromMyTeam && target.Owner?.Role != action.source?.Owner?.Role);
 		bool isMyself = action.target == TargetTypes.Self;
@@ -250,6 +250,7 @@ public static class CardActionTools
 		{
 			itDoes = true;
 		}
+		//Debug.Log($"<b>{action.source?.card.Name}</b>: Does target of buff meet all requirements? -> {itDoes} { TargetMeetsRequirements(target, action.requirements)}");
 		return itDoes && TargetMeetsRequirements(target, action.requirements);
 	}
 	public static bool TargetMeetsRequirements(CardDisplay actionTarget, List<Requirements> requirements)
@@ -258,7 +259,7 @@ public static class CardActionTools
 
         if (requirements.Count > 0) // Check attack requirements
         {
-			Debug.Log($"<b>{requirements[0].originAction?.source?.card.Name}</b>: <color=red>There is indeed some requirements for this action.</color>");
+			//Debug.Log($"<b>{requirements[0].originAction?.source?.card.Name}</b>: <color=red>There is indeed some requirements for this action.</color>");
             itDoes = false;
 
             foreach (Requirements requirement in requirements)
@@ -283,8 +284,10 @@ public static class CardActionTools
 					target = actionTarget;
 				}
 
-				Debug.Log($"{target.card.Name} seems to be the target of this action.");
+				//Debug.Log($"{target.card.Name} seems to be the target of this action.");
+                Debug.Log($"Origin buff: {originBuff != null}. Origin passive: {originBuff != null && originBuff.originPassive != null}");
 
+				if ((originBuff != null && originBuff.originPassive != null && originBuff.originPassive.CanBeUsedThisRound) || (originBuff != null && originBuff.originPassive == null) || originBuff == null)
 				switch (requirement.requirement)
                 {
                     case RequirementTypes.TargetHasSubtypesOrFactions:
@@ -437,7 +440,7 @@ public static class CardActionTools
             }
         }
 
-        Debug.Log($"Trying to reach {actionTarget?.card?.Name}: {itDoes}");
+        //Debug.Log($"Trying to reach {actionTarget?.card?.Name}: {itDoes}");
 		return itDoes;
 	}
 
@@ -504,11 +507,11 @@ public static class CardActionTools
         List<BuffAction> onHitBuffs = attackAction.source.appliedBuffs.Where(x => x.activatesOnHit).ToList();
 
         /* Calculation of temporary buffs and debuffs */
-        var attackerTempModifiers = new TempModifiers();
-        var targetTempModifiers = new TempModifiers();
+        TempModifiers attackerTempModifiers = output.attackerModifiers;
+        TempModifiers targetTempModifiers = output.targetModifiers;
         foreach (BuffAction buff in attackAction.temporaryBuffs)
         {
-			Debug.Log($"<b>{attackAction.source.card.Name}</b>: Checking buff to {buff.target} that gives {CardTranslator.AttributeAndValue(buff)} -> {buff.target == TargetTypes.Self} {buff.TargetMeetsRequirements(target)}");
+			//Debug.Log($"<b>{attackAction.source.card.Name}</b>: Checking buff to {buff.target} that gives {CardTranslator.AttributeAndValue(buff)} -> {buff.target == TargetTypes.Self} {buff.TargetMeetsRequirements(target)}");
             if (buff.target == TargetTypes.Self && buff.TargetMeetsRequirements(target)) /* The modifiers apply to myself */
             {
 				Debug.Log($"I deserve {CardTranslator.AttributeAndValue(buff)}");
@@ -683,7 +686,8 @@ public static class CardActionTools
     }
 }
 
-class TempModifiers
+[Serializable]
+public class TempModifiers
 {
     public int Attack = 0;
 	public int Health = 0;
@@ -694,9 +698,15 @@ class TempModifiers
 	public int DamageReductionBeforeArmor = 0;
 	public int DamageReductionAfterArmor = 0;
 	public float DamageMultiplier = 0;
+	public List<BuffAction> usedBuffs = new();
+
+	public TempModifiers() {
+
+	}
 
 	public void SetModifiersFromBuff(BuffAction buff)
 	{
+		usedBuffs.Add(new(buff));
         switch (buff.Attribute)
         {
             case Attributes.Attack: Attack += buff.amount; break;
@@ -714,11 +724,14 @@ class TempModifiers
     }
 }
 
+[Serializable]
 public class AttackActionOutput
 {
 	public int damage = 0;
 	public bool resultsInDeath = false;
 	public DamageTypes damageType = DamageTypes.Melee;
+	public TempModifiers attackerModifiers = new();
+	public TempModifiers targetModifiers = new();
 	public string damageTypeIcon {
 		get {
 			string character = "🥊";

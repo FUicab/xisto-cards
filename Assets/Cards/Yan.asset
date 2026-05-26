@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Yan
   m_EditorClassIdentifier: Assembly-CSharp::Card
   Name: Yan
-  CardCount: 5
+  CardCount: 100
   Type: 3
   Subtypes: 000000000c000000
   Cost: 3
@@ -28,6 +28,7 @@ MonoBehaviour:
     trigger: 1
     canBeShared: 0
     oncePerTurn: 0
+    sharedAcrossAllCardsOfSameKind: 0
     requiresElementalExchange: 0
     buffs:
     - target: 4
@@ -69,6 +70,7 @@ MonoBehaviour:
         trigger: 0
         canBeShared: 0
         oncePerTurn: 0
+        sharedAcrossAllCardsOfSameKind: 0
         requiresElementalExchange: 0
         buffs: []
         source: {fileID: 0}
@@ -78,6 +80,7 @@ MonoBehaviour:
     trigger: 1
     canBeShared: 0
     oncePerTurn: 0
+    sharedAcrossAllCardsOfSameKind: 0
     requiresElementalExchange: 0
     buffs:
     - target: 4
@@ -111,6 +114,7 @@ MonoBehaviour:
         trigger: 0
         canBeShared: 0
         oncePerTurn: 0
+        sharedAcrossAllCardsOfSameKind: 0
         requiresElementalExchange: 0
         buffs: []
         source: {fileID: 0}
@@ -120,6 +124,7 @@ MonoBehaviour:
     trigger: 1
     canBeShared: 1
     oncePerTurn: 0
+    sharedAcrossAllCardsOfSameKind: 0
     requiresElementalExchange: 0
     buffs:
     - target: 0
@@ -161,6 +166,7 @@ MonoBehaviour:
         trigger: 0
         canBeShared: 0
         oncePerTurn: 0
+        sharedAcrossAllCardsOfSameKind: 0
         requiresElementalExchange: 0
         buffs: []
         source: {fileID: 0}
@@ -170,6 +176,7 @@ MonoBehaviour:
     trigger: 1
     canBeShared: 0
     oncePerTurn: 0
+    sharedAcrossAllCardsOfSameKind: 0
     requiresElementalExchange: 1
     buffs:
     - target: 8
@@ -219,6 +226,7 @@ MonoBehaviour:
         trigger: 0
         canBeShared: 0
         oncePerTurn: 0
+        sharedAcrossAllCardsOfSameKind: 0
         requiresElementalExchange: 0
         buffs: []
         source: {fileID: 0}
@@ -297,6 +305,7 @@ MonoBehaviour:
         trigger: 0
         canBeShared: 0
         oncePerTurn: 0
+        sharedAcrossAllCardsOfSameKind: 0
         requiresElementalExchange: 0
         buffs: []
         source: {fileID: 0}
@@ -345,6 +354,7 @@ MonoBehaviour:
         trigger: 0
         canBeShared: 0
         oncePerTurn: 0
+        sharedAcrossAllCardsOfSameKind: 0
         requiresElementalExchange: 0
         buffs: []
         source: {fileID: 0}
@@ -393,6 +403,7 @@ MonoBehaviour:
         trigger: 0
         canBeShared: 0
         oncePerTurn: 0
+        sharedAcrossAllCardsOfSameKind: 0
         requiresElementalExchange: 0
         buffs: []
         source: {fileID: 0}
@@ -441,6 +452,7 @@ MonoBehaviour:
         trigger: 0
         canBeShared: 0
         oncePerTurn: 0
+        sharedAcrossAllCardsOfSameKind: 0
         requiresElementalExchange: 0
         buffs: []
         source: {fileID: 0}

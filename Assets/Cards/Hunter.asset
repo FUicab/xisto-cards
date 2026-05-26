@@ -92,7 +92,15 @@ MonoBehaviour:
       attackEffect: []
       temporaryBuffs:
       - target: 0
-        requirements: []
+        requirements:
+        - requirement: 6
+          subtypeRequirement: 
+          factionRequirement: 
+          targetIs: 
+          attribute: 0
+          comparison: 0
+          attributeValue: 0
+          targetOfRequirementIsTargetOfAttack: 1
         source: {fileID: 0}
         receiver: {fileID: 0}
         Attribute: 0
@@ -122,6 +130,64 @@ MonoBehaviour:
           trigger: 0
           canBeShared: 0
           oncePerTurn: 0
+          sharedAcrossAllCardsOfSameKind: 0
+          requiresElementalExchange: 0
+          buffs: []
+          source: {fileID: 0}
+      isExtra: 0
+    attackCountCanBeAugmented: 0
+    buffs: []
+  - actionType: 1
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 1
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs:
+      - target: 0
+        requirements:
+        - requirement: 6
+          subtypeRequirement: 
+          factionRequirement: 
+          targetIs: 
+          attribute: 0
+          comparison: 0
+          attributeValue: 0
+          targetOfRequirementIsTargetOfAttack: 1
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        Attribute: 0
+        amount: 3
+        isDebuff: 0
+        amountCanBeAugmented: 1
+        activatesOnHit: 0
+        onHitRequirements: []
+        specialEffect: 0
+        extraAttacks: []
+        grantedSubtypes: 
+        specialBehavior: 
+        originAttack:
+          target: 0
+          requirements: []
+          source: {fileID: 0}
+          receiver: {fileID: 0}
+          damageType: 0
+          damageMultiplier: 0
+          flatDamageOverwrite: 0
+          attackEffect: []
+          temporaryBuffs: []
+          isExtra: 0
+        originPassive:
+          title: 
+          description: 
+          trigger: 0
+          canBeShared: 0
+          oncePerTurn: 0
+          sharedAcrossAllCardsOfSameKind: 0
           requiresElementalExchange: 0
           buffs: []
           source: {fileID: 0}
@@ -133,9 +199,10 @@ MonoBehaviour:
     bonusPerAction:
     - 1.38125
     - 0
-    - 1.0066667
+    - 1.5241667
     bonusPerPassive: []
     passiveDescription: 
     passiveBuffDescriptions: 
-    actionsDescription: "\U0001F3AF Ranged attack.\nDo nothing..\n\U0001F3AF Ranged
-      attack, with <b><color=#15c>+3</color></b> <b><color=#900>attack</color></b>.\n"
+    actionsDescription: "\U0001F3AF Ranged attack.\nDo nothing.\n\U0001F3AF Ranged
+      attack, with <b><color=#15c>+3</color></b> <b><color=#900>attack</color></b>
+      if I'm <b><color=#90f>stunned</color></b>.\n"

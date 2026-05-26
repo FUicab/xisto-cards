@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Raider
   m_EditorClassIdentifier: Assembly-CSharp::Card
   Name: Wandering raider
-  CardCount: 10
+  CardCount: 1000
   Type: 0
   Subtypes: 02000000
   Cost: 1
@@ -28,6 +28,7 @@ MonoBehaviour:
     trigger: 1
     canBeShared: 0
     oncePerTurn: 1
+    sharedAcrossAllCardsOfSameKind: 1
     requiresElementalExchange: 0
     buffs:
     - target: 0
@@ -61,6 +62,7 @@ MonoBehaviour:
         trigger: 0
         canBeShared: 0
         oncePerTurn: 0
+        sharedAcrossAllCardsOfSameKind: 0
         requiresElementalExchange: 0
         buffs: []
         source: {fileID: 0}
@@ -159,7 +161,7 @@ MonoBehaviour:
     - 1.4520001
     passiveDescription: "\u2776 <b>Ambush</b>: When I <b>attack \U0001F4A5</b> I
       get <b><color=#15c>+2</color></b> <b><color=#b50>armor pierce</color></b> <i>(for
-      that attack)</i>.\n"
+      that attack)</i> <i>(once per round for all <b>cards of my kind</b>)</i>.\n"
     passiveBuffDescriptions: "<b>\U0001F4A5 On hit</b>: <b><color=#15c>+2</color></b>
       <b><color=#b50>armor pierce</color></b>, from myself\n"
     actionsDescription: "\u2694\uFE0F Melee attack.\n\U0001F3AF Ranged attack.\n"

@@ -1424,7 +1424,7 @@ public class CardPassiveSkillObject : CardSkillObject
 			buffs.Add(new BuffAction(buff){ source = theCard });
 		}
 		skill.buffs = buffs;
-		// sourceCard = theCard;
+		sourceCard = theCard;
 		description = TranslatePassiveSkillsToText();
 	}
 	public string TranslatePassiveSkillsToText()
@@ -1436,8 +1436,10 @@ public class CardPassiveSkillObject : CardSkillObject
 		if (skill.oncePerTurn || skill.canBeShared || skill.requiresElementalExchange) { text += " "; }
 		text += $"<b>{skill.title}</b>";
 		text += $": {CardTranslator.GenerateSkillBuffText(skill.buffs, skill)}";
-		text += ".";
+        if (skill.oncePerTurn && !skill.sharedAcrossAllCardsOfSameKind) { text += " <i>(once per round)</i>"; }
+        if (skill.oncePerTurn && skill.sharedAcrossAllCardsOfSameKind) { text += $" <i>(once per round for all <b>{sourceCard?.card.Name ?? "cards of my kind"}</b>)</i>"; }
+        text += ".";
 
-		return text;
+        return text;
 	}
 }

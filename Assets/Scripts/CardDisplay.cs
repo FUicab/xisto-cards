@@ -528,6 +528,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 			GM.Deck.Add(card);
 			Destroy(gameObject);
 			EventManager.OnTurnActionChange(GM.CurrentAction);
+			EventManager.OnBoardUpdate();
 			RemovePassiveBuffsFromMe();
 			return;
 		}
@@ -685,7 +686,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 
 	public void UpdatePassiveBuffStatus()
 	{
-		if (!HasBeenPlayed || !IsDisrupted) { return; }
+		if (!HasBeenPlayed || IsDisrupted) { return; }
 		//passiveBuffs.Clear();
 		foreach (PassiveSkill passive in cardPassives)
 		{
@@ -698,7 +699,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
                         foreach (CardDisplay target in buff.GetImplicitTargetsOfAction())
 						{
 							//Debug.Log($"{passive.title} from {passive.source.card.Name} is checking for validity on {target.card.Name}: {buff.TargetMeetsRequirements(target)}");
-							if (!target.passiveBuffs.Exists(x => x.originPassive.title == passive.title && x.originPassive.source == passive.source && buff.Attribute == x.Attribute && buff.amount == x.amount) ) {
+							if (!target.passiveBuffs.Exists(x => x.originPassive.title == passive.title && x.originPassive.source == passive.source && buff.Attribute == x.Attribute && buff.amount == x.amount) && passive.CanBeUsedThisRound) {
                                 //Debug.Log($"{passive.title} from {passive.source.card.Name} was successfully applied to {target.card.Name}");
                                 target.ReceivePassiveBuff(buff);
 							}
@@ -709,7 +710,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 							{
 								BuffAction theirBuff = cardSpace.PlayingCard.passiveBuffs[i];
                                 //Debug.Log($"{theirBuff.originPassive.source.card.Name} applied {theirBuff.originPassive.title} to {passive.source.card.Name}. Can they keep it? : {theirBuff.TargetMeetsRequirements(cardSpace.PlayingCard)}");
-                                if ( (theirBuff.originPassive.source == this && !theirBuff.TargetMeetsRequirements(cardSpace.PlayingCard)) || IsDisrupted )
+                                if ( (theirBuff.originPassive.source == this && !theirBuff.TargetMeetsRequirements(cardSpace.PlayingCard)) || IsDisrupted || !passive.CanBeUsedThisRound )
 								{
                                     //Debug.Log($"{passive.title} from {passive.source.card.Name} can no longer be applied to {cardSpace.PlayingCard.card.Name}");
                                     cardSpace.PlayingCard.passiveBuffs.RemoveAt(i);

@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CardSkill
@@ -11,10 +12,10 @@ public class CardSkill
 [System.Serializable]
 public class CardAction : CardSkill
 {
-	public ActionTypes actionType;
-	public List<AttackAction> attacks;
+	public ActionTypes actionType = ActionTypes.DoNothing;
+	public List<AttackAction> attacks = new();
 	public bool attackCountCanBeAugmented = false;
-	public List<BuffAction> buffs;
+	public List<BuffAction> buffs = new();
 
 	public CardAction(CardAction values)
 	{
@@ -27,7 +28,7 @@ public class CardAction : CardSkill
 
 public class ActiveAction
 {
-	public TargetTypes target;
+	public TargetTypes target = TargetTypes.SingleEnemy;
     public List<Requirements> requirements = new();
     public CardDisplay source;
     [HideInInspector] public CardDisplay receiver;
@@ -57,7 +58,7 @@ public class AttackAction : ActiveAction{
 	public int flatDamageOverwrite = 0; //This overwrite will make attacks deal a given amount of damage without taking into account the attack value of the card nor any modifiers
 	public List<AttackEffect> attackEffect = new();
 	public List<BuffAction> temporaryBuffs = new(); //Temporary buffs are applied during the attack
-	public AttackActionOutput attackActionOutput;
+	public AttackActionOutput attackActionOutput = new();
 	public bool isExtra = false; /* Extra attacks do not trigger counter attacks and other "on hit" effects. Armor pierce and executions work as normal. */
 
 	public AttackAction(AttackAction values)
@@ -71,6 +72,7 @@ public class AttackAction : ActiveAction{
 		source = values.source;
 		receiver = values.receiver;
 		isExtra = values.isExtra;
+		attackActionOutput = values.attackActionOutput;
 		values.requirements.ForEach(req => { requirements.Add(new Requirements(req, this) ); });
 		values.attackEffect.ForEach(atkFx => { attackEffect.Add(new AttackEffect(atkFx, this));  } );
 		values.temporaryBuffs.ForEach(tempBuff => { temporaryBuffs.Add(new BuffAction(tempBuff, this) { source = source }); });
@@ -183,10 +185,12 @@ public class PassiveSkill : CardSkill{
 	public TriggerTypes trigger;
 	public bool canBeShared = false;
 	public bool oncePerTurn = false;
+	public bool sharedAcrossAllCardsOfSameKind = false;
 	//public bool buffsAreTemporary = false;
 	public bool requiresElementalExchange = false;
 	public List<BuffAction> buffs = new();
 	[HideInInspector] public CardDisplay source;
+	private GameManager GM;
 
 	public PassiveSkill(PassiveSkill passiveSkill) {
 		title = passiveSkill.title;
@@ -194,11 +198,62 @@ public class PassiveSkill : CardSkill{
 		trigger = passiveSkill.trigger;
 		canBeShared = passiveSkill.canBeShared;
 		oncePerTurn = passiveSkill.oncePerTurn;
+		sharedAcrossAllCardsOfSameKind = passiveSkill.sharedAcrossAllCardsOfSameKind;
 		//buffs = new List<BuffAction>();
 		source = passiveSkill.source;
         passiveSkill.buffs.ForEach(buff => { buffs.Add(new BuffAction(buff, null) { source = source, originPassive = this }); });
         requiresElementalExchange = passiveSkill.requiresElementalExchange;
+        GM = GameObject.FindObjectOfType<GameManager>();
+    }
+
+	/* Gets the list of performed attacks during this round that have used any buff provided by this passive, with distinction of each card instance. */
+	public List<CardAction> GetAttackActionsWherePassiveHasBeenApplied(bool includeOthersOfSameKind = false)
+	{
+		List<CardAction> actions = new();
+		actions.AddRange(GM.RoundActions.Select(tuAc => tuAc?.actionObject?.action).Where( (action) => {
+			return action?.attacks?.Exists( (atk) => {
+				return atk.attackActionOutput.attackerModifiers.usedBuffs.Exists( (buff) => {
+					bool buffComesFromPassive = buff.originPassive != null;
+					//if(buffComesFromPassive) Debug.Log($"Found a buff from <b>{buff.originPassive.source.card.Name}</b>'s passive");
+					bool titlesMatch = buff.originPassive.title == title;
+					//if(titlesMatch ) Debug.Log($"...coming from passive {buff.originPassive.title}");
+					bool sourceOfPassiveMatch = (includeOthersOfSameKind ? buff.originPassive.source.card.Name == source.card.Name : buff.originPassive.source == source);
+					//if (sourceOfPassiveMatch) Debug.Log($"...from {buff.originPassive.source.card.Name}");
+					bool cardOwnerMatches = source.Owner == buff.originPassive.source.Owner;
+
+                    bool itExists = buffComesFromPassive && titlesMatch && sourceOfPassiveMatch && cardOwnerMatches;
+					//if(itExists) Debug.Log($"Found \"{title}\" in an action performed by {atk.source.card.Name}");
+                    return itExists;
+						}
+					);
+				}) ?? false;
+			}).ToList());
+		return actions;
+    }
+
+	public bool HasBeenUsedThisRound {
+		get { return GetAttackActionsWherePassiveHasBeenApplied().Count > 0; }
 	}
+
+    public bool HasBeenUsedThisRoundIncludingThoseOfMyKind
+    {
+        get { return GetAttackActionsWherePassiveHasBeenApplied(true).Count > 0; }
+    }
+
+	public bool CanBeUsedThisRound
+	{
+		get {
+			//Debug.Log($"<b>{source.card.Name}</b>: Passive {title} has been used by me: {HasBeenUsedThisRound}");
+   //         Debug.Log($"<b>{source.card.Name}</b>: Passive {title} has been used by someone of my kind: {HasBeenUsedThisRoundIncludingThoseOfMyKind}");
+			bool canBeReusedInfinitely = !oncePerTurn;
+			bool canBeUsedOnceByMe = oncePerTurn && !sharedAcrossAllCardsOfSameKind;
+			bool canBeUsedOnceByAllCardsOfMyKind = oncePerTurn && sharedAcrossAllCardsOfSameKind;
+            bool canBeUsed = (canBeReusedInfinitely || ((canBeUsedOnceByMe && !HasBeenUsedThisRound) || (canBeUsedOnceByAllCardsOfMyKind && !HasBeenUsedThisRoundIncludingThoseOfMyKind)));
+            //Debug.Log($"<b>{source.card.Name}</b>'s {title} -> Infinite uses: {canBeReusedInfinitely} | Once per turn: {canBeUsedOnceByMe} | Shared across all of my kind: {canBeUsedOnceByAllCardsOfMyKind} | <color=blue>Can be used this round?</color> <color={(canBeUsed ? "green" : "red")}>{canBeUsed}</color>");
+            return canBeUsed;
+		}
+	}
+
 }
 
 public enum Attributes{

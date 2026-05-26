@@ -461,6 +461,7 @@ public class GameManager : MonoBehaviour
 		UpdateDisplayGoldValues();
 		//ClearActionPoints();
 		SwitchTurns();
+		EventManager.OnBoardUpdate();
 	}
 
 	public void RoundEnd()
@@ -623,8 +624,9 @@ public class GameManager : MonoBehaviour
 	public async void DisplayDamage(int damage, CardDisplay target){
 		GameObject MessageObject = Instantiate(FloatingMessageObject);
 		MessageObject.GetComponent<FloatingMessage>().SetMessage(damage.ToString());
-		Vector3 position = new Vector3(Random.Range(-50f,50f)+target.transform.position.x, Random.Range(-50f, 50f) + target.transform.position.z, target.transform.position.z);
-		MessageObject.transform.Find("Canvas").GetComponent<RectTransform>().anchoredPosition = position;
+        //Vector3 position = new Vector3(Random.Range(-50f,50f)+target.transform.position.x, Random.Range(-50f, 50f) + target.transform.position.z, target.transform.position.z);
+        Vector3 position = new Vector3(target.transform.position.x, target.transform.position.z, target.transform.position.z);
+        MessageObject.transform.Find("Canvas").GetComponent<RectTransform>().anchoredPosition = position;
 		await Task.Delay(200);
 	}
 	public void DisplayFloatingMessage(string message, Vector3 location, string colorName = ""){
