@@ -192,6 +192,7 @@ public class PassiveSkill : CardSkill{
 	//public bool buffsAreTemporary = false;
 	public bool requiresElementalExchange = false;
 	public List<BuffAction> buffs = new();
+	public List<PlayerBuffs> playerBuffs = new();
 	[HideInInspector] public CardDisplay source;
 	private GameManager GM;
 
@@ -235,12 +236,12 @@ public class PassiveSkill : CardSkill{
     }
 
 	public bool HasBeenUsedThisRound {
-		get { return GetAttackActionsWherePassiveHasBeenApplied().Count > 0; }
+		get { return (GetAttackActionsWherePassiveHasBeenApplied().Count > 0 || source.usedPassives.Exists(x => x.title == title) ); }
 	}
 
     public bool HasBeenUsedThisRoundIncludingThoseOfMyKind
     {
-        get { return GetAttackActionsWherePassiveHasBeenApplied(true).Count > 0; }
+        get { return (GetAttackActionsWherePassiveHasBeenApplied(true).Count > 0 || source.usedPassives.Exists(x => x.title == title) ); }
     }
 
 	public bool CanBeUsedThisRound
@@ -388,7 +389,9 @@ public enum TargetUnitDefinition{
 }
 public enum TriggerTypes{
 	OnAttack,
-	OnBoardChange
+	OnBoardChange,
+	OnAssistingAKill,
+	OnScoringAKill
 }
 public enum PlayerTarget
 {

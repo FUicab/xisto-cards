@@ -51,6 +51,12 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 	public List<CardAction> cardActions;
 	public List<PassiveSkill> cardPassives;
 
+	/* The list of cards that have attacked me during this round */
+	public List<CardDisplay> myAttackers = new();
+
+	/* The passives that have been used during this round and can't be used again until next round */
+	public List<PassiveSkill> usedPassives = new();
+
 	/* Get functions. They apply buffs to properties and make the calculation before hand. These values cannot be changed by code and should only be manipulated by buffs or by modifying the card itself. */
 	public List<UnitSubtype> acquiredSubtypes {
 		get
@@ -345,13 +351,19 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		for (int i = 0; i < card.Passives.Count; i++)
 		{
 			cardPassives.Add(new PassiveSkill(card.Passives[i]) { source = this });
-			List<BuffAction> newBuffs = new List<BuffAction>();
-			foreach (BuffAction buff in card.Passives[i].buffs)
+			List<BuffAction> newBuffs = new();
+            List<PlayerBuffs> newPBuffs = new();
+            foreach (BuffAction buff in card.Passives[i].buffs)
 			{
 				newBuffs.Add(new BuffAction(buff) { source = this, originPassive = cardPassives[i] });
 			}
 			cardPassives[i].buffs = newBuffs;
-		}
+            foreach (PlayerBuffs pBuff in card.Passives[i].playerBuffs)
+            {
+                newPBuffs.Add(new PlayerBuffs(pBuff) { source = this });
+            }
+            cardPassives[i].playerBuffs = newPBuffs;
+        }
 		UpdateCardUI();
 
 		rectTransform.anchoredPosition = GM.DeckUI.GetComponent<RectTransform>().position;
@@ -532,10 +544,11 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		{
 			mySpace.FreeSpace();
 			GM.Deck.Add(card);
-			Destroy(gameObject);
+			CardActionTools.ActivateOnKillTriggers(myAttackers);
 			EventManager.OnTurnActionChange(GM.CurrentAction);
 			EventManager.OnBoardUpdate();
 			RemovePassiveBuffsFromMe();
+			Destroy(gameObject);
 			return;
 		}
 		//await Task.Delay(200);
@@ -546,6 +559,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
     public void ReceiveDamageFromAttack(AttackAction attack)
     {
 		attack.attackActionOutput = attack.GetAttackActionOutput(this);
+		myAttackers.Add(attack.source);
 		ReceiveDamage(attack.attackActionOutput.damage);
 		if (guardingPose && !attack.isExtra && attack.attackActionOutput.damageType == DamageTypes.Melee)
 		{
@@ -801,6 +815,8 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 	{
 		guardingPose = false;
 		activeBuffs.Clear();
+		myAttackers.Clear();
+		usedPassives.Clear();
 		UpdateActiveBuffStatus();
 	}
 

@@ -705,12 +705,12 @@ public static class CardActionTools
 			case BuffSpecialEffects.None:
 			case BuffSpecialEffects.RedirectAttacksTowardsMe:
 			case BuffSpecialEffects.GrantSubtypes:
-			case BuffSpecialEffects.EnableGuardingPose:
 			case BuffSpecialEffects.Stun:
 			case BuffSpecialEffects.Disarm:
 			case BuffSpecialEffects.Disrupt:
 				itIs = false;
 				break;
+			case BuffSpecialEffects.EnableGuardingPose:
 			case BuffSpecialEffects.TriggerExtraAttack:
 				itIs = true;
 				break;
@@ -721,6 +721,40 @@ public static class CardActionTools
 		}
 		return itIs;
     }
+
+	public static void ActivateOnKillTriggers(List<CardDisplay> cards) {
+		for (int i = 0; i < cards.Count; i++)
+		{
+			CardDisplay card = cards[i];
+			bool isTheKiller = (i == cards.Count - 1);
+			foreach (PassiveSkill passiveSkill in card.cardPassives)
+			{
+				bool killTriggerValid = false;
+                if ( !card.usedPassives.Contains(passiveSkill) && ( (passiveSkill.trigger == TriggerTypes.OnScoringAKill && isTheKiller) || passiveSkill.trigger == TriggerTypes.OnAssistingAKill ) )
+				{
+					Debug.Log($"{card.card.Name} participated in the killing of someone and has something to say about it.");
+					killTriggerValid = true;
+                }
+
+				if (killTriggerValid)
+				{
+					passiveSkill.playerBuffs.ForEach(pBuff => PerformPlayerBuffAction(pBuff));
+					if (passiveSkill.oncePerTurn)
+					{
+						if (passiveSkill.sharedAcrossAllCardsOfSameKind)
+						{
+                            card.Owner.GetActiveCards().Where(x => x.card.Name == card.card.Name && x.Owner == card.Owner && x.cardPassives.Exists(passive => passive.title == passiveSkill.title)).ToList().ForEach(x => x.usedPassives.Add(passiveSkill));
+                        } else {
+                            card.usedPassives.Add(passiveSkill);
+                        }
+					}
+
+				}
+
+			}
+		}
+	}
+
 }
 
 [Serializable]

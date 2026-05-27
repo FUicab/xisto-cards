@@ -91,7 +91,9 @@ MonoBehaviour:
         sharedAcrossAllCardsOfSameKind: 0
         requiresElementalExchange: 0
         buffs: []
+        playerBuffs: []
         source: {fileID: 0}
+    playerBuffs: []
     source: {fileID: 0}
   CardActions:
   - actionType: 0
@@ -345,6 +347,10 @@ MonoBehaviour:
     bonusPerAction:
     - 1.033125
     - 1.0200001
+    bonusPerAttackAction:
+    - 1.033125
+    - 1.0200001
+    bonusPerBuffAction: []
     bonusPerPassive:
     - 1.4520001
     passiveDescription: "\u2776 <b>Ambush</b>: When I <b>attack \U0001F4A5</b> I

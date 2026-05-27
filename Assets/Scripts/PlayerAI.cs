@@ -78,7 +78,8 @@ public class PlayerAI{
 				break;
 
 				case AIActionStrategy.Defensive:
-					PlayDefensive();
+                case AIActionStrategy.ApplyPlayerBuff:
+                    PlayDefensive();
 					break;
 
 				case AIActionStrategy.SaveGold:
@@ -96,12 +97,13 @@ public class PlayerAI{
 	}
 
 	public void RandomizeStrategy(){
-		switch (Random.Range(0,4)){
+		switch (Random.Range(0,5)){
 			case 0: ChosenStrategy = AIActionStrategy.PlaceCards; break;
 			case 1: ChosenStrategy = AIActionStrategy.Aggresive; break;
 			case 2: ChosenStrategy = AIActionStrategy.Defensive; break;
 			case 3: ChosenStrategy = AIActionStrategy.SaveGold; break;
-		}
+            case 4: ChosenStrategy = AIActionStrategy.ApplyPlayerBuff; break;
+        }
 	}
 
 	public void StartActions(){
@@ -379,7 +381,7 @@ public class PlayerAI{
 
     public List<CardActionObject> GetUsableBuffActions(CardDisplay cardDisplay)
     {
-        return GetUsableActions(cardDisplay, ActionTypes.Buff);
+        return GetUsableActions(cardDisplay, ActionTypes.Buff).Concat(GetUsableActions(cardDisplay, ActionTypes.PlayerBuff)).ToList();
     }
 
 	public List<CardActionObject> GetUsableAttacksOfTopWarriors()
@@ -416,7 +418,8 @@ public enum AIActionStrategy{
 	PlaceCards,
 	Aggresive,
 	Defensive,
-	SaveGold
+	SaveGold,
+	ApplyPlayerBuff
 }
 
 /* This has to be different from regular Turn Actions because we don't want the AI to work around them */

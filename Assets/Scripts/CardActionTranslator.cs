@@ -276,6 +276,7 @@ public static class CardTranslator
 		}
 
 		bool allSameRequirements = true;
+		if(buffs.Count > 0)
 		if (buffs[0].requirements.Count > 0)
         foreach (var buff in buffs)
         {
@@ -1376,7 +1377,7 @@ public static class CardTranslator
 		return text;
     }
 
-	public static string GeneratePlayerSkillBuffText(List<PlayerBuffs> playerBuffs)
+	public static string GeneratePlayerSkillBuffText(List<PlayerBuffs> playerBuffs, PassiveSkill passiveSkill = null)
 	{
 		string text = "";
         foreach (PlayerBuffs pBuff in playerBuffs)
@@ -1408,6 +1409,18 @@ public static class CardTranslator
                     text += $"{TextFormat("mercenaries", "subtype")} gain {TextFormat(NumberWithSign(pBuff.amount), null, pBuff.canBeAugmented)} {TextFormat("gold", "gold")} ";
                     if (pBuff.target == PlayerTarget.OtherPlayer) { text += " for their treasury "; } else { text += " for your treasury "; }
 					text += "when they score a kill";
+                    break;
+			}
+		}
+		if(passiveSkill != null)
+		{
+			switch (passiveSkill.trigger)
+			{
+				case TriggerTypes.OnAssistingAKill:
+					text += ", when I assist on a kill";
+					break;
+				case TriggerTypes.OnScoringAKill:
+                    text += ", when I score a kill";
                     break;
 			}
 		}
@@ -1485,7 +1498,8 @@ public class CardPassiveSkillObject : CardSkillObject
 		if (skill.requiresElementalExchange) { text += "💫"; }
 		if (skill.oncePerTurn || skill.canBeShared || skill.requiresElementalExchange) { text += " "; }
 		text += $"<b>{skill.title}</b>";
-		text += $": {CardTranslator.GenerateSkillBuffText(skill.buffs, skill)}";
+		if(skill.buffs.Count > 0) { text += $": {CardTranslator.GenerateSkillBuffText(skill.buffs, skill)}"; }
+		if(skill.playerBuffs.Count > 0) { text += $": {CardTranslator.GeneratePlayerSkillBuffText(skill.playerBuffs, skill)}"; }
         if (skill.oncePerTurn && !skill.sharedAcrossAllCardsOfSameKind) { text += " <i>(once per round)</i>"; }
         if (skill.oncePerTurn && skill.sharedAcrossAllCardsOfSameKind) { text += $" <i>(once per round for all <b>{sourceCard?.card.Name ?? "cards of my kind"}</b>)</i>"; }
         text += ".";

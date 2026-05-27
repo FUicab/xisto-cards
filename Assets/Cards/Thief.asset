@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Thief
   m_EditorClassIdentifier: Assembly-CSharp::Card
   Name: Thieving scoundrel
-  CardCount: 100
+  CardCount: 10
   Type: 0
   Subtypes: 02000000
   Cost: 1
@@ -329,6 +329,7 @@ MonoBehaviour:
         sharedAcrossAllCardsOfSameKind: 0
         requiresElementalExchange: 0
         buffs: []
+        playerBuffs: []
         source: {fileID: 0}
     playerBuffs:
     - target: 1

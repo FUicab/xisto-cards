@@ -28,6 +28,7 @@ MonoBehaviour:
     trigger: 1
     canBeShared: 1
     oncePerTurn: 0
+    sharedAcrossAllCardsOfSameKind: 0
     requiresElementalExchange: 0
     buffs:
     - target: 0
@@ -37,7 +38,7 @@ MonoBehaviour:
       Attribute: 0
       amount: 4
       isDebuff: 0
-      amountCanBeAugmented: 0
+      amountCanBeAugmented: 1
       activatesOnHit: 1
       onHitRequirements:
       - requirement: 1
@@ -62,6 +63,32 @@ MonoBehaviour:
         flatDamageOverwrite: 0
         attackEffect: []
         temporaryBuffs: []
+        attackActionOutput:
+          damage: 0
+          resultsInDeath: 0
+          damageType: 0
+          attackerModifiers:
+            Attack: 0
+            Health: 0
+            MaxHealth: 0
+            Defense: 0
+            Armor: 000000000000000000000000
+            ArmorPierce: 0
+            DamageReductionBeforeArmor: 0
+            DamageReductionAfterArmor: 0
+            DamageMultiplier: 0
+            usedBuffs: []
+          targetModifiers:
+            Attack: 0
+            Health: 0
+            MaxHealth: 0
+            Defense: 0
+            Armor: 000000000000000000000000
+            ArmorPierce: 0
+            DamageReductionBeforeArmor: 0
+            DamageReductionAfterArmor: 0
+            DamageMultiplier: 0
+            usedBuffs: []
         isExtra: 0
       originPassive:
         title: 
@@ -69,6 +96,7 @@ MonoBehaviour:
         trigger: 0
         canBeShared: 0
         oncePerTurn: 0
+        sharedAcrossAllCardsOfSameKind: 0
         requiresElementalExchange: 0
         buffs: []
         source: {fileID: 0}
@@ -85,9 +113,36 @@ MonoBehaviour:
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
+      attackActionOutput:
+        damage: 0
+        resultsInDeath: 0
+        damageType: 0
+        attackerModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+        targetModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
       isExtra: 0
     attackCountCanBeAugmented: 0
     buffs: []
+    playerBuffs: []
   - actionType: 1
     attacks:
     - target: 2
@@ -99,9 +154,36 @@ MonoBehaviour:
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
+      attackActionOutput:
+        damage: 0
+        resultsInDeath: 0
+        damageType: 0
+        attackerModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+        targetModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
       isExtra: 0
     attackCountCanBeAugmented: 0
     buffs: []
+    playerBuffs: []
   - actionType: 0
     attacks:
     - target: 2
@@ -113,9 +195,36 @@ MonoBehaviour:
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
+      attackActionOutput:
+        damage: 0
+        resultsInDeath: 0
+        damageType: 0
+        attackerModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+        targetModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
       isExtra: 0
     attackCountCanBeAugmented: 0
     buffs: []
+    playerBuffs: []
   - actionType: 1
     attacks:
     - target: 2
@@ -127,9 +236,36 @@ MonoBehaviour:
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
+      attackActionOutput:
+        damage: 0
+        resultsInDeath: 0
+        damageType: 0
+        attackerModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+        targetModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
       isExtra: 0
     attackCountCanBeAugmented: 0
     buffs: []
+    playerBuffs: []
   - actionType: 2
     attacks:
     - target: 2
@@ -141,6 +277,32 @@ MonoBehaviour:
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
+      attackActionOutput:
+        damage: 0
+        resultsInDeath: 0
+        damageType: 0
+        attackerModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+        targetModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
       isExtra: 0
     attackCountCanBeAugmented: 0
     buffs:
@@ -168,6 +330,32 @@ MonoBehaviour:
         flatDamageOverwrite: 0
         attackEffect: []
         temporaryBuffs: []
+        attackActionOutput:
+          damage: 0
+          resultsInDeath: 0
+          damageType: 0
+          attackerModifiers:
+            Attack: 0
+            Health: 0
+            MaxHealth: 0
+            Defense: 0
+            Armor: 000000000000000000000000
+            ArmorPierce: 0
+            DamageReductionBeforeArmor: 0
+            DamageReductionAfterArmor: 0
+            DamageMultiplier: 0
+            usedBuffs: []
+          targetModifiers:
+            Attack: 0
+            Health: 0
+            MaxHealth: 0
+            Defense: 0
+            Armor: 000000000000000000000000
+            ArmorPierce: 0
+            DamageReductionBeforeArmor: 0
+            DamageReductionAfterArmor: 0
+            DamageMultiplier: 0
+            usedBuffs: []
         isExtra: 0
       originPassive:
         title: 
@@ -175,9 +363,11 @@ MonoBehaviour:
         trigger: 0
         canBeShared: 0
         oncePerTurn: 0
+        sharedAcrossAllCardsOfSameKind: 0
         requiresElementalExchange: 0
         buffs: []
         source: {fileID: 0}
+    playerBuffs: []
   - actionType: 1
     attacks:
     - target: 2
@@ -189,6 +379,32 @@ MonoBehaviour:
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
+      attackActionOutput:
+        damage: 0
+        resultsInDeath: 0
+        damageType: 0
+        attackerModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+        targetModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
       isExtra: 0
     attackCountCanBeAugmented: 0
     buffs:
@@ -216,6 +432,32 @@ MonoBehaviour:
         flatDamageOverwrite: 0
         attackEffect: []
         temporaryBuffs: []
+        attackActionOutput:
+          damage: 0
+          resultsInDeath: 0
+          damageType: 0
+          attackerModifiers:
+            Attack: 0
+            Health: 0
+            MaxHealth: 0
+            Defense: 0
+            Armor: 000000000000000000000000
+            ArmorPierce: 0
+            DamageReductionBeforeArmor: 0
+            DamageReductionAfterArmor: 0
+            DamageMultiplier: 0
+            usedBuffs: []
+          targetModifiers:
+            Attack: 0
+            Health: 0
+            MaxHealth: 0
+            Defense: 0
+            Armor: 000000000000000000000000
+            ArmorPierce: 0
+            DamageReductionBeforeArmor: 0
+            DamageReductionAfterArmor: 0
+            DamageMultiplier: 0
+            usedBuffs: []
         isExtra: 0
       originPassive:
         title: 
@@ -223,22 +465,29 @@ MonoBehaviour:
         trigger: 0
         canBeShared: 0
         oncePerTurn: 0
+        sharedAcrossAllCardsOfSameKind: 0
         requiresElementalExchange: 0
         buffs: []
         source: {fileID: 0}
+    playerBuffs: []
   powerRating:
     card: {fileID: 11400000}
     bonusPerAction:
     - 0.47125003
     - 0.49583334
     - 0.5683333
+    bonusPerAttackAction:
+    - 0.47125003
+    - 0.49583334
+    bonusPerBuffAction:
+    - 0.5683333
     bonusPerPassive:
-    - 2.52
+    - 2.772
     passiveDescription: "\U0001F517 <b>The objective</b>: When I <b>attack \U0001F4A5</b>
-      I get <b><color=#222>+4</color></b> <b><color=#900>attack</color></b> <i>(for
+      I get <b><color=#15c>+4</color></b> <b><color=#900>attack</color></b> <i>(for
       that attack)</i> when targetting <b><color=#714>\U0001F451 nobles</color></b>,
       <b><color=#714>\u2B50 Doragon</color></b> or <b><color=#714>\U0001F30C Yatza</color></b>.\n"
-    passiveBuffDescriptions: "<b>\U0001F4A5 On hit</b>: <b><color=#222>+4</color></b>
+    passiveBuffDescriptions: "<b>\U0001F4A5 On hit</b>: <b><color=#15c>+4</color></b>
       <b><color=#900>attack</color></b> when targetting <b><color=#714>\U0001F451
       nobles</color></b>, <b><color=#714>\u2B50 Doragon</color></b> or <b><color=#714>\U0001F30C
       Yatza</color></b>, from myself\n"
