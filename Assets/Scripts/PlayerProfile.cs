@@ -22,7 +22,10 @@ public class PlayerProfile
 	public List<Dice> Dices = new List<Dice>() { };
 	public Dice selectedDice = null;
 	public PlayerProfile otherPlayer;
-	public GameManager GM;
+	public List<PlayerBuffs> activeBuffs = new();
+    public List<PlayerBuffs> passiveBuffs = new();
+	public List<PlayerBuffs> appliedBuffs{ get { return activeBuffs.Concat(passiveBuffs).ToList(); } }
+    public GameManager GM;
 	public List<CardSpace> mySpaces {
 		get
 		{
@@ -125,4 +128,13 @@ public class PlayerProfile
 		return itHas;
     }
 
+	public void ReceiveActiveBuff(PlayerBuffs playerBuff)
+	{
+		activeBuffs.Add(playerBuff);
+	}
+
+    public void ReceivePassiveBuff(PlayerBuffs playerBuff)
+    {
+        passiveBuffs.Add(playerBuff);
+    }
 }

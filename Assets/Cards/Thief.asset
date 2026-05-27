@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Thief
   m_EditorClassIdentifier: Assembly-CSharp::Card
   Name: Thieving scoundrel
-  CardCount: 10
+  CardCount: 100
   Type: 0
   Subtypes: 02000000
   Cost: 1
@@ -35,9 +35,36 @@ MonoBehaviour:
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
+      attackActionOutput:
+        damage: 0
+        resultsInDeath: 0
+        damageType: 0
+        attackerModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+        targetModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
       isExtra: 0
     attackCountCanBeAugmented: 0
     buffs: []
+    playerBuffs: []
   - actionType: 1
     attacks:
     - target: 2
@@ -49,9 +76,36 @@ MonoBehaviour:
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
+      attackActionOutput:
+        damage: 0
+        resultsInDeath: 0
+        damageType: 0
+        attackerModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+        targetModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
       isExtra: 0
     attackCountCanBeAugmented: 0
     buffs: []
+    playerBuffs: []
   - actionType: 4
     attacks:
     - target: 2
@@ -63,9 +117,36 @@ MonoBehaviour:
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
+      attackActionOutput:
+        damage: 0
+        resultsInDeath: 0
+        damageType: 0
+        attackerModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+        targetModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
       isExtra: 0
     attackCountCanBeAugmented: 0
     buffs: []
+    playerBuffs: []
   - actionType: 1
     attacks:
     - target: 2
@@ -77,9 +158,36 @@ MonoBehaviour:
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
+      attackActionOutput:
+        damage: 0
+        resultsInDeath: 0
+        damageType: 0
+        attackerModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+        targetModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
       isExtra: 0
     attackCountCanBeAugmented: 0
     buffs: []
+    playerBuffs: []
   - actionType: 1
     attacks:
     - target: 2
@@ -91,10 +199,37 @@ MonoBehaviour:
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
+      attackActionOutput:
+        damage: 0
+        resultsInDeath: 0
+        damageType: 0
+        attackerModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+        targetModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
       isExtra: 0
     attackCountCanBeAugmented: 0
     buffs: []
-  - actionType: 2
+    playerBuffs: []
+  - actionType: 5
     attacks:
     - target: 2
       requirements: []
@@ -105,6 +240,32 @@ MonoBehaviour:
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
+      attackActionOutput:
+        damage: 0
+        resultsInDeath: 0
+        damageType: 0
+        attackerModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+        targetModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
       isExtra: 0
     attackCountCanBeAugmented: 0
     buffs:
@@ -132,6 +293,32 @@ MonoBehaviour:
         flatDamageOverwrite: 0
         attackEffect: []
         temporaryBuffs: []
+        attackActionOutput:
+          damage: 0
+          resultsInDeath: 0
+          damageType: 0
+          attackerModifiers:
+            Attack: 0
+            Health: 0
+            MaxHealth: 0
+            Defense: 0
+            Armor: 000000000000000000000000
+            ArmorPierce: 0
+            DamageReductionBeforeArmor: 0
+            DamageReductionAfterArmor: 0
+            DamageMultiplier: 0
+            usedBuffs: []
+          targetModifiers:
+            Attack: 0
+            Health: 0
+            MaxHealth: 0
+            Defense: 0
+            Armor: 000000000000000000000000
+            ArmorPierce: 0
+            DamageReductionBeforeArmor: 0
+            DamageReductionAfterArmor: 0
+            DamageMultiplier: 0
+            usedBuffs: []
         isExtra: 0
       originPassive:
         title: 
@@ -139,17 +326,28 @@ MonoBehaviour:
         trigger: 0
         canBeShared: 0
         oncePerTurn: 0
+        sharedAcrossAllCardsOfSameKind: 0
         requiresElementalExchange: 0
         buffs: []
         source: {fileID: 0}
+    playerBuffs:
+    - target: 1
+      buffType: 2
+      amount: 1
+      canBeAugmented: 1
+      source: {fileID: 0}
   powerRating:
     card: {fileID: 11400000}
     bonusPerAction:
     - 1.4137502
     - 0
-    - 0.20625001
+    - 0
+    bonusPerAttackAction:
+    - 1.4137502
+    bonusPerBuffAction:
+    - 0
     bonusPerPassive: []
     passiveDescription: 
     passiveBuffDescriptions: 
-    actionsDescription: "\u2694\uFE0F Melee attack.\nDo nothing..\nGrants <b><color=#15c>+1</color></b>
-      <b><color=#b50>armor pierce</color></b> to allies next to me.\n"
+    actionsDescription: "\u2694\uFE0F Melee attack.\nDo nothing.\nSteal <b><color=#15c>+1</color></b>
+      <b><color=#b90>gold</color></b> from your opponnent's treasury.\n"

@@ -323,9 +323,10 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		for (int i = 0; i < card.CardActions.Count; i++)
 		{
 			cardActions.Add(new CardAction(card.CardActions[i]));
-			List<AttackAction> newAttacks = new List<AttackAction>();
-			List<BuffAction> newBuffs = new List<BuffAction>();
-			foreach (AttackAction attack in cardActions[i].attacks)
+			List<AttackAction> newAttacks = new();
+			List<BuffAction> newBuffs = new();
+            List<PlayerBuffs> newPBuffs = new();
+            foreach (AttackAction attack in cardActions[i].attacks)
 			{
 				newAttacks.Add(new AttackAction(attack) { source = this });
 			}
@@ -335,7 +336,12 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 				newBuffs.Add(new BuffAction(buff) { source = this });
             }
 			cardActions[i].buffs = newBuffs;
-		}
+            foreach (PlayerBuffs pBuff in cardActions[i].playerBuffs)
+            {
+                newPBuffs.Add(new PlayerBuffs(pBuff) { source = this });
+            }
+            cardActions[i].playerBuffs = newPBuffs;
+        }
 		for (int i = 0; i < card.Passives.Count; i++)
 		{
 			cardPassives.Add(new PassiveSkill(card.Passives[i]) { source = this });

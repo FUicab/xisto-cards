@@ -551,11 +551,18 @@ public static class CardTranslator
 			text += "×" + (buff.amount + (buff.originAttack != null? buff.originAttack.damageMultiplier : 0));
 		} else
 		{
-			if (buff.amount > 0) { text += $"+{buff.amount}"; }
-			if (buff.amount < 0) { text += $"{buff.amount}"; }
+			text += NumberWithSign(buff.amount);
 		}
 		return text;
 	}
+
+	public static string NumberWithSign(int number)
+	{
+		string text = "";
+        if (number > 0) { text += $"+{number}"; }
+        if (number < 0) { text += $"{number}"; }
+		return text;
+    }
 
 	public static string AttributeAndValue(BuffAction buff)
 	{
@@ -591,6 +598,7 @@ public static class CardTranslator
 				case "self-damage": text += "c42"; break;
                 case "statusEffect": text += "90f"; break;
                 case "guarding": text += "775"; break;
+                case Attributes.Cost: case "gold": text += "b90"; break;
                 default: text += "222"; break;
 			}
 		}
@@ -1368,6 +1376,44 @@ public static class CardTranslator
 		return text;
     }
 
+	public static string GeneratePlayerSkillBuffText(List<PlayerBuffs> playerBuffs)
+	{
+		string text = "";
+        foreach (PlayerBuffs pBuff in playerBuffs)
+        {
+			switch (pBuff.buffType)
+			{
+				case PlayerBuffTypes.AddGold:
+					text += $"Add {TextFormat(NumberWithSign(pBuff.amount),null,pBuff.canBeAugmented)} {TextFormat("gold","gold")} to your ";
+					if (pBuff.target == PlayerTarget.OtherPlayer)
+						text += "opponent's ";
+					text += "treasury";
+					break;
+				case PlayerBuffTypes.RemoveGold:
+                    text += $"Remove {TextFormat(NumberWithSign(pBuff.amount), null, pBuff.canBeAugmented)} {TextFormat("gold", "gold")} from your ";
+                    if (pBuff.target == PlayerTarget.OtherPlayer)
+                        text += "opponent's ";
+                    text += "treasury";
+                    break;
+				case PlayerBuffTypes.StealGold:
+					if (pBuff.target == PlayerTarget.OtherPlayer) { text += $"Steal {TextFormat(NumberWithSign(pBuff.amount), null, pBuff.canBeAugmented)} {TextFormat("gold", "gold")} from your opponnent's treasury"; }
+					else { text += $"Donate {TextFormat(NumberWithSign(pBuff.amount), null, pBuff.canBeAugmented)} {TextFormat("gold", "gold")} to your opponnent's treasury"; }
+                    break;
+				case PlayerBuffTypes.ExecutionerThresholdModifier:
+                    if (pBuff.target == PlayerTarget.OtherPlayer) { text += "Opponent's "; } else { text += "Your "; }
+                    text += $"{TextFormat("executors","subtype")} receive {TextFormat(NumberWithSign(pBuff.amount), null, pBuff.canBeAugmented)} to their {TextFormat("execution threshold",Attributes.Attack)}";
+					break;
+				case PlayerBuffTypes.MercenaryKillGoldReward:
+                    if (pBuff.target == PlayerTarget.OtherPlayer) { text += "Opponent's "; } else { text += "Your "; }
+                    text += $"{TextFormat("mercenaries", "subtype")} gain {TextFormat(NumberWithSign(pBuff.amount), null, pBuff.canBeAugmented)} {TextFormat("gold", "gold")} ";
+                    if (pBuff.target == PlayerTarget.OtherPlayer) { text += " for their treasury "; } else { text += " for your treasury "; }
+					text += "when they score a kill";
+                    break;
+			}
+		}
+        return text;
+	}
+
 }
 
 [System.Serializable]
@@ -1400,9 +1446,13 @@ public class CardActionObject : CardSkillObject
 			case ActionTypes.Buff:
 				text += CardTranslator.GenerateSkillBuffText(action.buffs);
 			break;
-			case ActionTypes.DoNothing:
+            case ActionTypes.PlayerBuff:
+                text += CardTranslator.GeneratePlayerSkillBuffText(action.playerBuffs);
+                break;
+            case ActionTypes.DoNothing:
 				text += "Do nothing";
 				break;
+
 		}
 
 		text += ".";

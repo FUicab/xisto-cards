@@ -33,8 +33,12 @@ public class PowerRating
 	}
 	//public float[] dicePowerMultipliers = { 1f, 0.95f, 0.9f, 0.85f, 0.8f, 0.75f };
 	public List<float> bonusPerAction = new();
-	public float actionOutputBonus { get { return bonusPerAction.Sum(); } }
-	public List<float> bonusPerPassive = new();
+    public List<float> bonusPerAttackAction = new();
+    public List<float> bonusPerBuffAction = new();
+    public float actionOutputBonus { get { return bonusPerAction.Sum(); } }
+    public float attackActionsOutputBonus { get { return bonusPerAttackAction.Sum(); } }
+    public float buffActionsOutputBonus { get { return bonusPerBuffAction.Sum(); } }
+    public List<float> bonusPerPassive = new();
 	public float passiveBonus { get { return bonusPerPassive.Sum(); } }
 	public float total { get { return baseBonus + actionOutputBonus + passiveBonus + subTypeBonus; } }
 	public string passiveDescription = "";
@@ -80,7 +84,18 @@ public class PowerRating
 						break;
 				}
 			}
-			bonusPerAction.Add((actionPower * dicePower) / 6);
+			float totalBonus = (actionPower * dicePower) / 6;
+            bonusPerAction.Add(totalBonus);
+			switch (actionObj.action.actionType)
+			{
+				case ActionTypes.Attack:
+					bonusPerAttackAction.Add(totalBonus);
+					break;
+				case ActionTypes.Buff:
+				case ActionTypes.PlayerBuff:
+					bonusPerBuffAction.Add(totalBonus);
+					break;
+			}
 			actionsDescription += actionObj.description+"\n";
 		}
 	}
@@ -95,22 +110,22 @@ public class PowerRating
                 bonus += baseBonus / 2;
                 break;
             case UnitSubtype.Dual:
-                bonus += card.Attack * 1.25f; // This unit subtype is no longer at use but we'll see what this could be used for
+                bonus += attackActionsOutputBonus * 1.25f; // This unit subtype is no longer at use but we'll see what this could be used for
                 break;
             case UnitSubtype.Mercenary:
-                bonus += card.Attack * 0.25f;
+                bonus += attackActionsOutputBonus * 0.25f;
                 break;
             case UnitSubtype.Assistant:
                 bonus += 1; // This unit subtype is no longer at use but we'll see what this could be used for
                 break;
             case UnitSubtype.Pacifist:
-                bonus -= card.Attack * 1.25f;
+                bonus -= attackActionsOutputBonus * 1.25f;
                 break;
             case UnitSubtype.Combo:
-                bonus += card.Attack;
+                bonus += attackActionsOutputBonus;
                 break;
             case UnitSubtype.Executioner:
-                bonus += card.Attack;
+                bonus += attackActionsOutputBonus;
                 break;
             case UnitSubtype.Noble:
                 bonus += 2;
@@ -126,7 +141,7 @@ public class PowerRating
                 break;
             case UnitSubtype.Yatza:
             case UnitSubtype.Doragon:
-                bonus += (baseBonus + card.Attack) / 2;
+                bonus += (baseBonus + attackActionsOutputBonus) / 2;
                 break;
         }
 
@@ -267,7 +282,11 @@ public class PowerRating
 			case BuffSpecialEffects.GrantSubtypes:
                 foreach (UnitSubtype subtype in buff.grantedSubtypes)
                 {
-					buffPower += GetSubtypeBonus(subtype);
+					if(buff.originAttack != null) {
+						buffPower += 5f;
+					} else {
+						buffPower += GetSubtypeBonus(subtype);
+					}
                 }
                 break;
 			case BuffSpecialEffects.TriggerExtraAttack:

@@ -216,7 +216,12 @@ public class GameManager : MonoBehaviour
 							}
 							info += "\n";
 						break;
-					}
+                        case ActionTypes.PlayerBuff:
+                            info += $"👤 <b>{tuAc.Owner.Role}</b>'s <b>{tuAc.CardInAction.card.Name}</b> activates: ";
+							info += CardTranslator.GeneratePlayerSkillBuffText(tuAc.actionObject.action.playerBuffs);
+                            info += "\n";
+                            break;
+                        }
 				break;
 
                 case TurnMovementType.Pass:
@@ -257,7 +262,8 @@ public class GameManager : MonoBehaviour
 		{
 			case ActionTypes.Attack:
 			case ActionTypes.Buff:
-				CurrentAction.RegisterAction(action);
+            case ActionTypes.PlayerBuff:
+                CurrentAction.RegisterAction(action);
 			break;
 		}
 		SetConfirmationButton(false);
@@ -700,6 +706,9 @@ public class TurnAction{
                     if (buff.isTargetImplicit) { targets.Add(actionObject.sourceCard); } else { targets.Add(null); }
                 }
 			break;
+			case ActionTypes.PlayerBuff:
+				// Do nothing because player buffs have always an implicit target
+				break;
 		}
 		UpdateTargetCountAndIndex();
 	}

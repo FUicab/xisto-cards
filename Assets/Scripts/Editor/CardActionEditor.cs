@@ -21,6 +21,7 @@ public class CardActionDrawer : PropertyDrawer
             SerializedProperty attacks = property.FindPropertyRelative("attacks");
             SerializedProperty buffs = property.FindPropertyRelative("buffs");
             SerializedProperty attackCountCanBeAugmented = property.FindPropertyRelative("attackCountCanBeAugmented");
+            SerializedProperty playerBuffs = property.FindPropertyRelative("playerBuffs");
 
             // 2. Dibujar ActionType
             Rect fieldRect = new Rect(position.x, position.y + EditorGUIUtility.singleLineHeight + 2, position.width, EditorGUIUtility.singleLineHeight);
@@ -42,7 +43,12 @@ public class CardActionDrawer : PropertyDrawer
             {
                 float listHeight = EditorGUI.GetPropertyHeight(buffs, true);
                 EditorGUI.PropertyField(new Rect(position.x, currentY, position.width, listHeight), buffs, true);
+            } else if (actionType.enumValueIndex == (int)ActionTypes.PlayerBuff)
+            {
+                float listHeight = EditorGUI.GetPropertyHeight(playerBuffs, true);
+                EditorGUI.PropertyField(new Rect(position.x, currentY, position.width, listHeight), playerBuffs, true);
             }
+
 
             EditorGUI.indentLevel--;
         }
@@ -64,10 +70,12 @@ public class CardActionDrawer : PropertyDrawer
         {
             height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("attacks"), true) + 2;
             height += EditorGUIUtility.singleLineHeight + 2; // El bool attackCountCanBeAugmented
-        }
-        else if (actionType.enumValueIndex == (int)ActionTypes.Buff || actionType.enumValueIndex == (int)ActionTypes.ApplyDebuff)
+        } else if (actionType.enumValueIndex == (int)ActionTypes.Buff || actionType.enumValueIndex == (int)ActionTypes.ApplyDebuff)
         {
             height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("buffs"), true) + 2;
+        } else if (actionType.enumValueIndex == (int)ActionTypes.PlayerBuff)
+        {
+            height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("playerBuffs"), true) + 2;
         }
 
         return height;

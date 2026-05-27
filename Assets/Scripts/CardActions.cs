@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class CardSkill
@@ -16,6 +17,7 @@ public class CardAction : CardSkill
 	public List<AttackAction> attacks = new();
 	public bool attackCountCanBeAugmented = false;
 	public List<BuffAction> buffs = new();
+	public List<PlayerBuffs> playerBuffs = new();
 
 	public CardAction(CardAction values)
 	{
@@ -23,6 +25,7 @@ public class CardAction : CardSkill
 		attacks = values.attacks;
 		attackCountCanBeAugmented = values.attackCountCanBeAugmented;
 		buffs = values.buffs;
+		playerBuffs = values.playerBuffs;
 	}
 }
 
@@ -256,6 +259,47 @@ public class PassiveSkill : CardSkill{
 
 }
 
+
+[System.Serializable]
+public class PlayerBuffs
+{
+	public PlayerTarget target = PlayerTarget.OwnerOfCard;
+	public PlayerBuffTypes buffType = PlayerBuffTypes.AddGold;
+	public int amount = 0;
+	public bool canBeAugmented = false;
+	public CardDisplay source;
+
+	public PlayerBuffs(PlayerBuffs values)
+	{
+		target = values.target;
+		buffType = values.buffType;
+		amount = values.amount;
+		canBeAugmented = values.canBeAugmented;
+		source = values.source;
+	}
+
+	public bool IsOfInstantApplication
+	{
+		get
+		{
+			bool itIs = false;
+			switch (buffType)
+			{
+				case PlayerBuffTypes.AddGold:
+				case PlayerBuffTypes.RemoveGold:
+				case PlayerBuffTypes.StealGold:
+					itIs = true;
+					break;
+				case PlayerBuffTypes.ExecutionerThresholdModifier:
+				case PlayerBuffTypes.MercenaryKillGoldReward:
+					itIs = false;
+					break;
+			}
+			return itIs;
+		}
+	}
+}
+
 public enum Attributes{
 	Attack,
 	Health,
@@ -275,7 +319,8 @@ public enum ActionTypes{
 	RepeatFromAbove,
 	Buff,
 	ApplyDebuff,
-	DoNothing
+	DoNothing,
+	PlayerBuff
 }
 public enum DamageTypes{
 	Melee,
@@ -344,4 +389,17 @@ public enum TargetUnitDefinition{
 public enum TriggerTypes{
 	OnAttack,
 	OnBoardChange
+}
+public enum PlayerTarget
+{
+	OwnerOfCard,
+	OtherPlayer
+}
+public enum PlayerBuffTypes
+{
+	AddGold,
+	RemoveGold,
+	StealGold,
+	ExecutionerThresholdModifier,
+	MercenaryKillGoldReward
 }

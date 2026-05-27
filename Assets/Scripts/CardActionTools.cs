@@ -153,6 +153,36 @@ public static class CardActionTools
 		}
 	}
 
+	public static void PerformPlayerBuffAction(PlayerBuffs playerBuff)
+	{
+		PlayerProfile playerTarget;
+        if (playerBuff.target == PlayerTarget.OwnerOfCard) { playerTarget = playerBuff.source.Owner; }
+        else { playerTarget = playerBuff.source.Owner.otherPlayer; }
+        switch (playerBuff.buffType)
+		{
+			case PlayerBuffTypes.AddGold:
+				playerTarget.Gold += playerBuff.amount;
+                break;
+			case PlayerBuffTypes.RemoveGold:
+                playerTarget.Gold -= playerBuff.amount;
+                break;
+			case PlayerBuffTypes.StealGold:
+				int bounty = 0;
+                if (playerTarget.Gold >= playerBuff.amount) {
+					bounty = playerBuff.amount;
+				} else {
+					bounty = playerTarget.Gold;
+				}
+				playerTarget.Gold -= bounty;
+				playerTarget.otherPlayer.Gold += bounty;
+                break;
+			case PlayerBuffTypes.ExecutionerThresholdModifier:
+			case PlayerBuffTypes.MercenaryKillGoldReward:
+				playerTarget.ReceiveActiveBuff(playerBuff);
+				break;
+		}
+	}
+
 	public static void PerformConfirmedAction(TurnAction ActionData)
 	{
 		if (ActionData.CardInAction != null)
@@ -191,6 +221,13 @@ public static class CardActionTools
                     }
 				}
 				break;
+			case ActionTypes.PlayerBuff:
+				for (int i = 0; i < ActionData.actionObject.action.playerBuffs.Count; i++)
+				{
+					PlayerBuffs pBuff = ActionData.actionObject.action.playerBuffs[i];
+					PerformPlayerBuffAction(pBuff);
+				}
+               break;
 		}
 	}
 

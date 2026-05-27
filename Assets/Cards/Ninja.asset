@@ -35,6 +35,33 @@ MonoBehaviour:
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
+      attackActionOutput:
+        damage: 0
+        resultsInDeath: 0
+        damageType: 0
+        attackerModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+        targetModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+      isExtra: 0
     - target: 2
       requirements: []
       source: {fileID: 0}
@@ -44,56 +71,123 @@ MonoBehaviour:
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
+      attackActionOutput:
+        damage: 0
+        resultsInDeath: 0
+        damageType: 0
+        attackerModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+        targetModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+      isExtra: 0
     attackCountCanBeAugmented: 0
     buffs: []
+    playerBuffs: []
   - actionType: 1
     attacks: []
     attackCountCanBeAugmented: 0
     buffs: []
+    playerBuffs: []
   - actionType: 0
     attacks:
     - target: 2
       requirements: []
       source: {fileID: 0}
       receiver: {fileID: 0}
-      damageType: 0
-      damageMultiplier: 1
-      flatDamageOverwrite: 0
-      attackEffect: []
-      temporaryBuffs:
-      - target: 0
-        requirements: []
-        source: {fileID: 0}
-        receiver: {fileID: 0}
-        Attribute: 0
-        amount: 0
-        isDebuff: 0
-        amountCanBeAugmented: 0
-        specialEffect: 0
-        specialBehavior: 
-        originPassive:
-          title: 
-          description: 
-          trigger: 0
-          canBeShared: 0
-          oncePerTurn: 0
-          buffs: []
-          source: {fileID: 0}
-    - target: 2
-      requirements: []
-      source: {fileID: 0}
-      receiver: {fileID: 0}
-      damageType: 0
+      damageType: 3
       damageMultiplier: 1
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
+      attackActionOutput:
+        damage: 0
+        resultsInDeath: 0
+        damageType: 0
+        attackerModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+        targetModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+      isExtra: 0
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 3
+      damageMultiplier: 1
+      flatDamageOverwrite: 0
+      attackEffect: []
+      temporaryBuffs: []
+      attackActionOutput:
+        damage: 0
+        resultsInDeath: 0
+        damageType: 0
+        attackerModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+        targetModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+      isExtra: 0
     attackCountCanBeAugmented: 0
     buffs: []
+    playerBuffs: []
   - actionType: 1
     attacks: []
     attackCountCanBeAugmented: 0
     buffs: []
+    playerBuffs: []
   - actionType: 0
     attacks:
     - target: 2
@@ -105,16 +199,54 @@ MonoBehaviour:
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
+      attackActionOutput:
+        damage: 0
+        resultsInDeath: 0
+        damageType: 0
+        attackerModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+        targetModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 000000000000000000000000
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+      isExtra: 0
     attackCountCanBeAugmented: 0
     buffs: []
+    playerBuffs: []
   - actionType: 1
     attacks: []
     attackCountCanBeAugmented: 0
     buffs: []
+    playerBuffs: []
   powerRating:
     card: {fileID: 11400000}
     bonusPerAction:
     - 2.559375
-    - 2.1145833
+    - 2.625
     - 1.4208333
+    bonusPerAttackAction:
+    - 2.559375
+    - 2.625
+    - 1.4208333
+    bonusPerBuffAction: []
     bonusPerPassive: []
+    passiveDescription: 
+    passiveBuffDescriptions: 
+    actionsDescription: "A \u2694\uFE0F Melee attack and a \U0001F3AF Ranged attack.\n<b><color=#222>2</color></b>
+      \u2694\uFE0F Melee or \U0001F3AF ranged attacks.\n\u2728 Energy attack.\n"
