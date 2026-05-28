@@ -473,6 +473,9 @@ public static class CardActionTools
                     case RequirementTypes.TargetIsDisrupted:
 						itDoes = target.IsDisrupted;
                         break;
+					case RequirementTypes.TargetIsGuarding:
+						itDoes = target.guardingPose;
+                        break;
                 }
             }
         }

@@ -82,6 +82,9 @@ public class PowerRating
 					case ActionTypes.ApplyDebuff:
 						actionPower += GetBuffPowerBonus(actionObj.action.buffs);
 						break;
+					case ActionTypes.PlayerBuff:
+						actionPower += GetPlayerBuffBonus(actionObj.action.playerBuffs);
+						break;
 				}
 			}
 			float totalBonus = (actionPower * dicePower) / 6;
@@ -153,9 +156,10 @@ public class PowerRating
 		passiveDescription = "";
 		foreach (PassiveSkill passiveSkill in card.Passives)
 		{
-			float passivePower = GetBuffPowerBonus(passiveSkill.buffs);
+			float passivePower = GetBuffPowerBonus(passiveSkill.buffs) + GetPlayerBuffBonus(passiveSkill.playerBuffs);
 			if (passiveSkill.canBeShared) { passivePower *= 1.05f; }
-			if (passiveSkill.oncePerTurn) { passivePower *= 0.66f; }
+            if (passiveSkill.oncePerTurn) { passivePower *= 0.66f; }
+            if (passiveSkill.sharedAcrossAllCardsOfSameKind) { passivePower *= 0.5f; }
 			if (passiveSkill.requiresElementalExchange) { passivePower *= 0.66f; }
 			bonusPerPassive.Add(passivePower);
 			CardPassiveSkillObject cardPassiveSkillObject = new CardPassiveSkillObject(passiveSkill, null);
@@ -376,4 +380,47 @@ public class PowerRating
         }
 		return powerBonus;
     }
+
+	public float GetPlayerBuffBonus(PlayerBuffs playerBuff)
+	{
+		float power = 0f;
+		float typeBonus = 0f;
+		float augmentationBonus = 1f;
+
+		switch (playerBuff.buffType)
+		{
+			case PlayerBuffTypes.AddGold:
+				typeBonus = 3f;
+				break;
+			case PlayerBuffTypes.RemoveGold:
+				typeBonus = -3f;
+                break;
+			case PlayerBuffTypes.StealGold:
+                typeBonus = -5f;
+                break;
+			case PlayerBuffTypes.ExecutionerThresholdModifier:
+                typeBonus = 10f;
+                break;
+			case PlayerBuffTypes.MercenaryKillGoldReward:
+                typeBonus = 3f;
+                break;
+		}
+
+        if (playerBuff.target == PlayerTarget.OtherPlayer) { typeBonus *= -1; }
+		if (playerBuff.canBeAugmented) { augmentationBonus *= 1.1f; }
+
+		power = playerBuff.amount * typeBonus * augmentationBonus;
+
+		return power;
+	}
+	public float GetPlayerBuffBonus(List<PlayerBuffs> playerBuffList) {
+		float power = 0f;
+
+		foreach (PlayerBuffs playerBuff in playerBuffList) {
+			power += GetPlayerBuffBonus(playerBuff);
+		}
+
+		return power;
+	}
+
 }

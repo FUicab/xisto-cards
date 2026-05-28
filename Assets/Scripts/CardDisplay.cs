@@ -589,6 +589,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 					break;
 				case BuffSpecialEffects.EnableGuardingPose:
 					guardingPose = true;
+					//EventManager.OnBoardUpdate();
 					break;
 				//case BuffSpecialEffects.Stun:
 				//	break;
@@ -719,7 +720,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
                         foreach (CardDisplay target in buff.GetImplicitTargetsOfAction())
 						{
 							//Debug.Log($"{passive.title} from {passive.source.card.Name} is checking for validity on {target.card.Name}: {buff.TargetMeetsRequirements(target)}");
-							if (!target.passiveBuffs.Exists(x => x.originPassive.title == passive.title && x.originPassive.source == passive.source && buff.Attribute == x.Attribute && buff.amount == x.amount) && passive.CanBeUsedThisRound) {
+							if (!target.passiveBuffs.Exists(x => x.originPassive.title == passive.title && x.originPassive.source == passive.source && buff.Attribute == x.Attribute && buff.amount == x.amount && buff.requirements.Count == x.requirements.Count) && passive.CanBeUsedThisRound) {
                                 //Debug.Log($"{passive.title} from {passive.source.card.Name} was successfully applied to {target.card.Name}");
                                 target.ReceivePassiveBuff(buff);
 							}

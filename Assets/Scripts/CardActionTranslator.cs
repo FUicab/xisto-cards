@@ -274,8 +274,19 @@ public static class CardTranslator
 				allSameTarget = false;
 			}
 		}
+		bool allSameTargetButCanHaveExtraWithRequirements = allSameTarget && buffs.Count > 1;
+		if(allSameTarget && buffs[0].requirements.Count == 0)
+		{
+            for (int i = 1; i < buffs.Count; i++)
+            {
+				if (buffs[i].requirements.Count == 0) allSameTargetButCanHaveExtraWithRequirements = false;
+            }
+        } else
+		{
+			allSameTargetButCanHaveExtraWithRequirements = false;
+		}
 
-		bool allSameRequirements = true;
+        bool allSameRequirements = true;
 		if(buffs.Count > 0)
 		if (buffs[0].requirements.Count > 0)
         foreach (var buff in buffs)
@@ -503,17 +514,22 @@ public static class CardTranslator
 				}
 			} else {
 				if(buffs.Count-1 == index){
-					text += " and ";
+                    if (allSameTargetButCanHaveExtraWithRequirements) { text += " to "+TargetTypeDescription(buff.target);}
+                    text += " and ";
 					if(buff.Attribute == Attributes.Health)
 					{
 						text += "heals ";
 					}
 					if(buff.amount != 0)
 					{
+						if (allSameTargetButCanHaveExtraWithRequirements) { text += " an additional "; }
 						text += AttributeAndValue(buff);
-						text += " to ";
-						text += TargetTypeDescription(buff.target);
-					}
+                        if (allSameTargetButCanHaveExtraWithRequirements) { text += RequirementDescription(buff.requirements, buff.target, buff.source?.card); }
+						if (!allSameTargetButCanHaveExtraWithRequirements) {
+							text += " to ";
+							text += TargetTypeDescription(buff.target);
+						}
+                    }
 					text += BuffEffectDescription(buff);
 				} else {
 					text += ", ";
@@ -529,12 +545,12 @@ public static class CardTranslator
 					text += BuffEffectDescription(buff);
 				}
 			}
-			if(buff.requirements.Count > 0 && !buff.activatesOnHit && (index == buffs.Count-1 || !allSameRequirements))
+			if(buff.requirements.Count > 0 && !buff.activatesOnHit && (index == buffs.Count-1 || !allSameRequirements) && !allSameTargetButCanHaveExtraWithRequirements )
 			{
 				text += RequirementDescription(buff.requirements, buff.target, buff.source?.card);
 			}
 
-			if (buff.onHitRequirements.Count > 0 && (index == buffs.Count - 1 || !allSameRequirements))
+			if (buff.onHitRequirements.Count > 0 && (index == buffs.Count - 1 || !allSameRequirements) && !allSameTargetButCanHaveExtraWithRequirements)
 			{
 				text += RequirementDescription(buff.onHitRequirements, buff.target, buff.source?.card, "onHit");
 			}
@@ -701,7 +717,10 @@ public static class CardTranslator
 							case RequirementTypes.TargetIsDisrupted:
 								text += $" if I'm {TextFormat("disrupted","statusEffect")}";
 								break;
-						}
+							case RequirementTypes.TargetIsGuarding:
+								text += $" if I'm {TextFormat("guarding", "guarding")}";
+								break;
+                    }
                     break;
 					case TargetTypes.SameTarget:
 					case TargetTypes.SingleEnemy:
@@ -815,6 +834,7 @@ public static class CardTranslator
 							case RequirementTypes.TargetIsStunned:
 							case RequirementTypes.TargetIsDisarmed:
 							case RequirementTypes.TargetIsDisrupted:
+							case RequirementTypes.TargetIsGuarding:
 								switch (formattingFor)
 								{
 									case "attack":
@@ -839,9 +859,12 @@ public static class CardTranslator
 									case RequirementTypes.TargetIsDisrupted:
 										text += $" {TextFormat("disrupted", "statusEffect")}";
 									break;
-								}
+									case RequirementTypes.TargetIsGuarding:
+										text += $" {TextFormat("guarding", "guarding")}";
+                                    break;
+                            }
 							break;
-						}
+                    }
 					break;
 					case TargetTypes.LineOfEnemies:
 					case TargetTypes.AlliesInSameLine:
@@ -950,6 +973,7 @@ public static class CardTranslator
 							case RequirementTypes.TargetIsStunned:
 							case RequirementTypes.TargetIsDisarmed:
 							case RequirementTypes.TargetIsDisrupted:
+							case RequirementTypes.TargetIsGuarding:
 								switch (formattingFor)
 								{
 									case "attack":
@@ -957,10 +981,10 @@ public static class CardTranslator
 										break;
 									case "effectOrTempBuff":
 									case "onHit":
-										text += " when the target is";
+										text += " when they're";
 										break;
 									case "buff":
-										text += " if the target is";
+										text += " if they're";
 										break;
 								}
 								switch (requirement.requirement)
@@ -973,6 +997,9 @@ public static class CardTranslator
 										break;
 									case RequirementTypes.TargetIsDisrupted:
 										text += $" {TextFormat("disrupted", "statusEffect")}";
+										break;
+									case RequirementTypes.TargetIsGuarding:
+										text += $" {TextFormat("guarding", "guarding")}";
 										break;
 								}
 								break;

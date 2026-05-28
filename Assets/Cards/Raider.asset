@@ -352,7 +352,7 @@ MonoBehaviour:
     - 1.0200001
     bonusPerBuffAction: []
     bonusPerPassive:
-    - 1.4520001
+    - 0.7260001
     passiveDescription: "\u2776 <b>Ambush</b>: When I <b>attack \U0001F4A5</b> I
       get <b><color=#15c>+2</color></b> <b><color=#b50>armor pierce</color></b> <i>(for
       that attack)</i> <i>(once per round for all <b>cards of my kind</b>)</i>.\n"

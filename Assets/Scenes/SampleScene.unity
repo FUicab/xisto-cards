@@ -6014,6 +6014,7 @@ MonoBehaviour:
         attacks: []
         attackCountCanBeAugmented: 0
         buffs: []
+        playerBuffs: []
       canBeUsed: 0
     targets: []
     nextNullIndex: 0
@@ -6033,6 +6034,8 @@ MonoBehaviour:
       buffs: []
       Dices: []
       selectedDice: {fileID: 0}
+      activeBuffs: []
+      passiveBuffs: []
       GM: {fileID: 0}
   CurrentAction:
     movementType: 0
@@ -6049,6 +6052,7 @@ MonoBehaviour:
         attacks: []
         attackCountCanBeAugmented: 0
         buffs: []
+        playerBuffs: []
       canBeUsed: 0
     targets: []
     nextNullIndex: -1
@@ -6068,6 +6072,8 @@ MonoBehaviour:
       buffs: []
       Dices: []
       selectedDice: {fileID: 0}
+      activeBuffs: []
+      passiveBuffs: []
       GM: {fileID: 0}
   ActionPoints: 3
   InitialActionPoints: 3
@@ -6105,6 +6111,8 @@ MonoBehaviour:
     buffs: []
     Dices: []
     selectedDice: {fileID: 0}
+    activeBuffs: []
+    passiveBuffs: []
     GM: {fileID: 0}
   Opponent:
     Role: 0
@@ -6140,6 +6148,8 @@ MonoBehaviour:
     buffs: []
     Dices: []
     selectedDice: {fileID: 0}
+    activeBuffs: []
+    passiveBuffs: []
     GM: {fileID: 0}
   PlayerAtPlay:
     Role: 0
@@ -6154,6 +6164,8 @@ MonoBehaviour:
     buffs: []
     Dices: []
     selectedDice: {fileID: 0}
+    activeBuffs: []
+    passiveBuffs: []
     GM: {fileID: 0}
   turnStatus: 0
   TurnConfirmationButton: {fileID: 710178417}
@@ -6182,6 +6194,8 @@ MonoBehaviour:
       buffs: []
       Dices: []
       selectedDice: {fileID: 0}
+      activeBuffs: []
+      passiveBuffs: []
       GM: {fileID: 0}
     OpponentProfile:
       Role: 0
@@ -6196,6 +6210,8 @@ MonoBehaviour:
       buffs: []
       Dices: []
       selectedDice: {fileID: 0}
+      activeBuffs: []
+      passiveBuffs: []
       GM: {fileID: 0}
     PrioritizesDefendersForDefendingOnly: 1
     PrioritizesDefendedBackline: 1
@@ -14713,7 +14729,8 @@ PrefabInstance:
     - target: {fileID: 2962488130967057685, guid: 9e9d10b15d1c1884f8b1207d16342067, type: 3}
       propertyPath: m_text
       value: "Ability details will go here. Click any card to see its extended information.\nPassive
-        skills and actions are listed here. <b><color=red>Read them carefully!</text></b>\n\u2694\uFE0F\u2728\U0001F3AF\U0001F4AB\U0001F517\U0001F6E1\uFE0F\U0001F3F4\U0001F6E0\uFE0F\U0001F54A\uFE0F\u23E9\U0001F480\U0001F451\U0001F56F\uFE0F\U0001F9EC\U0001F4DC\u2B50\U0001F30C\U0001F49A\U0001F5E1\uFE0F\U0001F4CC\u26A1\u23EB\U0001F6A9\u2693\u26D3\uFE0F"
+        skills and actions are listed here. <b><color=red>Read them carefully!</text></b>\n\u2694\uFE0F\u2728\U0001F3AF\U0001F4AB\U0001F517\U0001F6E1\uFE0F\U0001F3F4\U0001F6E0\uFE0F\U0001F54A\uFE0F\u23E9\U0001F480\U0001F451\U0001F56F\uFE0F\U0001F9EC\U0001F4DC\u2B50\U0001F30C\U0001F49A\U0001F5E1\uFE0F\U0001F4CC\u26A1\u23EB\U0001F6A9\u2693\u26D3\uFE0F\n<color=blue><sprite=\"archery-target\"
+        index=0 tint=1> yee </color>"
       objectReference: {fileID: 0}
     - target: {fileID: 2962488130967057685, guid: 9e9d10b15d1c1884f8b1207d16342067, type: 3}
       propertyPath: m_fontSize

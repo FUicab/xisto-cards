@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Yan
   m_EditorClassIdentifier: Assembly-CSharp::Card
   Name: Yan
-  CardCount: 5
+  CardCount: 100
   Type: 3
   Subtypes: 000000000c000000
   Cost: 3
@@ -99,7 +99,9 @@ MonoBehaviour:
         sharedAcrossAllCardsOfSameKind: 0
         requiresElementalExchange: 0
         buffs: []
+        playerBuffs: []
         source: {fileID: 0}
+    playerBuffs: []
     source: {fileID: 0}
   - title: Anti-motion
     description: 
@@ -169,7 +171,79 @@ MonoBehaviour:
         sharedAcrossAllCardsOfSameKind: 0
         requiresElementalExchange: 0
         buffs: []
+        playerBuffs: []
         source: {fileID: 0}
+    - target: 4
+      requirements:
+      - requirement: 9
+        subtypeRequirement: 
+        factionRequirement: 
+        targetIs: 
+        attribute: 0
+        comparison: 0
+        attributeValue: 0
+        targetOfRequirementIsTargetOfAttack: 0
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      Attribute: 2
+      amount: 1
+      isDebuff: 0
+      amountCanBeAugmented: 1
+      activatesOnHit: 0
+      onHitRequirements: []
+      specialEffect: 0
+      extraAttacks: []
+      grantedSubtypes: 
+      specialBehavior: 
+      originAttack:
+        target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        damageType: 0
+        damageMultiplier: 0
+        flatDamageOverwrite: 0
+        attackEffect: []
+        temporaryBuffs: []
+        attackActionOutput:
+          damage: 0
+          resultsInDeath: 0
+          damageType: 0
+          attackerModifiers:
+            Attack: 0
+            Health: 0
+            MaxHealth: 0
+            Defense: 0
+            Armor: 000000000000000000000000
+            ArmorPierce: 0
+            DamageReductionBeforeArmor: 0
+            DamageReductionAfterArmor: 0
+            DamageMultiplier: 0
+            usedBuffs: []
+          targetModifiers:
+            Attack: 0
+            Health: 0
+            MaxHealth: 0
+            Defense: 0
+            Armor: 000000000000000000000000
+            ArmorPierce: 0
+            DamageReductionBeforeArmor: 0
+            DamageReductionAfterArmor: 0
+            DamageMultiplier: 0
+            usedBuffs: []
+        isExtra: 0
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerTurn: 0
+        sharedAcrossAllCardsOfSameKind: 0
+        requiresElementalExchange: 0
+        buffs: []
+        playerBuffs: []
+        source: {fileID: 0}
+    playerBuffs: []
     source: {fileID: 0}
   - title: Crushing
     description: 
@@ -247,7 +321,9 @@ MonoBehaviour:
         sharedAcrossAllCardsOfSameKind: 0
         requiresElementalExchange: 0
         buffs: []
+        playerBuffs: []
         source: {fileID: 0}
+    playerBuffs: []
     source: {fileID: 0}
   - title: Protector's insignia
     description: 
@@ -333,7 +409,9 @@ MonoBehaviour:
         sharedAcrossAllCardsOfSameKind: 0
         requiresElementalExchange: 0
         buffs: []
+        playerBuffs: []
         source: {fileID: 0}
+    playerBuffs: []
     source: {fileID: 0}
   CardActions:
   - actionType: 0
@@ -518,6 +596,7 @@ MonoBehaviour:
         sharedAcrossAllCardsOfSameKind: 0
         requiresElementalExchange: 0
         buffs: []
+        playerBuffs: []
         source: {fileID: 0}
     playerBuffs: []
   - actionType: 1
@@ -620,6 +699,7 @@ MonoBehaviour:
         sharedAcrossAllCardsOfSameKind: 0
         requiresElementalExchange: 0
         buffs: []
+        playerBuffs: []
         source: {fileID: 0}
     playerBuffs: []
   - actionType: 1
@@ -722,6 +802,7 @@ MonoBehaviour:
         sharedAcrossAllCardsOfSameKind: 0
         requiresElementalExchange: 0
         buffs: []
+        playerBuffs: []
         source: {fileID: 0}
     playerBuffs: []
   - actionType: 0
@@ -824,6 +905,7 @@ MonoBehaviour:
         sharedAcrossAllCardsOfSameKind: 0
         requiresElementalExchange: 0
         buffs: []
+        playerBuffs: []
         source: {fileID: 0}
     playerBuffs: []
   powerRating:
@@ -832,23 +914,30 @@ MonoBehaviour:
     - 1.8850001
     - 7.48
     - 1.1500001
+    bonusPerAttackAction:
+    - 1.8850001
+    - 1.1500001
+    bonusPerBuffAction:
+    - 7.48
     bonusPerPassive:
     - 4.84
-    - 8.8
+    - 13.200001
     - 2.31
     - 3.1944003
     passiveDescription: "<b>Leader of Protectors</b>: Grants <b><color=#15c>+1</color></b>
       <b><color=#900>attack</color></b> to all allies who are <b><color=#555>Protectors</color></b>
       or <b><color=#555>Independent units</color></b>.\n<b>Anti-motion</b>: Grants
-      <b><color=#15c>+1</color></b> <b><color=#760>defense</color></b> to all allies.\n\U0001F517
-      <b>Crushing</b>: When I <b>attack \U0001F4A5</b> I get <b><color=#15c>+4</color></b>
-      <b><color=#900>attack</color></b> <i>(for that attack)</i> when the target's
-      <b><color=#583>HP</color></b> is less than or equal to <b>10</b>.\n\U0001F4AB
-      <b>Protector's insignia</b>: When the enemies who are <b><color=#714>\U0001F3F4
-      mercenaries</color></b> <b>attack \U0001F4A5</b> they get <b><color=#15c>-2</color></b>
-      <b><color=#900>attack</color></b> <i>(for that attack)</i> when targetting
-      <b><color=#555>Protectors</color></b> or <b><color=#555>Independent units</color></b>.\n"
+      <b><color=#15c>+1</color></b> <b><color=#760>defense</color></b> to all allies
+      and  an additional <b><color=#15c>+1</color></b> <b><color=#760>defense</color></b>
+      if they're <b><color=#775>guarding</color></b>.\n\U0001F517 <b>Crushing</b>:
+      When I <b>attack \U0001F4A5</b> I get <b><color=#15c>+4</color></b> <b><color=#900>attack</color></b>
+      <i>(for that attack)</i>.\n\U0001F4AB <b>Protector's insignia</b>: When the
+      enemies who are <b><color=#714>\U0001F3F4 mercenaries</color></b> <b>attack
+      \U0001F4A5</b> they get <b><color=#15c>-2</color></b> <b><color=#900>attack</color></b>
+      <i>(for that attack)</i> when targetting <b><color=#555>Protectors</color></b>
+      or <b><color=#555>Independent units</color></b>.\n"
     passiveBuffDescriptions: "<b><color=#15c>+1</color></b> <b><color=#900>attack</color></b>
+      from myself\n<b><color=#15c>+1</color></b> <b><color=#760>defense</color></b>
       from myself\n<b><color=#15c>+1</color></b> <b><color=#760>defense</color></b>
       from myself\n<b>\U0001F4A5 On hit</b>: <b><color=#15c>+4</color></b> <b><color=#900>attack</color></b>
       when the target's <b><color=#583>HP</color></b> is less than or equal to <b>10</b>,
