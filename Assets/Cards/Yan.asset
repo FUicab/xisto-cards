@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Yan
   m_EditorClassIdentifier: Assembly-CSharp::Card
   Name: Yan
-  CardCount: 100
+  CardCount: 5
   Type: 3
   Subtypes: 000000000c000000
   Cost: 3
@@ -60,6 +60,7 @@ MonoBehaviour:
         receiver: {fileID: 0}
         damageType: 0
         damageMultiplier: 0
+        damageMultiplierCanBeAugmented: 0
         flatDamageOverwrite: 0
         attackEffect: []
         temporaryBuffs: []
@@ -132,6 +133,7 @@ MonoBehaviour:
         receiver: {fileID: 0}
         damageType: 0
         damageMultiplier: 0
+        damageMultiplierCanBeAugmented: 0
         flatDamageOverwrite: 0
         attackEffect: []
         temporaryBuffs: []
@@ -202,6 +204,7 @@ MonoBehaviour:
         receiver: {fileID: 0}
         damageType: 0
         damageMultiplier: 0
+        damageMultiplierCanBeAugmented: 0
         flatDamageOverwrite: 0
         attackEffect: []
         temporaryBuffs: []
@@ -282,6 +285,7 @@ MonoBehaviour:
         receiver: {fileID: 0}
         damageType: 0
         damageMultiplier: 0
+        damageMultiplierCanBeAugmented: 0
         flatDamageOverwrite: 0
         attackEffect: []
         temporaryBuffs: []
@@ -370,6 +374,7 @@ MonoBehaviour:
         receiver: {fileID: 0}
         damageType: 0
         damageMultiplier: 0
+        damageMultiplierCanBeAugmented: 0
         flatDamageOverwrite: 0
         attackEffect: []
         temporaryBuffs: []
@@ -422,6 +427,7 @@ MonoBehaviour:
       receiver: {fileID: 0}
       damageType: 0
       damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
@@ -463,6 +469,7 @@ MonoBehaviour:
       receiver: {fileID: 0}
       damageType: 0
       damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
@@ -504,6 +511,7 @@ MonoBehaviour:
       receiver: {fileID: 0}
       damageType: 0
       damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
@@ -557,6 +565,7 @@ MonoBehaviour:
         receiver: {fileID: 0}
         damageType: 0
         damageMultiplier: 0
+        damageMultiplierCanBeAugmented: 0
         flatDamageOverwrite: 0
         attackEffect: []
         temporaryBuffs: []
@@ -607,6 +616,7 @@ MonoBehaviour:
       receiver: {fileID: 0}
       damageType: 0
       damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
@@ -660,6 +670,7 @@ MonoBehaviour:
         receiver: {fileID: 0}
         damageType: 0
         damageMultiplier: 0
+        damageMultiplierCanBeAugmented: 0
         flatDamageOverwrite: 0
         attackEffect: []
         temporaryBuffs: []
@@ -710,6 +721,7 @@ MonoBehaviour:
       receiver: {fileID: 0}
       damageType: 0
       damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
@@ -763,6 +775,7 @@ MonoBehaviour:
         receiver: {fileID: 0}
         damageType: 0
         damageMultiplier: 0
+        damageMultiplierCanBeAugmented: 0
         flatDamageOverwrite: 0
         attackEffect: []
         temporaryBuffs: []
@@ -813,6 +826,7 @@ MonoBehaviour:
       receiver: {fileID: 0}
       damageType: 5
       damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
@@ -866,6 +880,7 @@ MonoBehaviour:
         receiver: {fileID: 0}
         damageType: 0
         damageMultiplier: 0
+        damageMultiplierCanBeAugmented: 0
         flatDamageOverwrite: 0
         attackEffect: []
         temporaryBuffs: []
@@ -931,8 +946,9 @@ MonoBehaviour:
       and  an additional <b><color=#15c>+1</color></b> <b><color=#760>defense</color></b>
       if they're <b><color=#775>guarding</color></b>.\n\U0001F517 <b>Crushing</b>:
       When I <b>attack \U0001F4A5</b> I get <b><color=#15c>+4</color></b> <b><color=#900>attack</color></b>
-      <i>(for that attack)</i>.\n\U0001F4AB <b>Protector's insignia</b>: When the
-      enemies who are <b><color=#714>\U0001F3F4 mercenaries</color></b> <b>attack
+      <i>(for that attack)</i> when the target's <b><color=#583>HP</color></b> is
+      less than or equal to <b>10</b>.\n\U0001F4AB <b>Protector's insignia</b>: When
+      the enemies who are <b><color=#714>\U0001F3F4 mercenaries</color></b> <b>attack
       \U0001F4A5</b> they get <b><color=#15c>-2</color></b> <b><color=#900>attack</color></b>
       <i>(for that attack)</i> when targetting <b><color=#555>Protectors</color></b>
       or <b><color=#555>Independent units</color></b>.\n"

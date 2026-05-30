@@ -158,7 +158,11 @@ public static class CardTranslator
 
             if (attack.damageMultiplier != 1f)
             {
-                text += " with <b>" + (attack.damageMultiplier * 100) + "%</b> effectivity";
+				if (attack.damageMultiplier % 1 == 0) {
+                    text += $" with {TextFormat("×" + attack.damageMultiplier.ToString(), null, attack.damageMultiplierCanBeAugmented)} {TextFormat("damage",Attributes.Attack)}";
+				} else {
+					text += $" with {TextFormat( (attack.damageMultiplier * 100)+"%" , null, attack.damageMultiplierCanBeAugmented )} effectivity";
+				}
             }
 
             // Lists all attack effects
@@ -610,12 +614,13 @@ public static class CardTranslator
 				case Attributes.DamageReductionAfterArmor: text += "760"; break;
 				case Attributes.ArmorPierce: text += "b50"; break;
                 case Attributes.DamageMultiplier: text += "900"; break;
+                case Attributes.Cost: case "gold": text += "b90"; break;
                 case "faction": text += "555"; break;
 				case "subtype": text += "714"; break;
 				case "self-damage": text += "c42"; break;
                 case "statusEffect": text += "90f"; break;
                 case "guarding": text += "775"; break;
-                case Attributes.Cost: case "gold": text += "b90"; break;
+                case "actionPoints": text += "395"; break;
                 default: text += "222"; break;
 			}
 		}
@@ -1437,7 +1442,11 @@ public static class CardTranslator
                     if (pBuff.target == PlayerTarget.OtherPlayer) { text += " for their treasury "; } else { text += " for your treasury "; }
 					text += "when they score a kill";
                     break;
-			}
+                case PlayerBuffTypes.FreeAttackActions:
+                    if (pBuff.target == PlayerTarget.OtherPlayer) { text += "Opponent's "; } else { text += "Your "; }
+                    text += $"cards gain {TextFormat(NumberWithSign(pBuff.amount), null, pBuff.canBeAugmented)} {TextFormat("free attack action"+(pBuff.amount>1?"s":""),"actionPoints")} which also {(pBuff.amount > 1 ? "don't use their" : "doesn't use its")} dice";
+                    break;
+            }
 		}
 		if(passiveSkill != null)
 		{
@@ -1520,15 +1529,15 @@ public class CardPassiveSkillObject : CardSkillObject
 	public string TranslatePassiveSkillsToText()
 	{
 		string text = "";
-		if (skill.oncePerTurn) { text += "❶"; }
+		if (skill.oncePerRound) { text += "❶"; }
 		if (skill.canBeShared) { text += "🔗"; }
 		if (skill.requiresElementalExchange) { text += "💫"; }
-		if (skill.oncePerTurn || skill.canBeShared || skill.requiresElementalExchange) { text += " "; }
+		if (skill.oncePerRound || skill.canBeShared || skill.requiresElementalExchange) { text += " "; }
 		text += $"<b>{skill.title}</b>";
 		if(skill.buffs.Count > 0) { text += $": {CardTranslator.GenerateSkillBuffText(skill.buffs, skill)}"; }
 		if(skill.playerBuffs.Count > 0) { text += $": {CardTranslator.GeneratePlayerSkillBuffText(skill.playerBuffs, skill)}"; }
-        if (skill.oncePerTurn && !skill.sharedAcrossAllCardsOfSameKind) { text += " <i>(once per round)</i>"; }
-        if (skill.oncePerTurn && skill.sharedAcrossAllCardsOfSameKind) { text += $" <i>(once per round for all <b>{sourceCard?.card.Name ?? "cards of my kind"}</b>)</i>"; }
+        if (skill.oncePerRound && !skill.sharedAcrossAllCardsOfSameKind) { text += " <i>(once per round)</i>"; }
+        if (skill.oncePerRound && skill.sharedAcrossAllCardsOfSameKind) { text += $" <i>(once per round for all <b>{sourceCard?.card.Name ?? "cards of my kind"}</b>)</i>"; }
         text += ".";
 
         return text;

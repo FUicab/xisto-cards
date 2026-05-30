@@ -27,7 +27,7 @@ MonoBehaviour:
     description: 
     trigger: 3
     canBeShared: 0
-    oncePerTurn: 1
+    oncePerRound: 1
     sharedAcrossAllCardsOfSameKind: 1
     requiresElementalExchange: 0
     buffs: []
@@ -47,6 +47,7 @@ MonoBehaviour:
       receiver: {fileID: 0}
       damageType: 0
       damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
@@ -83,6 +84,7 @@ MonoBehaviour:
       receiver: {fileID: 0}
       damageType: 0
       damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
@@ -124,6 +126,7 @@ MonoBehaviour:
       receiver: {fileID: 0}
       damageType: 1
       damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
@@ -160,6 +163,7 @@ MonoBehaviour:
       receiver: {fileID: 0}
       damageType: 1
       damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
@@ -201,6 +205,7 @@ MonoBehaviour:
       receiver: {fileID: 0}
       damageType: 0
       damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
@@ -237,6 +242,7 @@ MonoBehaviour:
       receiver: {fileID: 0}
       damageType: 1
       damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
@@ -278,6 +284,7 @@ MonoBehaviour:
       receiver: {fileID: 0}
       damageType: 0
       damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
@@ -314,6 +321,7 @@ MonoBehaviour:
       receiver: {fileID: 0}
       damageType: 1
       damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
@@ -355,6 +363,7 @@ MonoBehaviour:
       receiver: {fileID: 0}
       damageType: 0
       damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
@@ -391,6 +400,7 @@ MonoBehaviour:
       receiver: {fileID: 0}
       damageType: 1
       damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
@@ -432,6 +442,7 @@ MonoBehaviour:
       receiver: {fileID: 0}
       damageType: 3
       damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
@@ -468,6 +479,7 @@ MonoBehaviour:
       receiver: {fileID: 0}
       damageType: 3
       damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
@@ -515,7 +527,7 @@ MonoBehaviour:
     - 1.125
     bonusPerBuffAction: []
     bonusPerPassive:
-    - 0
+    - 1.0890001
     passiveDescription: "\u2776 <b>Aaaargh!</b>: Remove <b><color=#15c>+1</color></b>
       <b><color=#b90>gold</color></b> from your opponent's treasury, when I score
       a kill <i>(once per round for all <b>cards of my kind</b>)</i>.\n"

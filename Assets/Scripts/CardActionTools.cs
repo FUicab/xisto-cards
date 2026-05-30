@@ -178,7 +178,8 @@ public static class CardActionTools
                 break;
 			case PlayerBuffTypes.ExecutionerThresholdModifier:
 			case PlayerBuffTypes.MercenaryKillGoldReward:
-				playerTarget.ReceiveActiveBuff(playerBuff);
+            case PlayerBuffTypes.FreeAttackActions:
+                playerTarget.ReceiveActiveBuff(playerBuff);
 				break;
 		}
 	}
@@ -279,15 +280,15 @@ public static class CardActionTools
 	{
 		bool itDoes = false;
 		//AttackAction attackAction = action as AttackAction;
+		bool isMyself = action.target == TargetTypes.Self;
 		bool isFromMyTeam = (action.targetIsFromMyTeam && target.Owner?.Role == action.source?.Owner?.Role);
 		bool isFromOtherTeam = (!action.targetIsFromMyTeam && target.Owner?.Role != action.source?.Owner?.Role);
-		bool isMyself = action.target == TargetTypes.Self;
 
         if ( ( isFromMyTeam || isFromOtherTeam || isMyself) && (action.TargetCanBeReached(target)) )
 		{
 			itDoes = true;
 		}
-		//Debug.Log($"<b>{action.source?.card.Name}</b>: Does target of buff meet all requirements? -> {itDoes} { TargetMeetsRequirements(target, action.requirements)}");
+		//Debug.Log($"<b>{action.source?.card.Name}</b>: Does target of buff meet all requirements? -> 1: {itDoes} . 2:{TargetMeetsRequirements(target, action.requirements)}");
 		return itDoes && TargetMeetsRequirements(target, action.requirements);
 	}
 	public static bool TargetMeetsRequirements(CardDisplay actionTarget, List<Requirements> requirements)
@@ -305,7 +306,10 @@ public static class CardActionTools
 
 				BuffAction originBuff = requirement.originAction as BuffAction;
                 AttackAction originAttack = requirement.originAction as AttackAction;
-				if (originBuff != null)
+				if(actionTarget == requirement.originAction?.source && requirement.originAction?.target == TargetTypes.Self)
+				{
+					target = actionTarget;
+				} else  if (originBuff != null)
 				{
 					if (!originBuff.activatesOnHit || (originBuff.originAttack != null && requirement.targetOfRequirementIsTargetOfAttack))
 					{
@@ -493,7 +497,7 @@ public static class CardActionTools
         {
 			if (action is AttackAction attackAction)
 			{
-				if(target.Owner.Role == action.source.Owner.Role)
+				if(action.target == TargetTypes.Self || target.Owner.Role == action.source.Owner.Role)
 				{
 					itCan = true;
 				} else  {
@@ -742,7 +746,7 @@ public static class CardActionTools
 				if (killTriggerValid)
 				{
 					passiveSkill.playerBuffs.ForEach(pBuff => PerformPlayerBuffAction(pBuff));
-					if (passiveSkill.oncePerTurn)
+					if (passiveSkill.oncePerRound)
 					{
 						if (passiveSkill.sharedAcrossAllCardsOfSameKind)
 						{

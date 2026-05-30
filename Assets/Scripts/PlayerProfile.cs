@@ -9,13 +9,14 @@ public class PlayerProfile
 	public PlayerRole Role;
 	public bool useAI = false;
 	public int Gold = 0;
+    public GameManager GM;
 	[HideInInspector] public int maxActionPoints = 3;
 	[HideInInspector] public int actionPoints = 3;
 	[HideInInspector] public int actionPointsTurnedToGold = 0;
 	public List<Transform> Hand = new List<Transform>();
 	public List<bool> AvailableCardSlots = new List<bool>();
 	public List<BoardRow> MyBoardRows = new List<BoardRow>();
-	public List<BuffAction> buffs = new List<BuffAction>();
+	//public List<BuffAction> buffs = new List<BuffAction>();
 	//public GameObject DiceUI_1;
 	//public GameObject DiceUI_2;
 	//public GameObject DiceUI_3;
@@ -25,7 +26,6 @@ public class PlayerProfile
 	public List<PlayerBuffs> activeBuffs = new();
     public List<PlayerBuffs> passiveBuffs = new();
 	public List<PlayerBuffs> appliedBuffs{ get { return activeBuffs.Concat(passiveBuffs).ToList(); } }
-    public GameManager GM;
 	public List<CardSpace> mySpaces {
 		get
 		{
@@ -40,9 +40,17 @@ public class PlayerProfile
 			return spaces;
 		}
 	}
-	public bool isMyTurnToPlay
+	public bool isMyTurnToPlay { get { return GM?.PlayerAtPlay == this; } }
+	public List<PlayerBuffs> FreeAttackBuffs {
+		get { return appliedBuffs.Where(pBuff => pBuff.buffType == PlayerBuffTypes.FreeAttackActions && pBuff.usableAmount > 0).ToList(); }
+	}
+	public PlayerBuffs NextFreeAttackBuff
 	{
-		get { return GM?.PlayerAtPlay == this; }
+        get { return FreeAttackBuffs.FirstOrDefault(pBuff => pBuff.usableAmount > 0); }
+    }
+	public int FreeAttackActions
+	{
+		get { return FreeAttackBuffs.Select(pBuff => pBuff.usableAmount).ToList().Sum(); }
 	}
 
 	public PlayerProfile()
@@ -137,4 +145,9 @@ public class PlayerProfile
     {
         passiveBuffs.Add(playerBuff);
     }
+
+	public void ResetBuffCounters()
+	{
+		appliedBuffs.ForEach(pBuff => pBuff.Reset());
+	}
 }

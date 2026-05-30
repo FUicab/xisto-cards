@@ -58,6 +58,7 @@ public class ActiveAction
 public class AttackAction : ActiveAction{
 	public DamageTypes damageType;
 	public float damageMultiplier = 1;
+	public bool damageMultiplierCanBeAugmented = false;
 	public int flatDamageOverwrite = 0; //This overwrite will make attacks deal a given amount of damage without taking into account the attack value of the card nor any modifiers
 	public List<AttackEffect> attackEffect = new();
 	public List<BuffAction> temporaryBuffs = new(); //Temporary buffs are applied during the attack
@@ -68,6 +69,7 @@ public class AttackAction : ActiveAction{
 	{
 		damageType = values.damageType;
 		damageMultiplier = values.damageMultiplier;
+		damageMultiplierCanBeAugmented = values.damageMultiplierCanBeAugmented;
 		target = values.target; 
 		//attackEffect = values.attackEffect;
 		//temporaryBuffs = values.temporaryBuffs;
@@ -187,7 +189,7 @@ public class PassiveSkill : CardSkill{
 	public string description = "";
 	public TriggerTypes trigger;
 	public bool canBeShared = false;
-	public bool oncePerTurn = false;
+	public bool oncePerRound = false;
 	public bool sharedAcrossAllCardsOfSameKind = false;
 	//public bool buffsAreTemporary = false;
 	public bool requiresElementalExchange = false;
@@ -201,7 +203,7 @@ public class PassiveSkill : CardSkill{
 		description = passiveSkill.description;
 		trigger = passiveSkill.trigger;
 		canBeShared = passiveSkill.canBeShared;
-		oncePerTurn = passiveSkill.oncePerTurn;
+		oncePerRound = passiveSkill.oncePerRound;
 		sharedAcrossAllCardsOfSameKind = passiveSkill.sharedAcrossAllCardsOfSameKind;
 		//buffs = new List<BuffAction>();
 		source = passiveSkill.source;
@@ -249,9 +251,9 @@ public class PassiveSkill : CardSkill{
 		get {
 			//Debug.Log($"<b>{source.card.Name}</b>: Passive {title} has been used by me: {HasBeenUsedThisRound}");
    //         Debug.Log($"<b>{source.card.Name}</b>: Passive {title} has been used by someone of my kind: {HasBeenUsedThisRoundIncludingThoseOfMyKind}");
-			bool canBeReusedInfinitely = !oncePerTurn;
-			bool canBeUsedOnceByMe = oncePerTurn && !sharedAcrossAllCardsOfSameKind;
-			bool canBeUsedOnceByAllCardsOfMyKind = oncePerTurn && sharedAcrossAllCardsOfSameKind;
+			bool canBeReusedInfinitely = !oncePerRound;
+			bool canBeUsedOnceByMe = oncePerRound && !sharedAcrossAllCardsOfSameKind;
+			bool canBeUsedOnceByAllCardsOfMyKind = oncePerRound && sharedAcrossAllCardsOfSameKind;
             bool canBeUsed = (canBeReusedInfinitely || ((canBeUsedOnceByMe && !HasBeenUsedThisRound) || (canBeUsedOnceByAllCardsOfMyKind && !HasBeenUsedThisRoundIncludingThoseOfMyKind)));
             //Debug.Log($"<b>{source.card.Name}</b>'s {title} -> Infinite uses: {canBeReusedInfinitely} | Once per turn: {canBeUsedOnceByMe} | Shared across all of my kind: {canBeUsedOnceByAllCardsOfMyKind} | <color=blue>Can be used this round?</color> <color={(canBeUsed ? "green" : "red")}>{canBeUsed}</color>");
             return canBeUsed;
@@ -268,7 +270,11 @@ public class PlayerBuffs
 	public PlayerBuffTypes buffType = PlayerBuffTypes.AddGold;
 	public int amount = 0;
 	public bool canBeAugmented = false;
+	public bool hasBeenUsed = false;
+	public int usedAmount = 0;
+	public int usableAmount { get {  return amount - usedAmount; }  }
 	public CardDisplay source;
+	public PassiveSkill originPassive;
 
 	public PlayerBuffs(PlayerBuffs values)
 	{
@@ -276,7 +282,10 @@ public class PlayerBuffs
 		buffType = values.buffType;
 		amount = values.amount;
 		canBeAugmented = values.canBeAugmented;
+		hasBeenUsed = values.hasBeenUsed;
+		usedAmount = values.usedAmount;
 		source = values.source;
+		originPassive = values.originPassive;
 	}
 
 	public bool IsOfInstantApplication
@@ -298,6 +307,12 @@ public class PlayerBuffs
 			}
 			return itIs;
 		}
+	}
+
+	public void Reset()
+	{
+		hasBeenUsed = false;
+		usedAmount = 0;
 	}
 }
 
@@ -405,5 +420,6 @@ public enum PlayerBuffTypes
 	RemoveGold,
 	StealGold,
 	ExecutionerThresholdModifier,
-	MercenaryKillGoldReward
+	MercenaryKillGoldReward,
+	FreeAttackActions
 }

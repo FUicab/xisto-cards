@@ -138,11 +138,18 @@ public class GameManager : MonoBehaviour
 	}
 
 	public TurnAction RegisterCurrentAction(){
-        //RoundActions.Add(new TurnAction(CurrentAction));
-        if (PlayerAtPlay.selectedDice != null) PlayerAtPlay.selectedDice.Use();
+		//RoundActions.Add(new TurnAction(CurrentAction));
+		bool canUseFreeAttackAction = CurrentAction.actionObject?.action.actionType == ActionTypes.Attack && PlayerAtPlay.FreeAttackActions > 0;
+
+        if (PlayerAtPlay.selectedDice != null && !canUseFreeAttackAction) PlayerAtPlay.selectedDice.Use();
         TurnActions.Add(new TurnAction(CurrentAction) { Owner = PlayerAtPlay });
         CurrentAction.Clean();
-		availableActionsForThisTurn -= 1;
+		if(canUseFreeAttackAction)
+		{
+			PlayerAtPlay.NextFreeAttackBuff.usedAmount += 1;
+		} else {
+			availableActionsForThisTurn -= 1;
+		}
 		SetConfirmationButton("");
 		return TurnActions[TurnActions.Count - 1];
 	}
@@ -178,11 +185,11 @@ public class GameManager : MonoBehaviour
 				break;
 
 				case TurnMovementType.PerformAction:
-					if(tuAc.CardInAction != null)
+					string cardName = tuAc.CardInAction?.card.Name ?? "<i><b>dead card</b></i>";
 					switch (tuAc.actionObject.action.actionType)
 					{
 						case ActionTypes.Attack:
-							info += $"💥 <b>{tuAc.Owner.Role}</b>'s <b>{tuAc.CardInAction.card.Name}</b> attacks: \n";
+							info += $"💥 <b>{tuAc.Owner.Role}</b>'s <b>{cardName}</b> attacks: \n";
 							for (int i = 0; i < tuAc.targets.Count; i++)
 							{
 								CardDisplay target = tuAc.targets[i];
@@ -202,7 +209,7 @@ public class GameManager : MonoBehaviour
 							//info += "\n";
 						break;
 						case ActionTypes.Buff:
-							info += $"⏫ <b>{tuAc.Owner.Role}</b>'s <b>{tuAc.CardInAction.card.Name}</b> applies buffs: ";
+							info += $"⏫ <b>{tuAc.Owner.Role}</b>'s <b>{cardName}</b> applies buffs: ";
 							for (int i = 0; i < tuAc.targets.Count; i++)
 							{
 								if(tuAc.actionObject.action.buffs[i].amount > 0){ info += "+"; }
@@ -256,7 +263,7 @@ public class GameManager : MonoBehaviour
 	/** Starts an action event */
 	public void StartAction(CardActionObject action)
 	{
-		if(!CheckAvailableActions() || !CheckAvailableTargetsForAction(action)){ return; }
+		if(!CheckAvailableActions(TurnMovementType.PerformAction, action.action.actionType) || !CheckAvailableTargetsForAction(action)){ return; }
 		CurrentAction.movementType = TurnMovementType.PerformAction;
 		switch (action.action.actionType)
 		{
@@ -360,7 +367,7 @@ public class GameManager : MonoBehaviour
 	/* --- Turn management functions --------------------------------------------- */
 	public bool CanBuyCard(CardDisplay card){
 		bool CardCanBeBought = false;
-		if(CheckGold(card.cost) && CheckAvailableActions()){
+		if(CheckGold(card.cost) && CheckAvailableActions(TurnMovementType.CardPurchase)){
 			PlayerAtPlay.Gold -= card.cost;
 			CardCanBeBought = true;
 		}
@@ -479,6 +486,8 @@ public class GameManager : MonoBehaviour
 	public async void RoundRestart()
 	{
 		RollAllDices();
+		Host.ResetBuffCounters();
+		Opponent.ResetBuffCounters();
 		foreach (PlayerProfile player in Players)
 		{
 			player.Gold += 1;
@@ -603,22 +612,37 @@ public class GameManager : MonoBehaviour
 	public bool CheckAvailableTargetsForAction(CardActionObject actionObject)
 	{
 		bool isOk = true;
-        foreach (ActiveAction action in actionObject.action.attacks.Concat<ActiveAction>(actionObject.action.buffs).ToList())
+
+		/* As of the writting of this comment: All individual actions must have a valid target for it to be valid to perform. */
+		if(actionObject.action.actionType == ActionTypes.Attack)
+        foreach (AttackAction action in actionObject.action.attacks)
         {
-			if (action.GetPotentialTargets().Count == 0) {
+            Debug.Log($"Attack action has {action.GetPotentialTargets().Count} potential targets.");
+            if (action.GetPotentialTargets().Count == 0) {
 				isOk = false;
 			}
         }
-		if (!isOk)
+
+		if(actionObject.action.actionType == ActionTypes.Buff)
+        foreach (BuffAction action in actionObject.action.buffs)
+        {
+			Debug.Log($"Buff action has {action.GetPotentialTargets().Count} potential targets.");
+            if (action.GetPotentialTargets().Count == 0)
+            {
+                isOk = false;
+            }
+        }
+        if (!isOk)
 		{
             DisplayFloatingMessage("This action would not reach anyone", Camera.main.ScreenToWorldPoint(Input.mousePosition), "red");
         }
         return isOk;
 	}
 
-	public bool CheckAvailableActions(int requirement = 1){
+	public bool CheckAvailableActions(TurnMovementType movementType, ActionTypes actionType = ActionTypes.DoNothing, int requirement = 1){
 		bool isOk = false;
-		if(availableActionsForThisTurn >= requirement){
+		int bonusActions = (actionType == ActionTypes.Attack ? PlayerAtPlay.FreeAttackActions : 0);
+		if((availableActionsForThisTurn + bonusActions ) >= requirement){
 			isOk = true;
 		} else {
 			DisplayFloatingMessage("No more actions available\nEnd your turn to continue", Camera.main.ScreenToWorldPoint(Input.mousePosition), "green");

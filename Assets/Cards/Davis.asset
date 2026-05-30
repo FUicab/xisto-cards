@@ -1,0 +1,844 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e4e87ef44ac0934298d8773e4605e72, type: 3}
+  m_Name: Davis
+  m_EditorClassIdentifier: Assembly-CSharp::Card
+  Name: Davis
+  CardCount: 1000
+  Type: 0
+  Subtypes: 050000000200000006000000
+  Cost: 4
+  Artwork: {fileID: 21300000, guid: 043f038d93b9c424eb96a0d110e9d742, type: 3}
+  Origin: 00000000
+  MaxHP: 9
+  Armor: 020000000100000000000000
+  Attack: 6
+  Passives:
+  - title: Speed augment
+    description: 
+    trigger: 1
+    canBeShared: 0
+    oncePerRound: 1
+    sharedAcrossAllCardsOfSameKind: 0
+    requiresElementalExchange: 0
+    buffs: []
+    playerBuffs:
+    - target: 0
+      buffType: 5
+      amount: 1
+      canBeAugmented: 0
+      hasBeenUsed: 0
+      usedAmount: 0
+      source: {fileID: 0}
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerRound: 0
+        sharedAcrossAllCardsOfSameKind: 0
+        requiresElementalExchange: 0
+        buffs: []
+        playerBuffs: []
+        source: {fileID: 0}
+    source: {fileID: 0}
+  CardActions:
+  - actionType: 0
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
+      flatDamageOverwrite: 0
+      attackEffect:
+      - effectType: 1
+        useAttackValue: 0
+        value: 3
+        valueCanBeAugmented: 0
+        buffs: []
+        requirements: []
+        originAttack:
+          target: 0
+          requirements: []
+          source: {fileID: 0}
+          receiver: {fileID: 0}
+          damageType: 0
+          damageMultiplier: 0
+          damageMultiplierCanBeAugmented: 0
+          flatDamageOverwrite: 0
+          attackEffect: []
+          temporaryBuffs: []
+          attackActionOutput:
+            damage: 0
+            resultsInDeath: 0
+            damageType: 0
+            attackerModifiers:
+              Attack: 0
+              Health: 0
+              MaxHealth: 0
+              Defense: 0
+              Armor: 
+              ArmorPierce: 0
+              DamageReductionBeforeArmor: 0
+              DamageReductionAfterArmor: 0
+              DamageMultiplier: 0
+              usedBuffs: []
+            targetModifiers:
+              Attack: 0
+              Health: 0
+              MaxHealth: 0
+              Defense: 0
+              Armor: 
+              ArmorPierce: 0
+              DamageReductionBeforeArmor: 0
+              DamageReductionAfterArmor: 0
+              DamageMultiplier: 0
+              usedBuffs: []
+          isExtra: 0
+      temporaryBuffs: []
+      attackActionOutput:
+        damage: 0
+        resultsInDeath: 0
+        damageType: 0
+        attackerModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+        targetModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+      isExtra: 0
+    attackCountCanBeAugmented: 0
+    buffs: []
+    playerBuffs: []
+  - actionType: 1
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
+      flatDamageOverwrite: 0
+      attackEffect:
+      - effectType: 1
+        useAttackValue: 0
+        value: 3
+        valueCanBeAugmented: 0
+        buffs: []
+        requirements: []
+        originAttack:
+          target: 0
+          requirements: []
+          source: {fileID: 0}
+          receiver: {fileID: 0}
+          damageType: 0
+          damageMultiplier: 0
+          damageMultiplierCanBeAugmented: 0
+          flatDamageOverwrite: 0
+          attackEffect: []
+          temporaryBuffs: []
+          attackActionOutput:
+            damage: 0
+            resultsInDeath: 0
+            damageType: 0
+            attackerModifiers:
+              Attack: 0
+              Health: 0
+              MaxHealth: 0
+              Defense: 0
+              Armor: 
+              ArmorPierce: 0
+              DamageReductionBeforeArmor: 0
+              DamageReductionAfterArmor: 0
+              DamageMultiplier: 0
+              usedBuffs: []
+            targetModifiers:
+              Attack: 0
+              Health: 0
+              MaxHealth: 0
+              Defense: 0
+              Armor: 
+              ArmorPierce: 0
+              DamageReductionBeforeArmor: 0
+              DamageReductionAfterArmor: 0
+              DamageMultiplier: 0
+              usedBuffs: []
+          isExtra: 0
+      temporaryBuffs: []
+      attackActionOutput:
+        damage: 0
+        resultsInDeath: 0
+        damageType: 0
+        attackerModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+        targetModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+      isExtra: 0
+    attackCountCanBeAugmented: 0
+    buffs: []
+    playerBuffs: []
+  - actionType: 2
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
+      flatDamageOverwrite: 0
+      attackEffect:
+      - effectType: 1
+        useAttackValue: 0
+        value: 3
+        valueCanBeAugmented: 0
+        buffs: []
+        requirements: []
+        originAttack:
+          target: 0
+          requirements: []
+          source: {fileID: 0}
+          receiver: {fileID: 0}
+          damageType: 0
+          damageMultiplier: 0
+          damageMultiplierCanBeAugmented: 0
+          flatDamageOverwrite: 0
+          attackEffect: []
+          temporaryBuffs: []
+          attackActionOutput:
+            damage: 0
+            resultsInDeath: 0
+            damageType: 0
+            attackerModifiers:
+              Attack: 0
+              Health: 0
+              MaxHealth: 0
+              Defense: 0
+              Armor: 
+              ArmorPierce: 0
+              DamageReductionBeforeArmor: 0
+              DamageReductionAfterArmor: 0
+              DamageMultiplier: 0
+              usedBuffs: []
+            targetModifiers:
+              Attack: 0
+              Health: 0
+              MaxHealth: 0
+              Defense: 0
+              Armor: 
+              ArmorPierce: 0
+              DamageReductionBeforeArmor: 0
+              DamageReductionAfterArmor: 0
+              DamageMultiplier: 0
+              usedBuffs: []
+          isExtra: 0
+      temporaryBuffs: []
+      attackActionOutput:
+        damage: 0
+        resultsInDeath: 0
+        damageType: 0
+        attackerModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+        targetModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+      isExtra: 0
+    attackCountCanBeAugmented: 0
+    buffs:
+    - target: 0
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      Attribute: 1
+      amount: 8
+      isDebuff: 0
+      amountCanBeAugmented: 1
+      activatesOnHit: 0
+      onHitRequirements: []
+      specialEffect: 0
+      extraAttacks: []
+      grantedSubtypes: 
+      specialBehavior: 
+      originAttack:
+        target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        damageType: 0
+        damageMultiplier: 0
+        damageMultiplierCanBeAugmented: 0
+        flatDamageOverwrite: 0
+        attackEffect: []
+        temporaryBuffs: []
+        attackActionOutput:
+          damage: 0
+          resultsInDeath: 0
+          damageType: 0
+          attackerModifiers:
+            Attack: 0
+            Health: 0
+            MaxHealth: 0
+            Defense: 0
+            Armor: 
+            ArmorPierce: 0
+            DamageReductionBeforeArmor: 0
+            DamageReductionAfterArmor: 0
+            DamageMultiplier: 0
+            usedBuffs: []
+          targetModifiers:
+            Attack: 0
+            Health: 0
+            MaxHealth: 0
+            Defense: 0
+            Armor: 
+            ArmorPierce: 0
+            DamageReductionBeforeArmor: 0
+            DamageReductionAfterArmor: 0
+            DamageMultiplier: 0
+            usedBuffs: []
+        isExtra: 0
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerRound: 0
+        sharedAcrossAllCardsOfSameKind: 0
+        requiresElementalExchange: 0
+        buffs: []
+        playerBuffs: []
+        source: {fileID: 0}
+    playerBuffs: []
+  - actionType: 1
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
+      flatDamageOverwrite: 0
+      attackEffect:
+      - effectType: 1
+        useAttackValue: 0
+        value: 3
+        valueCanBeAugmented: 0
+        buffs: []
+        requirements: []
+        originAttack:
+          target: 0
+          requirements: []
+          source: {fileID: 0}
+          receiver: {fileID: 0}
+          damageType: 0
+          damageMultiplier: 0
+          damageMultiplierCanBeAugmented: 0
+          flatDamageOverwrite: 0
+          attackEffect: []
+          temporaryBuffs: []
+          attackActionOutput:
+            damage: 0
+            resultsInDeath: 0
+            damageType: 0
+            attackerModifiers:
+              Attack: 0
+              Health: 0
+              MaxHealth: 0
+              Defense: 0
+              Armor: 
+              ArmorPierce: 0
+              DamageReductionBeforeArmor: 0
+              DamageReductionAfterArmor: 0
+              DamageMultiplier: 0
+              usedBuffs: []
+            targetModifiers:
+              Attack: 0
+              Health: 0
+              MaxHealth: 0
+              Defense: 0
+              Armor: 
+              ArmorPierce: 0
+              DamageReductionBeforeArmor: 0
+              DamageReductionAfterArmor: 0
+              DamageMultiplier: 0
+              usedBuffs: []
+          isExtra: 0
+      temporaryBuffs: []
+      attackActionOutput:
+        damage: 0
+        resultsInDeath: 0
+        damageType: 0
+        attackerModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+        targetModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+      isExtra: 0
+    attackCountCanBeAugmented: 0
+    buffs:
+    - target: 0
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      Attribute: 1
+      amount: 6
+      isDebuff: 0
+      amountCanBeAugmented: 0
+      activatesOnHit: 0
+      onHitRequirements: []
+      specialEffect: 0
+      extraAttacks: []
+      grantedSubtypes: 
+      specialBehavior: 
+      originAttack:
+        target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        damageType: 0
+        damageMultiplier: 0
+        damageMultiplierCanBeAugmented: 0
+        flatDamageOverwrite: 0
+        attackEffect: []
+        temporaryBuffs: []
+        attackActionOutput:
+          damage: 0
+          resultsInDeath: 0
+          damageType: 0
+          attackerModifiers:
+            Attack: 0
+            Health: 0
+            MaxHealth: 0
+            Defense: 0
+            Armor: 
+            ArmorPierce: 0
+            DamageReductionBeforeArmor: 0
+            DamageReductionAfterArmor: 0
+            DamageMultiplier: 0
+            usedBuffs: []
+          targetModifiers:
+            Attack: 0
+            Health: 0
+            MaxHealth: 0
+            Defense: 0
+            Armor: 
+            ArmorPierce: 0
+            DamageReductionBeforeArmor: 0
+            DamageReductionAfterArmor: 0
+            DamageMultiplier: 0
+            usedBuffs: []
+        isExtra: 0
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerRound: 0
+        sharedAcrossAllCardsOfSameKind: 0
+        requiresElementalExchange: 0
+        buffs: []
+        playerBuffs: []
+        source: {fileID: 0}
+    playerBuffs: []
+  - actionType: 1
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
+      flatDamageOverwrite: 0
+      attackEffect:
+      - effectType: 1
+        useAttackValue: 0
+        value: 3
+        valueCanBeAugmented: 0
+        buffs: []
+        requirements: []
+        originAttack:
+          target: 0
+          requirements: []
+          source: {fileID: 0}
+          receiver: {fileID: 0}
+          damageType: 0
+          damageMultiplier: 0
+          damageMultiplierCanBeAugmented: 0
+          flatDamageOverwrite: 0
+          attackEffect: []
+          temporaryBuffs: []
+          attackActionOutput:
+            damage: 0
+            resultsInDeath: 0
+            damageType: 0
+            attackerModifiers:
+              Attack: 0
+              Health: 0
+              MaxHealth: 0
+              Defense: 0
+              Armor: 
+              ArmorPierce: 0
+              DamageReductionBeforeArmor: 0
+              DamageReductionAfterArmor: 0
+              DamageMultiplier: 0
+              usedBuffs: []
+            targetModifiers:
+              Attack: 0
+              Health: 0
+              MaxHealth: 0
+              Defense: 0
+              Armor: 
+              ArmorPierce: 0
+              DamageReductionBeforeArmor: 0
+              DamageReductionAfterArmor: 0
+              DamageMultiplier: 0
+              usedBuffs: []
+          isExtra: 0
+      temporaryBuffs: []
+      attackActionOutput:
+        damage: 0
+        resultsInDeath: 0
+        damageType: 0
+        attackerModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+        targetModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+      isExtra: 0
+    attackCountCanBeAugmented: 0
+    buffs:
+    - target: 0
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      Attribute: 1
+      amount: 6
+      isDebuff: 0
+      amountCanBeAugmented: 0
+      activatesOnHit: 0
+      onHitRequirements: []
+      specialEffect: 0
+      extraAttacks: []
+      grantedSubtypes: 
+      specialBehavior: 
+      originAttack:
+        target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        damageType: 0
+        damageMultiplier: 0
+        damageMultiplierCanBeAugmented: 0
+        flatDamageOverwrite: 0
+        attackEffect: []
+        temporaryBuffs: []
+        attackActionOutput:
+          damage: 0
+          resultsInDeath: 0
+          damageType: 0
+          attackerModifiers:
+            Attack: 0
+            Health: 0
+            MaxHealth: 0
+            Defense: 0
+            Armor: 
+            ArmorPierce: 0
+            DamageReductionBeforeArmor: 0
+            DamageReductionAfterArmor: 0
+            DamageMultiplier: 0
+            usedBuffs: []
+          targetModifiers:
+            Attack: 0
+            Health: 0
+            MaxHealth: 0
+            Defense: 0
+            Armor: 
+            ArmorPierce: 0
+            DamageReductionBeforeArmor: 0
+            DamageReductionAfterArmor: 0
+            DamageMultiplier: 0
+            usedBuffs: []
+        isExtra: 0
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerRound: 0
+        sharedAcrossAllCardsOfSameKind: 0
+        requiresElementalExchange: 0
+        buffs: []
+        playerBuffs: []
+        source: {fileID: 0}
+    playerBuffs: []
+  - actionType: 0
+    attacks:
+    - target: 2
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      damageType: 0
+      damageMultiplier: 2
+      damageMultiplierCanBeAugmented: 1
+      flatDamageOverwrite: 0
+      attackEffect:
+      - effectType: 1
+        useAttackValue: 0
+        value: 6
+        valueCanBeAugmented: 0
+        buffs: []
+        requirements: []
+        originAttack:
+          target: 0
+          requirements: []
+          source: {fileID: 0}
+          receiver: {fileID: 0}
+          damageType: 0
+          damageMultiplier: 0
+          damageMultiplierCanBeAugmented: 0
+          flatDamageOverwrite: 0
+          attackEffect: []
+          temporaryBuffs: []
+          attackActionOutput:
+            damage: 0
+            resultsInDeath: 0
+            damageType: 0
+            attackerModifiers:
+              Attack: 0
+              Health: 0
+              MaxHealth: 0
+              Defense: 0
+              Armor: 
+              ArmorPierce: 0
+              DamageReductionBeforeArmor: 0
+              DamageReductionAfterArmor: 0
+              DamageMultiplier: 0
+              usedBuffs: []
+            targetModifiers:
+              Attack: 0
+              Health: 0
+              MaxHealth: 0
+              Defense: 0
+              Armor: 
+              ArmorPierce: 0
+              DamageReductionBeforeArmor: 0
+              DamageReductionAfterArmor: 0
+              DamageMultiplier: 0
+              usedBuffs: []
+          isExtra: 0
+      temporaryBuffs: []
+      attackActionOutput:
+        damage: 0
+        resultsInDeath: 0
+        damageType: 0
+        attackerModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+        targetModifiers:
+          Attack: 0
+          Health: 0
+          MaxHealth: 0
+          Defense: 0
+          Armor: 
+          ArmorPierce: 0
+          DamageReductionBeforeArmor: 0
+          DamageReductionAfterArmor: 0
+          DamageMultiplier: 0
+          usedBuffs: []
+      isExtra: 0
+    attackCountCanBeAugmented: 0
+    buffs:
+    - target: 0
+      requirements: []
+      source: {fileID: 0}
+      receiver: {fileID: 0}
+      Attribute: 1
+      amount: 6
+      isDebuff: 0
+      amountCanBeAugmented: 0
+      activatesOnHit: 0
+      onHitRequirements: []
+      specialEffect: 0
+      extraAttacks: []
+      grantedSubtypes: 
+      specialBehavior: 
+      originAttack:
+        target: 0
+        requirements: []
+        source: {fileID: 0}
+        receiver: {fileID: 0}
+        damageType: 0
+        damageMultiplier: 0
+        damageMultiplierCanBeAugmented: 0
+        flatDamageOverwrite: 0
+        attackEffect: []
+        temporaryBuffs: []
+        attackActionOutput:
+          damage: 0
+          resultsInDeath: 0
+          damageType: 0
+          attackerModifiers:
+            Attack: 0
+            Health: 0
+            MaxHealth: 0
+            Defense: 0
+            Armor: 
+            ArmorPierce: 0
+            DamageReductionBeforeArmor: 0
+            DamageReductionAfterArmor: 0
+            DamageMultiplier: 0
+            usedBuffs: []
+          targetModifiers:
+            Attack: 0
+            Health: 0
+            MaxHealth: 0
+            Defense: 0
+            Armor: 
+            ArmorPierce: 0
+            DamageReductionBeforeArmor: 0
+            DamageReductionAfterArmor: 0
+            DamageMultiplier: 0
+            usedBuffs: []
+        isExtra: 0
+      originPassive:
+        title: 
+        description: 
+        trigger: 0
+        canBeShared: 0
+        oncePerRound: 0
+        sharedAcrossAllCardsOfSameKind: 0
+        requiresElementalExchange: 0
+        buffs: []
+        playerBuffs: []
+        source: {fileID: 0}
+    playerBuffs: []
+  powerRating:
+    card: {fileID: 11400000}
+    bonusPerAction:
+    - 0.43875006
+    - 3.74
+    - 0.33750004
+    bonusPerAttackAction:
+    - 0.43875006
+    - 0.33750004
+    bonusPerBuffAction:
+    - 3.74
+    bonusPerPassive:
+    - 0
+    passiveDescription: "\u2776 <b>Speed augment</b>: Your cards gain <b><color=#222>+1</color></b>
+      <b><color=#222>free attack action</color></b> which also doesn't use its dice
+      <i>(once per round)</i>.\n"
+    passiveBuffDescriptions: 
+    actionsDescription: "\u2694\uFE0F Melee attack and inflicts <b><color=#222>+3</color></b>
+      <b><color=#c42>self-damage</color></b>.\nHeals <b><color=#15c>+8</color></b>
+      <b><color=#583>HP</color></b> to me.\n\u2694\uFE0F Melee attack with <b><color=#15c>\xD72</color></b>
+      <b><color=#900>damage</color></b> and inflicts <b><color=#222>+6</color></b>
+      <b><color=#c42>self-damage</color></b>.\n"

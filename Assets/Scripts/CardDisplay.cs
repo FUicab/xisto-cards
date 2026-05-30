@@ -360,7 +360,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 			cardPassives[i].buffs = newBuffs;
             foreach (PlayerBuffs pBuff in card.Passives[i].playerBuffs)
             {
-                newPBuffs.Add(new PlayerBuffs(pBuff) { source = this });
+                newPBuffs.Add(new PlayerBuffs(pBuff) { source = this, originPassive = cardPassives[i] });
             }
             cardPassives[i].playerBuffs = newPBuffs;
         }
@@ -740,7 +740,17 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 						}
 					}
 				}
-			}
+
+                foreach (PlayerBuffs pBuff in passive.playerBuffs)
+				{
+					PlayerProfile playerTarget = pBuff.target == PlayerTarget.OwnerOfCard ? pBuff.source.Owner : pBuff.source.Owner.otherPlayer;
+                    Debug.Log($"{passive.title} from {passive.source.card.Name} was could be applied to {playerTarget.Role}");
+                    if (!playerTarget.passiveBuffs.Exists(x => x.originPassive.title == passive.title && x.originPassive.source == passive.source && pBuff.amount == x.amount) && passive.CanBeUsedThisRound)
+                    {
+						playerTarget.ReceivePassiveBuff(pBuff);
+                    }
+                }
+            }
 		}
 	}
 
@@ -755,6 +765,18 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
                 if (buff.originPassive.source == this)
 				{
                     cardSpace.PlayingCard.passiveBuffs.RemoveAt(i);
+                }
+            }
+        }
+		List<PlayerProfile> players = new() { GM.Host, GM.Opponent };
+        foreach (PlayerProfile player in players)
+        {
+            for (int i = player.passiveBuffs.Count - 1; i >= 0; i--)
+            {
+                PlayerBuffs pBuff = player.passiveBuffs[i];
+                if (pBuff.originPassive.source == this)
+                {
+                    player.passiveBuffs.RemoveAt(i);
                 }
             }
         }

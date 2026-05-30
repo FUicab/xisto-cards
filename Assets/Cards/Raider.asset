@@ -27,7 +27,7 @@ MonoBehaviour:
     description: 
     trigger: 1
     canBeShared: 0
-    oncePerTurn: 1
+    oncePerRound: 1
     sharedAcrossAllCardsOfSameKind: 1
     requiresElementalExchange: 0
     buffs:
@@ -52,6 +52,7 @@ MonoBehaviour:
         receiver: {fileID: 0}
         damageType: 0
         damageMultiplier: 0
+        damageMultiplierCanBeAugmented: 0
         flatDamageOverwrite: 0
         attackEffect: []
         temporaryBuffs: []
@@ -87,7 +88,7 @@ MonoBehaviour:
         description: 
         trigger: 0
         canBeShared: 0
-        oncePerTurn: 0
+        oncePerRound: 0
         sharedAcrossAllCardsOfSameKind: 0
         requiresElementalExchange: 0
         buffs: []
@@ -104,6 +105,7 @@ MonoBehaviour:
       receiver: {fileID: 0}
       damageType: 0
       damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
@@ -145,6 +147,7 @@ MonoBehaviour:
       receiver: {fileID: 0}
       damageType: 0
       damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
@@ -186,6 +189,7 @@ MonoBehaviour:
       receiver: {fileID: 0}
       damageType: 0
       damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
@@ -227,6 +231,7 @@ MonoBehaviour:
       receiver: {fileID: 0}
       damageType: 1
       damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
@@ -268,6 +273,7 @@ MonoBehaviour:
       receiver: {fileID: 0}
       damageType: 1
       damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []
@@ -309,6 +315,7 @@ MonoBehaviour:
       receiver: {fileID: 0}
       damageType: 1
       damageMultiplier: 1
+      damageMultiplierCanBeAugmented: 0
       flatDamageOverwrite: 0
       attackEffect: []
       temporaryBuffs: []

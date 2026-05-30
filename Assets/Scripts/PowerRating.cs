@@ -158,7 +158,7 @@ public class PowerRating
 		{
 			float passivePower = GetBuffPowerBonus(passiveSkill.buffs) + GetPlayerBuffBonus(passiveSkill.playerBuffs);
 			if (passiveSkill.canBeShared) { passivePower *= 1.05f; }
-            if (passiveSkill.oncePerTurn) { passivePower *= 0.66f; }
+            if (passiveSkill.oncePerRound) { passivePower *= 0.66f; }
             if (passiveSkill.sharedAcrossAllCardsOfSameKind) { passivePower *= 0.5f; }
 			if (passiveSkill.requiresElementalExchange) { passivePower *= 0.66f; }
 			bonusPerPassive.Add(passivePower);
