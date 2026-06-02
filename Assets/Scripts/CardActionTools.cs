@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 using System;
@@ -288,207 +289,212 @@ public static class CardActionTools
 		{
 			itDoes = true;
 		}
-		//Debug.Log($"<b>{action.source?.card.Name}</b>: Does target of buff meet all requirements? -> 1: {itDoes} . 2:{TargetMeetsRequirements(target, action.requirements)}");
+		//Debug.Log($"<b>{action.source?.card.Name}</b>: Does target meet all requirements? -> 1: {itDoes} . 2:{TargetMeetsRequirements(target, action.requirements)}");
 		return itDoes && TargetMeetsRequirements(target, action.requirements);
 	}
 	public static bool TargetMeetsRequirements(CardDisplay actionTarget, List<Requirements> requirements)
+	{
+		return StatsMeetRequirements(new(actionTarget), requirements);
+	}
+
+    public static bool StatsMeetRequirements(StatList selectedTargetStats, List<Requirements> requirements)
 	{
 		bool itDoes = true;
 
         if (requirements.Count > 0) // Check attack requirements
         {
-			//Debug.Log($"<b>{requirements[0].originAction?.source?.card.Name}</b>: <color=red>There is indeed some requirements for this action.</color>");
+            //Debug.Log($"<b>{requirements[0].originAction?.source?.card.Name}</b>: <color=red>There is indeed some requirements for this action.</color>");
             itDoes = false;
 
             foreach (Requirements requirement in requirements)
             {
-				CardDisplay target;
+                StatList targetStats;
 
-				BuffAction originBuff = requirement.originAction as BuffAction;
+                BuffAction originBuff = requirement.originAction as BuffAction;
                 AttackAction originAttack = requirement.originAction as AttackAction;
-				if(actionTarget == requirement.originAction?.source && requirement.originAction?.target == TargetTypes.Self)
-				{
-					target = actionTarget;
-				} else  if (originBuff != null)
-				{
-					if (!originBuff.activatesOnHit || (originBuff.originAttack != null && requirement.targetOfRequirementIsTargetOfAttack))
-					{
-						target = actionTarget;
-					}
-					else
-					{
-						target = requirement.originAction.source;
-					}
-				}
-				else
-				{
-					target = actionTarget;
-				}
+                if (selectedTargetStats.source == requirement.originAction?.source && requirement.originAction?.target == TargetTypes.Self)
+                {
+                    targetStats = selectedTargetStats;
+                }
+                else if (originBuff != null)
+                {
+                    if (!originBuff.activatesOnHit || (originBuff.originAttack != null && requirement.targetOfRequirementIsTargetOfAttack))
+                    {
+                        targetStats = selectedTargetStats;
+                    }
+                    else
+                    {
+                        targetStats = new(requirement.originAction.source);
+                    }
+                }
+                else
+                {
+                    targetStats = selectedTargetStats;
+                }
 
-				//Debug.Log($"{target.card.Name} seems to be the target of this action.");
+                //Debug.Log($"{target.card.Name} seems to be the target of this action.");
                 Debug.Log($"Origin buff: {originBuff != null}. Origin passive: {originBuff != null && originBuff.originPassive != null}");
 
-				if ((originBuff != null && originBuff.originPassive != null && originBuff.originPassive.CanBeUsedThisRound) || (originBuff != null && originBuff.originPassive == null) || originBuff == null)
-				switch (requirement.requirement)
-                {
-                    case RequirementTypes.TargetHasSubtypesOrFactions:
-                        foreach (UnitSubtype subtype in target.card.Subtypes)
-                        {
-                            if (requirement.subtypeRequirement.Contains(subtype))
+                if ((originBuff != null && originBuff.originPassive != null && originBuff.originPassive.CanBeUsedThisRound) || (originBuff != null && originBuff.originPassive == null) || originBuff == null)
+                    switch (requirement.requirement)
+                    {
+                        case RequirementTypes.TargetHasSubtypesOrFactions:
+                            foreach (UnitSubtype subtype in targetStats.subtypes)
                             {
-                                itDoes = true;
+                                if (requirement.subtypeRequirement.Contains(subtype))
+                                {
+                                    itDoes = true;
+                                }
                             }
-                        }
-                        foreach (Faction faction in target.card.Origin)
-                        {
-                            if (requirement.factionRequirement.Contains(faction))
+                            foreach (Faction faction in targetStats.origin)
                             {
-                                itDoes = true;
+                                if (requirement.factionRequirement.Contains(faction))
+                                {
+                                    itDoes = true;
+                                }
                             }
-                        }
-                        break;
-                    case RequirementTypes.TargetIsNextTo:
-                        foreach (CardSpace neighborSpace in target.mySpace?.SpacesNextToMe())
-                        {
-                            if (neighborSpace.PlayingCard != null)
-                                foreach (TargetUnitDefinition neighborType in requirement.targetIs)
-                                {
-                                    switch (neighborType)
+                            break;
+                        case RequirementTypes.TargetIsNextTo:
+                            foreach (CardSpace neighborSpace in targetStats.source.mySpace?.SpacesNextToMe())
+                            {
+                                if (neighborSpace.PlayingCard != null)
+                                    foreach (TargetUnitDefinition neighborType in requirement.targetIs)
                                     {
-                                        case TargetUnitDefinition.SameAsMyself:
-                                            if (neighborSpace.PlayingCard.card.Name == target.card.Name)
-                                            {
-                                                itDoes = true;
-                                            }
-                                            break;
-										case TargetUnitDefinition.TheLeader:
-                                            if (neighborSpace.PlayingCard.card.Type == UnitType.Leader)
-                                            {
-                                                itDoes = true;
-                                            }
-                                            break;
+                                        switch (neighborType)
+                                        {
+                                            case TargetUnitDefinition.SameAsMyself:
+                                                if (neighborSpace.PlayingCard.card.Name == targetStats.source.card.Name)
+                                                {
+                                                    itDoes = true;
+                                                }
+                                                break;
+                                            case TargetUnitDefinition.TheLeader:
+                                                if (neighborSpace.PlayingCard.card.Type == UnitType.Leader)
+                                                {
+                                                    itDoes = true;
+                                                }
+                                                break;
+                                        }
                                     }
-                                }
-                        }
-                        break;
-                    case RequirementTypes.TargetIsInRowInFrontOf:
-						if(target.mySpace.Defendeds.Count > 0)
-                        foreach (CardSpace spaceBehind in target.mySpace.Defendeds[0].myRow.BoardSpaces)
-                        {
-                            if (spaceBehind.PlayingCard != null)
-                                foreach (TargetUnitDefinition neighborType in requirement.targetIs)
+                            }
+                            break;
+                        case RequirementTypes.TargetIsInRowInFrontOf:
+                            if (targetStats.source.mySpace.Defendeds.Count > 0)
+                                foreach (CardSpace spaceBehind in targetStats.source.mySpace.Defendeds[0].myRow.BoardSpaces)
                                 {
-                                    switch (neighborType)
-                                    {
-                                        case TargetUnitDefinition.SameAsMyself:
-                                            if (spaceBehind.PlayingCard.card.Name == target.card.Name)
+                                    if (spaceBehind.PlayingCard != null)
+                                        foreach (TargetUnitDefinition neighborType in requirement.targetIs)
+                                        {
+                                            switch (neighborType)
                                             {
-                                                itDoes = true;
+                                                case TargetUnitDefinition.SameAsMyself:
+                                                    if (spaceBehind.PlayingCard.card.Name == targetStats.source.card.Name)
+                                                    {
+                                                        itDoes = true;
+                                                    }
+                                                    break;
+                                                case TargetUnitDefinition.TheLeader:
+                                                    if (spaceBehind.PlayingCard.card.Type == UnitType.Leader)
+                                                    {
+                                                        itDoes = true;
+                                                    }
+                                                    break;
                                             }
-                                            break;
-                                        case TargetUnitDefinition.TheLeader:
-                                            if (spaceBehind.PlayingCard.card.Type == UnitType.Leader)
-                                            {
-                                                itDoes = true;
-                                            }
-                                            break;
-                                    }
+                                        }
                                 }
-                        }
-                        break;
-                    case RequirementTypes.TargetHasAttackedThisRound:
-						itDoes = target.HasAttackedThisRound;
-						break;
-					case RequirementTypes.TargetAttributeIs:
-						int attributeValueInTarget = 0;
-						switch (requirement.attribute)
-						{
-							case Attributes.Attack:
-								attributeValueInTarget = target.attack;
-								break;
-							case Attributes.Health:
-                                attributeValueInTarget = target.hp;
-                                break;
-							case Attributes.DefenseMelee:
-                                attributeValueInTarget = target.armor[0];
-                                break;
-							case Attributes.DefenseRanged:
-                                attributeValueInTarget = target.armor[1];
-                                break;
-							case Attributes.DefenseEnergy:
-                                attributeValueInTarget = target.armor[2];
-                                break;
-							case Attributes.ArmorPierce:
-                                attributeValueInTarget = target.armorPierce;
-                                break;
-							case Attributes.DamageReductionBeforeArmor:
-							case Attributes.DamageReductionAfterArmor:
-                                attributeValueInTarget = target.damageReduction;
-                                break;
-							case Attributes.MaxHealth:
-                                attributeValueInTarget = target.maxHP;
-                                break;
-							case Attributes.Cost:
-                                attributeValueInTarget = target.cost;
-                                break;
-						}
-						switch (requirement.comparison)
-						{
-							case Comparison.LessThan:
-								itDoes = attributeValueInTarget < requirement.attributeValue;
-								break;
-							case Comparison.LessThanOrEqual:
-                                itDoes = attributeValueInTarget <= requirement.attributeValue;
-                                break;
-							case Comparison.Equal:
-                                itDoes = attributeValueInTarget == requirement.attributeValue;
-                                break;
-							case Comparison.MoreThan:
-                                itDoes = attributeValueInTarget > requirement.attributeValue;
-                                break;
-							case Comparison.MoreThanOrEqual:
-                                itDoes = attributeValueInTarget >= requirement.attributeValue;
-                                break;
-							case Comparison.Not:
-                                itDoes = attributeValueInTarget != requirement.attributeValue;
-                                break;
-						}
-						break;
-					case RequirementTypes.TargetHasAffectedUnitDefinition:
-                        foreach (TargetUnitDefinition targetUnitDefinition in requirement.targetIs)
-                        {
-							switch (targetUnitDefinition)
-							{
-								case TargetUnitDefinition.SameAsMyself:
-									itDoes = target.MyActionsOfThisRound.Where(tuAc => tuAc.targets.Where(x => x.card.Name == requirement.originAction.source.card.Name).ToList().Count > 0).ToList().Count > 0;
-									break;
-								case TargetUnitDefinition.TheLeader:
-                                    itDoes = target.MyActionsOfThisRound.Where(tuAc => tuAc.targets.Where(x => x.card.Type == UnitType.Leader && x.Owner == requirement.originAction.source.Owner).ToList().Count > 0).ToList().Count > 0;
+                            break;
+                        case RequirementTypes.TargetHasAttackedThisRound:
+                            itDoes = targetStats.source.HasAttackedThisRound;
+                            break;
+                        case RequirementTypes.TargetAttributeIs:
+                            int attributeValueInTarget = 0;
+                            switch (requirement.attribute)
+                            {
+                                case Attributes.Attack:
+                                    attributeValueInTarget = targetStats.attack;
                                     break;
-							}
-						}
-                        break;
-					case RequirementTypes.TargetIsStunned:
-						itDoes = target.IsStunned;
-						break;
-                    case RequirementTypes.TargetIsDisarmed:
-						itDoes = target.IsDisarmed;
-                        break;
-                    case RequirementTypes.TargetIsDisrupted:
-						itDoes = target.IsDisrupted;
-                        break;
-					case RequirementTypes.TargetIsGuarding:
-						itDoes = target.guardingPose;
-                        break;
-                }
+                                case Attributes.Health:
+                                    attributeValueInTarget = targetStats.hp;
+                                    break;
+                                case Attributes.DefenseMelee:
+                                    attributeValueInTarget = targetStats.armor[0];
+                                    break;
+                                case Attributes.DefenseRanged:
+                                    attributeValueInTarget = targetStats.armor[1];
+                                    break;
+                                case Attributes.DefenseEnergy:
+                                    attributeValueInTarget = targetStats.armor[2];
+                                    break;
+                                case Attributes.ArmorPierce:
+                                    attributeValueInTarget = targetStats.armorPierce;
+                                    break;
+                                case Attributes.DamageReductionBeforeArmor:
+                                case Attributes.DamageReductionAfterArmor:
+                                    attributeValueInTarget = targetStats.damageReduction;
+                                    break;
+                                case Attributes.MaxHealth:
+                                    attributeValueInTarget = targetStats.maxHP;
+                                    break;
+                                case Attributes.Cost:
+                                    attributeValueInTarget = targetStats.cost;
+                                    break;
+                            }
+                            switch (requirement.comparison)
+                            {
+                                case Comparison.LessThan:
+                                    itDoes = attributeValueInTarget < requirement.attributeValue;
+                                    break;
+                                case Comparison.LessThanOrEqual:
+                                    itDoes = attributeValueInTarget <= requirement.attributeValue;
+                                    break;
+                                case Comparison.Equal:
+                                    itDoes = attributeValueInTarget == requirement.attributeValue;
+                                    break;
+                                case Comparison.MoreThan:
+                                    itDoes = attributeValueInTarget > requirement.attributeValue;
+                                    break;
+                                case Comparison.MoreThanOrEqual:
+                                    itDoes = attributeValueInTarget >= requirement.attributeValue;
+                                    break;
+                                case Comparison.Not:
+                                    itDoes = attributeValueInTarget != requirement.attributeValue;
+                                    break;
+                            }
+                            break;
+                        case RequirementTypes.TargetHasAffectedUnitDefinition:
+                            foreach (TargetUnitDefinition targetUnitDefinition in requirement.targetIs)
+                            {
+                                switch (targetUnitDefinition)
+                                {
+                                    case TargetUnitDefinition.SameAsMyself:
+                                        itDoes = targetStats.source.MyActionsOfThisRound.Where(tuAc => tuAc.targets.Where(x => x.card.Name == requirement.originAction.source.card.Name).ToList().Count > 0).ToList().Count > 0;
+                                        break;
+                                    case TargetUnitDefinition.TheLeader:
+                                        itDoes = targetStats.source.MyActionsOfThisRound.Where(tuAc => tuAc.targets.Where(x => x.card.Type == UnitType.Leader && x.Owner == requirement.originAction.source.Owner).ToList().Count > 0).ToList().Count > 0;
+                                        break;
+                                }
+                            }
+                            break;
+                        case RequirementTypes.TargetIsStunned:
+                            itDoes = targetStats.source.IsStunned;
+                            break;
+                        case RequirementTypes.TargetIsDisarmed:
+                            itDoes = targetStats.source.IsDisarmed;
+                            break;
+                        case RequirementTypes.TargetIsDisrupted:
+                            itDoes = targetStats.source.IsDisrupted;
+                            break;
+                        case RequirementTypes.TargetIsGuarding:
+                            itDoes = targetStats.source.guardingPose;
+                            break;
+                    }
             }
         }
 
-        //Debug.Log($"Trying to reach {actionTarget?.card?.Name}: {itDoes}");
-		return itDoes;
+        return itDoes;
 	}
 
-	public static bool TargetCanBeReachedByAction(CardDisplay target, ActiveAction action)
+    public static bool TargetCanBeReachedByAction(CardDisplay target, ActiveAction action)
 	{
 		bool itCan = true;
         bool targetIsDefended = false;
@@ -549,10 +555,20 @@ public static class CardActionTools
 		AttackActionOutput output = new AttackActionOutput();
         CardDisplay attacker = attackAction.source;
         List<BuffAction> onHitBuffs = attackAction.source.appliedBuffs.Where(x => x.activatesOnHit).ToList();
+        output.attackerStats = new(attacker);
+        output.targetStats = new(target);
 
         /* Calculation of temporary buffs and debuffs */
         TempModifiers attackerTempModifiers = output.attackerModifiers;
         TempModifiers targetTempModifiers = output.targetModifiers;
+
+        /* Extract and organize attack effects */
+        List<AttackEffect> effectsFromAttack = attackAction.attackEffect.ToList();
+		List<AttackEffect> effectsFromBuffs = attacker.appliedBuffs.Where(buff => buff.specialEffect == BuffSpecialEffects.GrantAttackEffect && buff.attackEffect.Count > 0).SelectMany(buff => buff.attackEffect).ToList();
+
+		List<AttackEffect> attackEffectsBeforeAttack = effectsFromAttack.Concat(effectsFromBuffs).Where(atkFx => !atkFx.effectChecksAfterAttack).ToList();
+        List<AttackEffect> attackEffectsAfterAttack = effectsFromAttack.Concat(effectsFromBuffs).Where(atkFx => atkFx.effectChecksAfterAttack).ToList();
+
         foreach (BuffAction buff in attackAction.temporaryBuffs)
         {
 			//Debug.Log($"<b>{attackAction.source.card.Name}</b>: Checking buff to {buff.target} that gives {CardTranslator.AttributeAndValue(buff)} -> {buff.target == TargetTypes.Self} {buff.TargetMeetsRequirements(target)}");
@@ -574,54 +590,53 @@ public static class CardActionTools
             }
         }
 
+        output.attackerStats.ApplyModifiers(attackerTempModifiers);
+        output.targetStats.ApplyModifiers(targetTempModifiers);
+
+        foreach (AttackEffect atkFx in attackEffectsBeforeAttack)
+        {
+            if (atkFx.StatsMeetRequirements(output.targetStats)) output.attackerModifiers.usedAttackEffects.Add(atkFx);
+        }
+
         int targetArmor = 0;
         DamageTypes damageType = DamageTypes.Melee;
         switch (attackAction.damageType)
         {
-            case DamageTypes.Melee: targetArmor = target.armor[0]; break;
-            case DamageTypes.Ranged: targetArmor = target.armor[1]; damageType = DamageTypes.Ranged; break;
-            case DamageTypes.Energy: targetArmor = target.armor[2]; damageType = DamageTypes.Energy;  break;
+            case DamageTypes.Melee: damageType = DamageTypes.Melee; break;
+            case DamageTypes.Ranged: damageType = DamageTypes.Ranged; break;
+            case DamageTypes.Energy: damageType = DamageTypes.Energy;  break;
             case DamageTypes.MeleeOrRanged:
-                if (target.armor[0] < target.armor[1])
-                { targetArmor = target.armor[0]; }
-                else
-                { targetArmor = target.armor[1]; damageType = DamageTypes.Ranged; }
+                if (target.armor[0] < target.armor[1]) { damageType = DamageTypes.Melee; }
+                else { damageType = DamageTypes.Ranged; }
                 break;
             case DamageTypes.RangedOrEnergy:
-                if (target.armor[2] < target.armor[1])
-                { targetArmor = target.armor[2]; damageType = DamageTypes.Energy; }
-                else
-                { targetArmor = target.armor[1]; damageType = DamageTypes.Ranged; }
+                if (target.armor[2] < target.armor[1]) { damageType = DamageTypes.Energy; }
+                else { damageType = DamageTypes.Ranged; }
                 break;
             case DamageTypes.MeleeOrEnergy:
-                if (target.armor[0] < target.armor[2])
-                { targetArmor = target.armor[0]; }
-                else
-                { targetArmor = target.armor[2]; damageType = DamageTypes.Energy; }
+                if (target.armor[0] < target.armor[2]) { damageType = DamageTypes.Melee; }
+                else { damageType = DamageTypes.Energy; }
                 break;
             case DamageTypes.MeleeOrRangedOrEnergy:
-                if (target.armor[0] < target.armor[1] && target.armor[0] < target.armor[2])
-                { targetArmor = target.armor[0]; }
-                else if (target.armor[1] < target.armor[2])
-                { targetArmor = target.armor[1]; damageType = DamageTypes.Ranged; }
-                else
-                { targetArmor = target.armor[2]; damageType = DamageTypes.Energy; }
+                if (target.armor[0] < target.armor[1] && target.armor[0] < target.armor[2]) { damageType = DamageTypes.Melee; }
+                else if (target.armor[1] < target.armor[2]) { damageType = DamageTypes.Ranged; }
+                else { damageType = DamageTypes.Energy; }
                 break;
         }
         switch (damageType)
         {
-            case DamageTypes.Melee: targetArmor += targetTempModifiers.Armor[0]; break;
-            case DamageTypes.Ranged: targetArmor += targetTempModifiers.Armor[1]; break;
-            case DamageTypes.Energy: targetArmor += targetTempModifiers.Armor[2]; break;
+            case DamageTypes.Melee: targetArmor += output.targetStats.armor[0]; break;
+            case DamageTypes.Ranged: targetArmor += output.targetStats.armor[1]; break;
+            case DamageTypes.Energy: targetArmor += output.targetStats.armor[2]; break;
         }
-        targetArmor -= attacker.armorPierce + attackerTempModifiers.ArmorPierce;
+        targetArmor -= output.attackerStats.armorPierce;
         if (targetArmor < 0) { targetArmor = 0; }
-
-        int dmg = Mathf.FloorToInt((attacker.attack + attackerTempModifiers.Attack - target.damageReduction) * (attackAction.damageMultiplier + attackerTempModifiers.DamageMultiplier)) - targetArmor;
         if (attackAction.damageType == DamageTypes.SelfDamage)
         {
             targetArmor = 0;
         }
+
+        int dmg = Mathf.FloorToInt((output.attackerStats.attack - output.targetStats.damageReduction) * (attackAction.damageMultiplier + attackerTempModifiers.DamageMultiplier)) - targetArmor;
         if (attackAction.flatDamageOverwrite > 0)
         {
             dmg = attackAction.flatDamageOverwrite - targetArmor;
@@ -632,7 +647,17 @@ public static class CardActionTools
         }
 		output.damage = dmg;
 		output.damageType = damageType;
-		if (target.hp - dmg <= 0 || (target.hp - dmg <= 2 && attacker.card.Subtypes.Contains(UnitSubtype.Executioner))) {
+		output.targetStats.hp -= dmg;
+
+        foreach (AttackEffect atkFx in attackEffectsAfterAttack)
+        {
+            if (atkFx.StatsMeetRequirements(output.targetStats)) attackerTempModifiers.usedAttackEffects.Add(atkFx);
+        }
+
+		bool canExecute = (output.targetStats.hp <= 2 && attacker.card.Subtypes.Contains(UnitSubtype.Executioner) || attackerTempModifiers.willExecute );
+		output.deathByExecution = canExecute;
+
+		if (output.targetStats.hp <= 0 || canExecute ) {
 			output.resultsInDeath = true;
 		}
         
@@ -715,7 +740,8 @@ public static class CardActionTools
 			case BuffSpecialEffects.Stun:
 			case BuffSpecialEffects.Disarm:
 			case BuffSpecialEffects.Disrupt:
-				itIs = false;
+            case BuffSpecialEffects.GrantAttackEffect:
+                itIs = false;
 				break;
 			case BuffSpecialEffects.EnableGuardingPose:
 			case BuffSpecialEffects.TriggerExtraAttack:
@@ -776,7 +802,12 @@ public class TempModifiers
 	public int DamageReductionBeforeArmor = 0;
 	public int DamageReductionAfterArmor = 0;
 	public float DamageMultiplier = 0;
+	//public int HPAtEndOfAction = 0;
 	public List<BuffAction> usedBuffs = new();
+	public List<AttackEffect> usedAttackEffects = new();
+	public bool willExecute {
+		get { return (usedAttackEffects.Exists(x => x.effectType == AttackEffects.Execute)); }
+	}
 
 	public TempModifiers() {
 
@@ -785,6 +816,7 @@ public class TempModifiers
 	public void SetModifiersFromBuff(BuffAction buff)
 	{
 		usedBuffs.Add(new(buff));
+		//if(buff.specialEffect == BuffSpecialEffects.GrantAttackEffect && buff.attackEffect.Count > 0) usedAttackEffects.AddRange(buff.attackEffect);
         switch (buff.Attribute)
         {
             case Attributes.Attack: Attack += buff.amount; break;
@@ -800,6 +832,72 @@ public class TempModifiers
             case Attributes.DamageMultiplier: DamageMultiplier += buff.amount; break;
         }
     }
+
+	public bool CheckComparison(Comparison comparisonType, int what, int toWhat) {
+		bool checks = false;
+		switch (comparisonType)
+		{
+			case Comparison.LessThan:
+				checks = what < toWhat;
+				break;
+			case Comparison.LessThanOrEqual:
+                checks = what <= toWhat;
+                break;
+			case Comparison.Equal:
+                checks = what == toWhat;
+                break;
+			case Comparison.MoreThan:
+                checks = what > toWhat;
+                break;
+			case Comparison.MoreThanOrEqual:
+                checks = what >= toWhat;
+                break;
+			case Comparison.Not:
+                checks = what != toWhat;
+                break;
+		}
+		return checks;
+	}
+}
+[Serializable]
+public class StatList
+{
+	public int hp = 0;
+    public int maxHP = 0;
+	public int[] armor = { 0, 0, 0 };
+	public int attack = 0;
+	public int armorPierce = 0;
+    public int damageReduction = 0;
+    public int cost = 0;
+    public List<UnitSubtype> subtypes = new();
+    public List<Faction> origin = new();
+    public CardDisplay source;
+
+	public StatList() { }
+    public StatList(CardDisplay cardSource) {
+        source = cardSource;
+        hp = cardSource.hp;
+        maxHP = cardSource.maxHP;
+        armor = cardSource.armor;
+        attack = cardSource.attack;
+        armorPierce = cardSource.armorPierce;
+        damageReduction = cardSource.damageReduction;
+        cost = cardSource.cost;
+        subtypes = cardSource.card.Subtypes.Concat(cardSource.acquiredSubtypes).ToList();
+        origin.AddRange(cardSource.card.Origin);
+    }
+
+    public void ApplyModifiers(TempModifiers modifiers)
+    {
+        hp += modifiers.Health;
+        maxHP += modifiers.MaxHealth;
+        armor[0] += modifiers.Armor[0];
+        armor[1] += modifiers.Armor[1];
+        armor[2] += modifiers.Armor[2];
+        attack += modifiers.Attack;
+        armorPierce += modifiers.ArmorPierce;
+        damageReduction += modifiers.DamageReductionBeforeArmor + modifiers.DamageReductionAfterArmor;
+    }
 }
 
 [Serializable]
@@ -807,9 +905,12 @@ public class AttackActionOutput
 {
 	public int damage = 0;
 	public bool resultsInDeath = false;
+	public bool deathByExecution = false;
 	public DamageTypes damageType = DamageTypes.Melee;
 	public TempModifiers attackerModifiers = new();
 	public TempModifiers targetModifiers = new();
+    public StatList attackerStats;
+    public StatList targetStats;
 	public string damageTypeIcon {
 		get {
 			string character = "🥊";

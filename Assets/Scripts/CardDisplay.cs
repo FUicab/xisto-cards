@@ -27,7 +27,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 	}
 	public int HandIndex;
 	public bool isPotentialTargetForPerformingAction = false;
-	public PlayerProfile Owner;
+    [HideInInspector] public PlayerProfile Owner;
 
 	/* Card values calculated after all modifiers and other independent values */
 	public int hp;
@@ -37,7 +37,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 	public bool guardingPose = false;
 
 	/* Some cards allow to redirect attacks towards them. This variable defines who's doing it for this card. This works differently from defenders in the sense that attacks can be redirected regardless of the position, and affected cards can still be targetted.*/
-	public CardDisplay attackSponge = null;
+	[HideInInspector] public CardDisplay attackSponge = null;
 	public List<BuffAction> activeBuffs = new List<BuffAction>();
 	public List<BuffAction> passiveBuffs = new List<BuffAction>();
 	public List<BuffAction> appliedBuffs{
@@ -48,14 +48,14 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 			return buffs;
 		}
 	}
-	public List<CardAction> cardActions;
-	public List<PassiveSkill> cardPassives;
+    [HideInInspector] public List<CardAction> cardActions;
+    [HideInInspector] public List<PassiveSkill> cardPassives;
 
-	/* The list of cards that have attacked me during this round */
-	public List<CardDisplay> myAttackers = new();
+    /* The list of cards that have attacked me during this round */
+    [HideInInspector] public List<CardDisplay> myAttackers = new();
 
-	/* The passives that have been used during this round and can't be used again until next round */
-	public List<PassiveSkill> usedPassives = new();
+    /* The passives that have been used during this round and can't be used again until next round */
+    [HideInInspector] public List<PassiveSkill> usedPassives = new();
 
 	/* Get functions. They apply buffs to properties and make the calculation before hand. These values cannot be changed by code and should only be manipulated by buffs or by modifying the card itself. */
 	public List<UnitSubtype> acquiredSubtypes {
@@ -228,18 +228,18 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 
 	private GameManager GM;
 	public RectTransform rectTransform;
-	[SerializeField] private Canvas MainUI;
+	private Canvas MainUI;
 	private CanvasGroup canvasGroup;
 	private Outline outline;
-	public Transform SlotGroup;
-	public Vector3 OriginPosition;
-	public Transform OriginParent;
-	public CardSpace mySpace;
+	[HideInInspector] public Transform SlotGroup;
+	[HideInInspector] public Vector3 OriginPosition;
+	[HideInInspector] public Transform OriginParent;
+	[HideInInspector] public CardSpace mySpace;
 	public RawImage Overlay;
 	private LineRenderer line;
 
 	public GameObject UndoButtonObject;
-	public TurnAction PurchaseAction;
+	[HideInInspector] public TurnAction PurchaseAction;
 
 	public List<TurnAction> MyActionsOfThisRound
 	{
@@ -540,6 +540,8 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 	public void ReceiveDamage(int dmg)
 	{
 		hp -= dmg;
+		//await Task.Delay(200);
+		GM.DisplayDamage(dmg, this);
 		if (hp <= 0)
 		{
 			mySpace.FreeSpace();
@@ -551,8 +553,6 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 			Destroy(gameObject);
 			return;
 		}
-		//await Task.Delay(200);
-		GM.DisplayDamage(dmg, this);
 		UpdateCardUI();
 	}
 
@@ -560,6 +560,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
     {
 		attack.attackActionOutput = attack.GetAttackActionOutput(this);
 		myAttackers.Add(attack.source);
+		if (attack.attackActionOutput.deathByExecution) { hp = 0; }
 		ReceiveDamage(attack.attackActionOutput.damage);
 		if (guardingPose && !attack.isExtra && attack.attackActionOutput.damageType == DamageTypes.Melee)
 		{
@@ -822,7 +823,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		TextMeshProUGUI potentialDamage = PotentialDamageImage.GetComponentInChildren<TextMeshProUGUI>();
         AttackActionOutput attackOutput = CardActionTools.GetAttackActionOutput(this, turnAction.actionObject.action.attacks[i]);
 		if (attackOutput.resultsInDeath) {
-            potentialDamage.text = $"☠️";
+            potentialDamage.text = $"☠️{(attackOutput.deathByExecution? "🔪" : "")}";
         } else
 		{
 			potentialDamage.text = $"{attackOutput.damageTypeIcon} {attackOutput.damage}";

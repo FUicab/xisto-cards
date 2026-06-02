@@ -194,14 +194,14 @@ public class GameManager : MonoBehaviour
 							{
 								CardDisplay target = tuAc.targets[i];
                                 AttackActionOutput attackOutput = tuAc.actionObject.action.attacks[i].attackActionOutput;
-								info += $" <b>· {target.card.name}</b> <i>({attackOutput.damageTypeIcon} {attackOutput.damage}) {(attackOutput.resultsInDeath?"FATAL":"")}</i> \n";
+								info += $" <b>· {target.card.name}</b> <i>({attackOutput.damageTypeIcon} {attackOutput.damage}) {(attackOutput.resultsInDeath? "☠️" : "")}{(attackOutput.deathByExecution ? "🔪" : "")}</i> \n";
 
 								List<AttackAction> extraAttacks = tuAc.CardInAction.appliedBuffs.Where(x => x.specialEffect == BuffSpecialEffects.TriggerExtraAttack).Where(x => x.TargetMeetsOnHitRequirements(target)).SelectMany(x => x.extraAttacks).ToList();
 								if(extraAttacks.Count > 0) {
 									foreach (AttackAction extraAttack in extraAttacks)
 									{
 										AttackActionOutput extraAttackOutput = extraAttack.attackActionOutput;
-										info += $"    <b>·</b> <i>({extraAttackOutput.damageTypeIcon} {extraAttackOutput.damage}) {(extraAttackOutput.resultsInDeath ? "FATAL" : "")}</i> \n";
+										info += $"    <b>·</b> <i>({extraAttackOutput.damageTypeIcon} {extraAttackOutput.damage}) {(extraAttackOutput.resultsInDeath ? "☠️" : "")}{(attackOutput.deathByExecution ? "🔪" : "")}</i> \n";
 									}
 
 								}

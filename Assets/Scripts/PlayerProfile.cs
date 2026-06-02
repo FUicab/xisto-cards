@@ -23,8 +23,8 @@ public class PlayerProfile
 	public List<Dice> Dices = new List<Dice>() { };
 	public Dice selectedDice = null;
 	public PlayerProfile otherPlayer;
-	public List<PlayerBuffs> activeBuffs = new();
-    public List<PlayerBuffs> passiveBuffs = new();
+	[SerializeReference] public List<PlayerBuffs> activeBuffs = new();
+    [SerializeReference] public List<PlayerBuffs> passiveBuffs = new();
 	public List<PlayerBuffs> appliedBuffs{ get { return activeBuffs.Concat(passiveBuffs).ToList(); } }
 	public List<CardSpace> mySpaces {
 		get

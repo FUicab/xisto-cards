@@ -373,7 +373,11 @@ public static class CardTranslator
 								text += " as extra attacks";
 							}
 							break;
-						default:
+                        case BuffSpecialEffects.GrantAttackEffect:
+                            text += ", this attack ";
+							text += $"{AttackEffectDescription(buff.attackEffect[0])}";
+                            break;
+                        default:
 							switch (buff.Attribute)
 							{
 								case Attributes.Health: text += "heals "; break;
@@ -462,27 +466,59 @@ public static class CardTranslator
 					}
 					text += $" take {TextFormat("guarding pose", "guarding")}";
 				}
-				else if (buff.specialEffect == BuffSpecialEffects.Disarm || buff.specialEffect == BuffSpecialEffects.Stun || buff.specialEffect == BuffSpecialEffects.Disrupt) {
+				else if (buff.specialEffect == BuffSpecialEffects.Disarm || buff.specialEffect == BuffSpecialEffects.Stun || buff.specialEffect == BuffSpecialEffects.Disrupt)
+				{
 					switch (buff.specialEffect)
 					{
 						case BuffSpecialEffects.Stun:
-                            text += TextFormat("Stun" + (buff.isTargetPlural ? "" : "s"), "statusEffect");
-                            break;
+							text += TextFormat("Stun" + (buff.isTargetPlural ? "" : "s"), "statusEffect");
+							break;
 						case BuffSpecialEffects.Disarm:
-                            text += TextFormat("Disarm" + (buff.isTargetPlural ? "" : "s"), "statusEffect");
-                            break;
+							text += TextFormat("Disarm" + (buff.isTargetPlural ? "" : "s"), "statusEffect");
+							break;
 						case BuffSpecialEffects.Disrupt:
-                            text += TextFormat("Disrupt" + (buff.isTargetPlural ? "" : "s"), "statusEffect");
-                            break;
+							text += TextFormat("Disrupt" + (buff.isTargetPlural ? "" : "s"), "statusEffect");
+							break;
 					}
-					text += " "+TargetTypeDescription(buff.target);
-				} else {
+					text += " " + TargetTypeDescription(buff.target);
+				}
+				else if (buff.specialEffect == BuffSpecialEffects.GrantAttackEffect)
+				{
+                    switch (buff.target)
+                    {
+                        case TargetTypes.Self:
+                            text += "My attack ";
+                            break;
+                        case TargetTypes.AlliesInSameLine:
+                            text += "Attack from allies in the same line ";
+                            break;
+                        case TargetTypes.SingleEnemy:
+                        case TargetTypes.LineOfEnemies:
+                        case TargetTypes.AllEnemies:
+                            text += "Enemy attack ";
+                            break;
+                        case TargetTypes.SingleAlly:
+                        case TargetTypes.AllAllies:
+                            text += "Ally attack ";
+                            break;
+                        case TargetTypes.AlliesNextToMe:
+                            text += "Attack from allies next to me ";
+                            break;
+                        default:
+                            text += "Their attack ";
+                            break;
+                    }
+                    text += $" {AttackEffectDescription(buff.attackEffect[0])}";
+                }
+				else
+				{
 					switch (buff.Attribute)
 					{
 						case Attributes.Health: text += "Heals "; break;
 						default: text += "Grants "; break;
 					}
 				}
+
 				if(buff.amount != 0)
 				{
 					text += AttributeAndValue(buff);
@@ -1241,7 +1277,10 @@ public static class CardTranslator
 					index += 1;
 				}
 			break;
-		}
+            case AttackEffects.Execute:
+                text += $"{TextFormat("executes",Attributes.Attack)}{RequirementDescription(effect.requirements, effect.originAttack?.target ?? TargetTypes.SingleEnemy, effect.originAttack?.source?.card, "onHit")}{(effect.effectChecksAfterAttack? " after the attack": "")}";
+			break;
+        }
 		return text;
 	}
 

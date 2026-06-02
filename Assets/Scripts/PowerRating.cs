@@ -312,7 +312,8 @@ public class PowerRating
 		if (!buff.targetIsFromMyTeam && buffEffectIsPositive) { buffPower *= -1f; }
 		float temporaryBuffRequirementNerf = GetRequirementsNerf(buff.requirements);
 		float onHitBuffRequirementNerf = GetRequirementsNerf(buff.onHitRequirements);
-		return buffPower * temporaryBuffRequirementNerf * onHitBuffRequirementNerf;
+		float attackEffectPowerBonus = GetAttackEffectPowerBonus(buff.attackEffect);
+		return (buffPower + attackEffectPowerBonus) * temporaryBuffRequirementNerf * onHitBuffRequirementNerf;
 	}
 	public float GetBuffPowerBonus(List<BuffAction> buffs)
 	{
@@ -340,6 +341,9 @@ public class PowerRating
 			case AttackEffects.ApplyDebuff:
 				effectPower += GetBuffPowerBonus(attackEffect.buffs);
 				break;
+			case AttackEffects.Execute:
+                effectPower += 12f;
+                break;
 		}
 		float attackEffectRequirementNerf = GetRequirementsNerf(attackEffect.requirements);
 		return effectPower * attackEffectRequirementNerf;
@@ -404,6 +408,9 @@ public class PowerRating
 			case PlayerBuffTypes.MercenaryKillGoldReward:
                 typeBonus = 3f;
                 break;
+			case PlayerBuffTypes.FreeAttackActions:
+				typeBonus = 9f;
+				break;
 		}
 
         if (playerBuff.target == PlayerTarget.OtherPlayer) { typeBonus *= -1; }

@@ -16,7 +16,7 @@ public class CardAction : CardSkill
 	public ActionTypes actionType = ActionTypes.DoNothing;
 	public List<AttackAction> attacks = new();
 	public bool attackCountCanBeAugmented = false;
-	public List<BuffAction> buffs = new();
+    public List<BuffAction> buffs = new();
 	public List<PlayerBuffs> playerBuffs = new();
 
 	public CardAction(CardAction values)
@@ -33,8 +33,8 @@ public class ActiveAction
 {
 	public TargetTypes target = TargetTypes.SingleEnemy;
     public List<Requirements> requirements = new();
-    public CardDisplay source;
-    [HideInInspector] public CardDisplay receiver;
+    [SerializeReference] public CardDisplay source;
+    [SerializeReference] public CardDisplay receiver;
 
 	public ActiveAction()
 	{
@@ -60,10 +60,10 @@ public class AttackAction : ActiveAction{
 	public float damageMultiplier = 1;
 	public bool damageMultiplierCanBeAugmented = false;
 	public int flatDamageOverwrite = 0; //This overwrite will make attacks deal a given amount of damage without taking into account the attack value of the card nor any modifiers
-	public List<AttackEffect> attackEffect = new();
-	public List<BuffAction> temporaryBuffs = new(); //Temporary buffs are applied during the attack
-	public AttackActionOutput attackActionOutput = new();
-	public bool isExtra = false; /* Extra attacks do not trigger counter attacks and other "on hit" effects. Armor pierce and executions work as normal. */
+    public List<AttackEffect> attackEffect = new();
+    public List<BuffAction> temporaryBuffs = new(); //Temporary buffs are applied during the attack
+    public AttackActionOutput attackActionOutput = new();
+    [HideInInspector] public bool isExtra = false; /* Extra attacks do not trigger counter attacks and other "on hit" effects. Armor pierce and executions work as normal. */
 
 	public AttackAction(AttackAction values)
 	{
@@ -101,13 +101,14 @@ public class BuffAction : ActiveAction{
 	public bool isDebuff = false; /* Check this if this is meant to be a negative effect for the one whoe receives it. */
 	public bool amountCanBeAugmented = false;
 	public bool activatesOnHit = false; /* Check this if the buff is meant to only activate during attacks. As if it was a temporary buff. */
-	public List<Requirements> onHitRequirements = new(); /* The buff will not activate its "on hit" benefits if these requirements are not met. */
+    public List<Requirements> onHitRequirements = new(); /* The buff will not activate its "on hit" benefits if these requirements are not met. */
 	public BuffSpecialEffects specialEffect;
-	public List<AttackAction> extraAttacks = new(); /* Applying buffs with extra attacks will trigger the attack inmediatly at the moment of application and the buff effect will not stay. If OnHit is set then the buff stays and the extra attack performs on each hit of the target. */
+    public List<AttackAction> extraAttacks = new(); /* Applying buffs with extra attacks will trigger the attack inmediatly at the moment of application and the buff effect will not stay. If OnHit is set then the buff stays and the extra attack performs on each hit of the target. */
 	public List<UnitSubtype> grantedSubtypes = new();
-	public List<SpecialBehavior> specialBehavior = new();
-	public AttackAction originAttack;
-	public PassiveSkill originPassive;
+    public List<AttackEffect> attackEffect = new();
+    public List<SpecialBehavior> specialBehavior = new();
+    public AttackAction originAttack;
+    public PassiveSkill originPassive;
 
 	public BuffAction(BuffAction values, AttackAction sourceAttack = null)
 	{
@@ -128,6 +129,7 @@ public class BuffAction : ActiveAction{
 		values.requirements.ForEach(req => { requirements?.Add(new Requirements(req, (originAttack != null ? originAttack : this) ) ); });
         values.onHitRequirements.ForEach(req => { onHitRequirements?.Add(new Requirements(req, (originAttack != null ? originAttack : this) ) ); });
         values.extraAttacks.ForEach(atk => { extraAttacks?.Add(new AttackAction(atk) { source = values.source, isExtra = true } ); });
+        values.attackEffect.ForEach(atkFx => { attackEffect.Add(new AttackEffect(atkFx, null)); });
         //onHitRequirements = values.onHitRequirements;
     }
     public bool TargetMeetsOnHitRequirements(CardDisplay target) { return CardActionTools.TargetMeetsRequirements(target, onHitRequirements); }
@@ -141,10 +143,11 @@ public class AttackEffect
     public bool useAttackValue;
     public int value;
     public bool valueCanBeAugmented = false;
+	public bool effectChecksAfterAttack = false;
     public List<BuffAction> buffs = new();
     //public List<BuffAction> debuffs;
     public List<Requirements> requirements = new();
-	[HideInInspector] public AttackAction originAttack;
+	[SerializeReference] public AttackAction originAttack;
 
 	public AttackEffect(AttackEffect values, AttackAction attackSource)
 	{
@@ -152,10 +155,14 @@ public class AttackEffect
 		useAttackValue = values.useAttackValue;
 		value = values.value;
 		valueCanBeAugmented = values.valueCanBeAugmented;
+		effectChecksAfterAttack = values.effectChecksAfterAttack;
 		originAttack = attackSource ?? values.originAttack;
 		values.buffs.ForEach(buff => { buffs.Add(new BuffAction(buff, originAttack){ source = attackSource.source }); });
         values.requirements.ForEach(req => { requirements?.Add(new Requirements(req, originAttack) ); });
     }
+
+    public bool TargetMeetsRequirements(CardDisplay target) { return CardActionTools.TargetMeetsRequirements(target, requirements); }
+    public bool StatsMeetRequirements(StatList stats) { return CardActionTools.StatsMeetRequirements(stats, requirements); }
 }
 
 [System.Serializable]
@@ -166,9 +173,11 @@ public class Requirements{
 	public List<TargetUnitDefinition> targetIs;
 	public Attributes attribute;
 	public Comparison comparison;
+	public bool compareToMyAttribute;
+	public Attributes myAttribute;
 	public int attributeValue = 0;
 	public bool targetOfRequirementIsTargetOfAttack;
-	[HideInInspector] public ActiveAction originAction;
+	[SerializeReference] public ActiveAction originAction;
 
 	public Requirements(Requirements requirements, ActiveAction originAction = null){
 		requirement = requirements.requirement;
@@ -194,9 +203,9 @@ public class PassiveSkill : CardSkill{
 	//public bool buffsAreTemporary = false;
 	public bool requiresElementalExchange = false;
 	public List<BuffAction> buffs = new();
-	public List<PlayerBuffs> playerBuffs = new();
+    public List<PlayerBuffs> playerBuffs = new();
 	[HideInInspector] public CardDisplay source;
-	private GameManager GM;
+    [HideInInspector] private GameManager GM;
 
 	public PassiveSkill(PassiveSkill passiveSkill) {
 		title = passiveSkill.title;
@@ -218,7 +227,7 @@ public class PassiveSkill : CardSkill{
 		List<CardAction> actions = new();
 		actions.AddRange(GM.RoundActions.Select(tuAc => tuAc?.actionObject?.action).Where( (action) => {
 			return action?.attacks?.Exists( (atk) => {
-				return atk.attackActionOutput.attackerModifiers.usedBuffs.Exists( (buff) => {
+				return atk?.attackActionOutput?.attackerModifiers?.usedBuffs?.Exists( (buff) => {
 					bool buffComesFromPassive = buff.originPassive != null;
 					//if(buffComesFromPassive) Debug.Log($"Found a buff from <b>{buff.originPassive.source.card.Name}</b>'s passive");
 					bool titlesMatch = buff.originPassive.title == title;
@@ -231,7 +240,7 @@ public class PassiveSkill : CardSkill{
 					//if(itExists) Debug.Log($"Found \"{title}\" in an action performed by {atk.source.card.Name}");
                     return itExists;
 						}
-					);
+					) ?? false;
 				}) ?? false;
 			}).ToList());
 		return actions;
@@ -270,11 +279,11 @@ public class PlayerBuffs
 	public PlayerBuffTypes buffType = PlayerBuffTypes.AddGold;
 	public int amount = 0;
 	public bool canBeAugmented = false;
-	public bool hasBeenUsed = false;
-	public int usedAmount = 0;
-	public int usableAmount { get {  return amount - usedAmount; }  }
-	public CardDisplay source;
-	public PassiveSkill originPassive;
+	[HideInInspector] public bool hasBeenUsed = false;
+    [HideInInspector] public int usedAmount = 0;
+    [HideInInspector] public int usableAmount { get {  return amount - usedAmount; }  }
+    [HideInInspector] public CardDisplay source;
+	[HideInInspector] public PassiveSkill originPassive;
 
 	public PlayerBuffs(PlayerBuffs values)
 	{
@@ -328,7 +337,8 @@ public enum Attributes{
 	DamageReductionAfterArmor,
 	MaxHealth,
 	Cost,
-	DamageMultiplier
+	DamageMultiplier,
+	BaseAttack
 }
 public enum ActionTypes{
 	Attack,
@@ -362,7 +372,8 @@ public enum TargetTypes{
 public enum AttackEffects{
 	SplashDamage,
 	SelfDamage,
-	ApplyDebuff
+	ApplyDebuff,
+	Execute
 }
 public enum BuffSpecialEffects
 {
@@ -373,7 +384,8 @@ public enum BuffSpecialEffects
     EnableGuardingPose,
 	Stun,
 	Disarm,
-	Disrupt
+	Disrupt,
+	GrantAttackEffect
 }
 public enum SpecialBehavior{
 	OnlyActivatesOnce
