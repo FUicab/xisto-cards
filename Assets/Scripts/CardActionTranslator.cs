@@ -158,7 +158,11 @@ public static class CardTranslator
 
             if (attack.damageMultiplier != 1f)
             {
-				if (attack.damageMultiplier % 1 == 0) {
+				if(attack.flatDamageOverwrite != 0)
+				{
+					if (attacks.Count > 1) { text += " and each "; } else { text += " which "; }
+                    text += $"deals {TextFormat(NumberWithSign(attack.flatDamageOverwrite), null, attack.damageMultiplierCanBeAugmented)} {TextFormat("damage", Attributes.Attack)}";
+                } else if (attack.damageMultiplier % 1 == 0) {
                     text += $" with {TextFormat("×" + attack.damageMultiplier.ToString(), null, attack.damageMultiplierCanBeAugmented)} {TextFormat("damage",Attributes.Attack)}";
 				} else {
 					text += $" with {TextFormat( (attack.damageMultiplier * 100)+"%" , null, attack.damageMultiplierCanBeAugmented )} effectivity";
@@ -337,6 +341,9 @@ public static class CardTranslator
 						case TargetTypes.AlliesNextToMe:
 							text += "the allies next to me";
 							break;
+						case TargetTypes.AlliesInLineInFrontOfMe:
+							text += "the allies in the line in front of me";
+							break;
 						default:
 							text += "they";
 							break;
@@ -419,7 +426,10 @@ public static class CardTranslator
 						case TargetTypes.AlliesNextToMe:
 							text += "s the allies next to me";
 							break;
-						default:
+                        case TargetTypes.AlliesInLineInFrontOfMe:
+                            text += "s the allies in the line in front of me";
+                            break;
+                        default:
 							text += "s them";
 							break;
 					}
@@ -460,7 +470,10 @@ public static class CardTranslator
 						case TargetTypes.AlliesNextToMe:
 							text += "The allies next to me";
 							break;
-						default:
+                        case TargetTypes.AlliesInLineInFrontOfMe:
+                            text += "The allies in the line in front of me";
+                            break;
+                        default:
 							text += "They";
 							break;
 					}
@@ -503,6 +516,9 @@ public static class CardTranslator
                             break;
                         case TargetTypes.AlliesNextToMe:
                             text += "Attack from allies next to me ";
+                            break;
+                        case TargetTypes.AlliesInLineInFrontOfMe:
+                            text += "Attack from allies in the line in front of me";
                             break;
                         default:
                             text += "Their attack ";
@@ -585,6 +601,11 @@ public static class CardTranslator
 					text += BuffEffectDescription(buff);
 				}
 			}
+
+			if (buff.multiplyThisBuff) {
+				text += $", for each{UnitDefinitionDescription(buff.multiplyForEach, buff.source?.card)}";
+			}
+
 			if(buff.requirements.Count > 0 && !buff.activatesOnHit && (index == buffs.Count-1 || !allSameRequirements) && !allSameTargetButCanHaveExtraWithRequirements )
 			{
 				text += RequirementDescription(buff.requirements, buff.target, buff.source?.card);
@@ -912,6 +933,7 @@ public static class CardTranslator
 					case TargetTypes.AllAllies:
 					case TargetTypes.AllEnemies:
 					case TargetTypes.AlliesNextToMe:
+					case TargetTypes.AlliesInLineInFrontOfMe:
 						switch (requirement.requirement)
 						{
 							case RequirementTypes.TargetHasSubtypesOrFactions:
@@ -1149,7 +1171,10 @@ public static class CardTranslator
 			case TargetTypes.AlliesNextToMe:
 				text += "allies next to me";
 			break;
-			case TargetTypes.AllEnemies:
+            case TargetTypes.AlliesInLineInFrontOfMe:
+                text += "allies in the line in front of me";
+            break;
+            case TargetTypes.AllEnemies:
 				text += "all enemies";
 			break;
 		}
@@ -1340,7 +1365,29 @@ public static class CardTranslator
 					{
 						text += " as extra attacks ";
 					}
-                } else {
+                }
+                else if (buff.specialEffect == BuffSpecialEffects.GrantAttackEffect)
+                {
+					foreach (AttackEffect attackEffect in buff.attackEffect)
+					{
+						switch (attackEffect.effectType)
+						{
+							case AttackEffects.SplashDamage:
+                                text += TextFormat(NumberWithSign(attackEffect.value), null, attackEffect.valueCanBeAugmented);
+								text += " splash damage";
+                                break;
+							case AttackEffects.SelfDamage:
+                                text += TextFormat(NumberWithSign(attackEffect.value), null, attackEffect.valueCanBeAugmented);
+								text += TextFormat(" self damage", "self-damage");
+                                break;
+							case AttackEffects.ApplyDebuff:
+							case AttackEffects.Execute:
+							default:
+								break;
+						}
+					}
+                }
+                else {
 					text += AttributeAndValue(buff);
 				}
 				if (buff.activatesOnHit)
@@ -1427,15 +1474,7 @@ public static class CardTranslator
         string text = "";
 		for (int i = 0; i < unitDefinitions.Count; i++)
 		{
-			switch (unitDefinitions[i])
-			{
-				case TargetUnitDefinition.SameAsMyself:
-					text += $" any <b>{(card?.Name ?? "card of my kind")}</b>";
-					break;
-				case TargetUnitDefinition.TheLeader:
-					text += $" the {TextFormat("leader","subtype")}";
-					break;
-			}
+            text += UnitDefinitionDescription(unitDefinitions[i], card);
             if (i < unitDefinitions.Count - 2)
             {
                 text += ", ";
@@ -1447,8 +1486,35 @@ public static class CardTranslator
         }
 		return text;
     }
+    public static string UnitDefinitionDescription(TargetUnitDefinition unitDefinition, Card card = null)
+	{
+        string text = "";
+        switch (unitDefinition)
+        {
+            case TargetUnitDefinition.SameAsMyself:
+                text += $" any <b>{(card?.Name ?? "card of my kind")}</b>";
+                break;
+            case TargetUnitDefinition.TheLeader:
+                text += $" the {TextFormat("leader", "subtype")}";
+                break;
+            case TargetUnitDefinition.BenefitedYatzasAndDoragons:
+                text += $" benefited ";
+				if (card != null && ( card.Subtypes.Contains(UnitSubtype.Yatza) || card.Subtypes.Contains(UnitSubtype.Doragon) ) ) {
+					if (card.Subtypes.Contains(UnitSubtype.Yatza))
+						text += $"{TextFormat("Doragon", "subtype")}";
+					if (card.Subtypes.Contains(UnitSubtype.Doragon))
+						text += $"{TextFormat("Yatza", "subtype")}";
+                } else
+				{
+					text += $"{TextFormat("Doragon", "subtype")} or {TextFormat("Yatza", "subtype")}";
+				}
+                break;
+        }
+        return text;
+    }
 
-	public static string GeneratePlayerSkillBuffText(List<PlayerBuffs> playerBuffs, PassiveSkill passiveSkill = null)
+
+    public static string GeneratePlayerSkillBuffText(List<PlayerBuffs> playerBuffs, PassiveSkill passiveSkill = null)
 	{
 		string text = "";
         foreach (PlayerBuffs pBuff in playerBuffs)

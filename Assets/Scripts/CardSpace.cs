@@ -37,6 +37,7 @@ public class CardSpace : MonoBehaviour, IDropHandler {
 	public Image DefenderBarrier;
 	public int myIndexInRow = 0;
 	public BoardRow myRow;
+	public int myRowIndex = 0;
 
 	public void OnDrop(PointerEventData eventData){
 		// Debug.Log("OnDrop");
@@ -105,16 +106,29 @@ public class CardSpace : MonoBehaviour, IDropHandler {
 	private bool IsInLineBehind(CardSpace cardSpace)
 	{
         bool itIs = false;
-        if (Owner.MyBoardRows[myIndexInRow+1] != null)
+        if (Owner.MyBoardRows[myRowIndex + 1] != null)
 		{
-			if (Owner.MyBoardRows[myIndexInRow + 1].BoardSpaces.Contains(cardSpace)) {
+			if (Owner.MyBoardRows[myRowIndex  + 1].BoardSpaces.Contains(cardSpace)) {
 				itIs = true;
 			}
 		}
 		return itIs;
     }
 
-	public bool IsNextToMe(CardSpace otherSpace)
+    public bool IsInLineInFront(CardSpace cardSpace)
+    {
+        bool itIs = false;
+        foreach (CardSpace space in SpacesInFrontOfMe())
+        {
+            if (space == cardSpace)
+            {
+                itIs = true;
+            }
+        }
+        return itIs;
+    }
+
+    public bool IsNextToMe(CardSpace otherSpace)
 	{
 		bool itIs = false;
 		if (IsInSameLine(otherSpace))
@@ -143,11 +157,24 @@ public class CardSpace : MonoBehaviour, IDropHandler {
 		return spacesNextToMe;
     }
 
-	// public delegate void VoidCallback();
-	// private void AnimEnd(System.DateTime? time = null){
-	//     Debug.Log("Animation ended");
-	// }
-	private void PlaceCard(CardDisplay card, System.Action OnAnimEnd = null){
+    public List<CardSpace> SpacesInFrontOfMe()
+    {
+        List<CardSpace> spacesInFrontOfMe = new List<CardSpace>();
+        if (Owner.MyBoardRows[myRowIndex - 1] != null)
+		{
+			for (int i = 0; i < Owner.MyBoardRows[myRowIndex - 1].BoardSpaces.Count; i++)
+			{
+				spacesInFrontOfMe.Add(Owner.MyBoardRows[myRowIndex - 1].BoardSpaces[i]);
+			}
+		}
+        return spacesInFrontOfMe;
+    }
+
+    // public delegate void VoidCallback();
+    // private void AnimEnd(System.DateTime? time = null){
+    //     Debug.Log("Animation ended");
+    // }
+    private void PlaceCard(CardDisplay card, System.Action OnAnimEnd = null){
 		//card.HasBeenPlayed = true;
 		card.OriginParent = transform;
 		card.transform.SetParent(card.OriginParent);
@@ -234,20 +261,35 @@ public class CardSpace : MonoBehaviour, IDropHandler {
 
 	public void SetRowPositionData()
 	{
-		foreach (BoardRow row in Owner.MyBoardRows)
+		for (int r = 0; r < Owner.MyBoardRows.Count; r++)
 		{
-			if (row.BoardSpaces.Contains(this))
-			{
-				myRow = row;
-				for (int i = 0; i < row.BoardSpaces.Count; i++)
-				{
-					if(row.BoardSpaces[i] == this)
-					{
-						myIndexInRow = i;
-					}
-				}
-			}
-		}
+            if (Owner.MyBoardRows[r].BoardSpaces.Contains(this))
+            {
+                myRow = Owner.MyBoardRows[r];
+				myRowIndex = r;
+                for (int i = 0; i < myRow.BoardSpaces.Count; i++)
+                {
+                    if (myRow.BoardSpaces[i] == this)
+                    {
+                        myIndexInRow = i;
+                    }
+                }
+            }
+        }
+		//foreach (BoardRow row in Owner.MyBoardRows)
+		//{
+		//	if (row.BoardSpaces.Contains(this))
+		//	{
+		//		myRow = row;
+		//		for (int i = 0; i < row.BoardSpaces.Count; i++)
+		//		{
+		//			if(row.BoardSpaces[i] == this)
+		//			{
+		//				myIndexInRow = i;
+		//			}
+		//		}
+		//	}
+		//}
 	}
 }
 

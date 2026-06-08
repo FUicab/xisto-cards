@@ -5997,6 +5997,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 11a824f601cfcca44ba40d1a054c8227, type: 2}
   - {fileID: 11400000, guid: 0b1df85d71fa9ad4bb424ee7587f5a6b, type: 2}
   - {fileID: 11400000, guid: ce757256c4470d642869c26a2f8d1a31, type: 2}
+  - {fileID: 11400000, guid: b028c8773d430c34282143af731168a7, type: 2}
+  - {fileID: 11400000, guid: 097ef245e73f1344a83da13dcbbcc06b, type: 2}
   Deck: []
   Players: []
   RoundActions: []
@@ -6026,18 +6028,17 @@ MonoBehaviour:
       Role: 0
       useAI: 0
       Gold: 0
+      GM: {fileID: 0}
       maxActionPoints: 3
       actionPoints: 3
       actionPointsTurnedToGold: 0
       Hand: []
       AvailableCardSlots: 
       MyBoardRows: []
-      buffs: []
       Dices: []
       selectedDice: {fileID: 0}
       activeBuffs: []
       passiveBuffs: []
-      GM: {fileID: 0}
   CurrentAction:
     movementType: 0
     CardInAction: {fileID: 0}
@@ -6064,24 +6065,24 @@ MonoBehaviour:
       Role: 0
       useAI: 0
       Gold: 0
+      GM: {fileID: 0}
       maxActionPoints: 3
       actionPoints: 3
       actionPointsTurnedToGold: 0
       Hand: []
       AvailableCardSlots: 
       MyBoardRows: []
-      buffs: []
       Dices: []
       selectedDice: {fileID: 0}
       activeBuffs: []
       passiveBuffs: []
-      GM: {fileID: 0}
   ActionPoints: 3
   InitialActionPoints: 3
   Host:
     Role: 0
     useAI: 0
     Gold: 0
+    GM: {fileID: 0}
     maxActionPoints: 3
     actionPoints: 3
     actionPointsTurnedToGold: 0
@@ -6109,16 +6110,15 @@ MonoBehaviour:
       - {fileID: 1365228193}
       - {fileID: 1384187055}
       - {fileID: 2063578075}
-    buffs: []
     Dices: []
     selectedDice: {fileID: 0}
     activeBuffs: []
     passiveBuffs: []
-    GM: {fileID: 0}
   Opponent:
     Role: 0
     useAI: 1
     Gold: 0
+    GM: {fileID: 0}
     maxActionPoints: 3
     actionPoints: 3
     actionPointsTurnedToGold: 0
@@ -6146,28 +6146,25 @@ MonoBehaviour:
       - {fileID: 2111037057}
       - {fileID: 1287371020}
       - {fileID: 1973690978}
-    buffs: []
     Dices: []
     selectedDice: {fileID: 0}
     activeBuffs: []
     passiveBuffs: []
-    GM: {fileID: 0}
   PlayerAtPlay:
     Role: 0
     useAI: 0
     Gold: 0
+    GM: {fileID: 0}
     maxActionPoints: 3
     actionPoints: 3
     actionPointsTurnedToGold: 0
     Hand: []
     AvailableCardSlots: 
     MyBoardRows: []
-    buffs: []
     Dices: []
     selectedDice: {fileID: 0}
     activeBuffs: []
     passiveBuffs: []
-    GM: {fileID: 0}
   turnStatus: 0
   TurnConfirmationButton: {fileID: 710178417}
   ConfirmationButtonImage: {fileID: 0}
@@ -6186,34 +6183,32 @@ MonoBehaviour:
       Role: 0
       useAI: 0
       Gold: 0
+      GM: {fileID: 0}
       maxActionPoints: 3
       actionPoints: 3
       actionPointsTurnedToGold: 0
       Hand: []
       AvailableCardSlots: 
       MyBoardRows: []
-      buffs: []
       Dices: []
       selectedDice: {fileID: 0}
       activeBuffs: []
       passiveBuffs: []
-      GM: {fileID: 0}
     OpponentProfile:
       Role: 0
       useAI: 0
       Gold: 0
+      GM: {fileID: 0}
       maxActionPoints: 3
       actionPoints: 3
       actionPointsTurnedToGold: 0
       Hand: []
       AvailableCardSlots: 
       MyBoardRows: []
-      buffs: []
       Dices: []
       selectedDice: {fileID: 0}
       activeBuffs: []
       passiveBuffs: []
-      GM: {fileID: 0}
     PrioritizesDefendersForDefendingOnly: 1
     PrioritizesDefendedBackline: 1
     PrefersToSaveAtLeast2GoldPerTurn: 1
@@ -6230,6 +6225,9 @@ MonoBehaviour:
     GM: {fileID: 0}
     TurnCount: 1
   MainUI: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!4 &921430698
 Transform:
   m_ObjectHideFlags: 0

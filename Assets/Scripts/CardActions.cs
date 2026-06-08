@@ -70,6 +70,7 @@ public class AttackAction : ActiveAction{
 		damageType = values.damageType;
 		damageMultiplier = values.damageMultiplier;
 		damageMultiplierCanBeAugmented = values.damageMultiplierCanBeAugmented;
+		flatDamageOverwrite = values.flatDamageOverwrite;
 		target = values.target; 
 		//attackEffect = values.attackEffect;
 		//temporaryBuffs = values.temporaryBuffs;
@@ -107,6 +108,8 @@ public class BuffAction : ActiveAction{
 	public List<UnitSubtype> grantedSubtypes = new();
     public List<AttackEffect> attackEffect = new();
     public List<SpecialBehavior> specialBehavior = new();
+	public bool multiplyThisBuff = false;
+	public TargetUnitDefinition multiplyForEach = TargetUnitDefinition.BenefitedYatzasAndDoragons; /* The buff re-applies its effects with each unit that matches the definition. If no matches are found the buff does not apply. */
     public AttackAction originAttack;
     public PassiveSkill originPassive;
 
@@ -118,7 +121,6 @@ public class BuffAction : ActiveAction{
 		amountCanBeAugmented = values.amountCanBeAugmented;
 		specialEffect = values.specialEffect;
         //requirements = values.requirements;
-        specialBehavior = values.specialBehavior;
 		source = values.source;
 		receiver = values.receiver;
 		originPassive = values.originPassive;
@@ -126,6 +128,9 @@ public class BuffAction : ActiveAction{
 		isDebuff = values.isDebuff;
 		activatesOnHit = values.activatesOnHit;
 		grantedSubtypes = values.grantedSubtypes;
+        specialBehavior = values.specialBehavior;
+		multiplyThisBuff = values.multiplyThisBuff;
+		multiplyForEach = values.multiplyForEach;
 		values.requirements.ForEach(req => { requirements?.Add(new Requirements(req, (originAttack != null ? originAttack : this) ) ); });
         values.onHitRequirements.ForEach(req => { onHitRequirements?.Add(new Requirements(req, (originAttack != null ? originAttack : this) ) ); });
         values.extraAttacks.ForEach(atk => { extraAttacks?.Add(new AttackAction(atk) { source = values.source, isExtra = true } ); });
@@ -367,7 +372,8 @@ public enum TargetTypes{
 	SameTarget,
 	AlliesNextToMe,
 	SingleAlly,
-	AllEnemies
+	AllEnemies,
+	AlliesInLineInFrontOfMe
 }
 public enum AttackEffects{
 	SplashDamage,
@@ -413,7 +419,8 @@ public enum Comparison
 }
 public enum TargetUnitDefinition{
 	SameAsMyself,
-	TheLeader
+	TheLeader,
+	BenefitedYatzasAndDoragons
 }
 public enum TriggerTypes{
 	OnAttack,

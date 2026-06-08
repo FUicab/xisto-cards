@@ -94,7 +94,9 @@ public static class CardActionTools
             }
         }
 
-        foreach (AttackEffect effect in attack.attackEffect)
+        List<AttackEffect> attackEffectsFromBuffs = attacker.appliedBuffs.Where(buff => buff.specialEffect == BuffSpecialEffects.GrantAttackEffect && buff.attackEffect.Count > 0 && !buff.activatesOnHit ).SelectMany(x => x.attackEffect).ToList();
+
+        foreach (AttackEffect effect in attack.attackEffect.Concat(attackEffectsFromBuffs).ToList())
 		{
 			switch (effect.effectType)
 			{
@@ -270,6 +272,12 @@ public static class CardActionTools
                 foreach (CardSpace cardSpace in action.source.mySpace.SpacesNextToMe().Where(x => x.PlayingCard != null && action.TargetMeetsRequirements(x.PlayingCard)))
                 {
 					targets.Add(cardSpace.PlayingCard);
+                }
+                break;
+            case TargetTypes.AlliesInLineInFrontOfMe:
+                foreach (CardSpace cardSpace in action.source.mySpace.SpacesInFrontOfMe().Where(x => x.PlayingCard != null && action.TargetMeetsRequirements(x.PlayingCard)))
+                {
+                    targets.Add(cardSpace.PlayingCard);
                 }
                 break;
         }
@@ -695,7 +703,8 @@ public static class CardActionTools
 			case TargetTypes.AlliesInSameLine:
 			case TargetTypes.AllAllies:
 			case TargetTypes.AlliesNextToMe:
-			case TargetTypes.SingleAlly:
+            case TargetTypes.AlliesInLineInFrontOfMe:
+            case TargetTypes.SingleAlly:
 				itIs = true;
 				break;
 			case TargetTypes.SingleEnemy:
@@ -723,6 +732,7 @@ public static class CardActionTools
 			case TargetTypes.AllAllies:
 			case TargetTypes.AlliesNextToMe:
             case TargetTypes.AllEnemies:
+            case TargetTypes.AlliesInLineInFrontOfMe:
                 itIs = true;
 				break;
 		}
