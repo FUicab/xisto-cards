@@ -373,7 +373,8 @@ public enum TargetTypes{
 	AlliesNextToMe,
 	SingleAlly,
 	AllEnemies,
-	AlliesInLineInFrontOfMe
+	AlliesInLineInFrontOfMe,
+	AlliesInLineBehind
 }
 public enum AttackEffects{
 	SplashDamage,
@@ -391,7 +392,8 @@ public enum BuffSpecialEffects
 	Stun,
 	Disarm,
 	Disrupt,
-	GrantAttackEffect
+	GrantAttackEffect,
+	AllowGuardingPoseRespondToRangedAttacks
 }
 public enum SpecialBehavior{
 	OnlyActivatesOnce

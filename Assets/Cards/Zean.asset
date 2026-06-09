@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Zean
   m_EditorClassIdentifier: Assembly-CSharp::Card
   Name: Zean Vanni
-  CardCount: 100
+  CardCount: 5
   Type: 0
   Subtypes: 0c0000000a000000
-  Cost: 1
+  Cost: 4
   Artwork: {fileID: 21300000, guid: f27d32b3a3968ea4082c94d751bd7cce, type: 3}
   Origin: 0000000003000000
   MaxHP: 10

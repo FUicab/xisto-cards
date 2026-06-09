@@ -80,6 +80,23 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		}
 	}
 
+	/* This determines if the unit has the capability of answering ranged attacks when guarding. */
+	public bool CanFightBackAgainstRangedAttacksWhenGuarding
+	{
+		get
+		{
+			bool itCan = false;
+			if (guardingPose) /* You would not be able to respond if you're not guarding in the first place. */
+			{
+				if(appliedBuffs.Exists(buff => buff.specialEffect == BuffSpecialEffects.AllowGuardingPoseRespondToRangedAttacks))
+				{
+					itCan = true;
+				}
+			}
+			return itCan;
+		}
+	}
+
     /* Get functions. They apply buffs to properties and make the calculation before hand. These values cannot be changed by code and should only be manipulated by buffs or by modifying the card itself. */
     public List<UnitSubtype> acquiredSubtypes {
 		get
@@ -585,11 +602,22 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		myAttackers.Add(attack.source);
 		if (attack.attackActionOutput.deathByExecution) { hp = 0; }
 		ReceiveDamage(attack.attackActionOutput.damage);
-		if (guardingPose && !attack.isExtra && attack.attackActionOutput.damageType == DamageTypes.Melee)
+		if (CanFightBack(attack))
 		{
-			AttackAction counterAttack = new(this);
-			attack.source.ReceiveDamageFromAttack(counterAttack);
+			FightBack(attack.source);
 		}
+    }
+
+	public bool CanFightBack(AttackAction attack)
+	{
+		bool itCan = guardingPose && !attack.isExtra && (attack.attackActionOutput.damageType == DamageTypes.Melee || ( CanFightBackAgainstRangedAttacksWhenGuarding && attack.attackActionOutput.damageType == DamageTypes.Ranged ) );
+		return itCan;
+	}
+
+	public void FightBack(CardDisplay victim)
+	{
+        AttackAction counterAttack = new(this);
+        victim.ReceiveDamageFromAttack(counterAttack);
     }
 
     public void ReceiveActiveBuff(BuffAction newBuff)

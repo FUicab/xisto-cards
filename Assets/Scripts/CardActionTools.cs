@@ -247,7 +247,7 @@ public static class CardActionTools
             case TargetTypes.AllAllies:
                 foreach (BoardRow row in action.source.mySpace.Owner.MyBoardRows)
                 {
-                    foreach (CardSpace cardSpace in row.BoardSpaces.Where(x => x.PlayingCard != null && action.TargetMeetsRequirements(x.PlayingCard)))
+                    foreach (CardSpace cardSpace in row.BoardSpaces.Where(x => x.HasCard && action.TargetMeetsRequirements(x.PlayingCard)))
                     {
 						targets.Add(cardSpace.PlayingCard);
                     }
@@ -256,26 +256,32 @@ public static class CardActionTools
             case TargetTypes.AllEnemies:
                 foreach (BoardRow row in action.source.mySpace.Owner.otherPlayer.MyBoardRows)
                 {
-                    foreach (CardSpace cardSpace in row.BoardSpaces.Where(x => x.PlayingCard != null && action.TargetMeetsRequirements(x.PlayingCard)))
+                    foreach (CardSpace cardSpace in row.BoardSpaces.Where(x => x.HasCard && action.TargetMeetsRequirements(x.PlayingCard)))
                     {
                         targets.Add(cardSpace.PlayingCard);
                     }
                 }
                 break;
             case TargetTypes.AlliesInSameLine:
-                foreach (CardSpace cardSpace in action.source.mySpace.myRow.BoardSpaces.Where(x => x.PlayingCard != null && action.TargetMeetsRequirements(x.PlayingCard)))
+                foreach (CardSpace cardSpace in action.source.mySpace.myRow.BoardSpaces.Where(x => x.HasCard && action.TargetMeetsRequirements(x.PlayingCard)))
                 {
                     targets.Add(cardSpace.PlayingCard);
                 }
                 break;
             case TargetTypes.AlliesNextToMe:
-                foreach (CardSpace cardSpace in action.source.mySpace.SpacesNextToMe().Where(x => x.PlayingCard != null && action.TargetMeetsRequirements(x.PlayingCard)))
+                foreach (CardSpace cardSpace in action.source.mySpace.SpacesNextToMe().Where(x => x.HasCard && action.TargetMeetsRequirements(x.PlayingCard)))
                 {
 					targets.Add(cardSpace.PlayingCard);
                 }
                 break;
             case TargetTypes.AlliesInLineInFrontOfMe:
-                foreach (CardSpace cardSpace in action.source.mySpace.SpacesInFrontOfMe().Where(x => x.PlayingCard != null && action.TargetMeetsRequirements(x.PlayingCard)))
+                foreach (CardSpace cardSpace in action.source.mySpace.SpacesInLineInFrontOfMe().Where(x => x.HasCard && action.TargetMeetsRequirements(x.PlayingCard)))
+                {
+                    targets.Add(cardSpace.PlayingCard);
+                }
+                break;
+            case TargetTypes.AlliesInLineBehind:
+                foreach (CardSpace cardSpace in action.source.mySpace.SpacesInLineInBehindMe().Where(x => x.HasCard && action.TargetMeetsRequirements(x.PlayingCard)))
                 {
                     targets.Add(cardSpace.PlayingCard);
                 }
@@ -689,6 +695,8 @@ public static class CardActionTools
             case TargetTypes.AlliesNextToMe: isIt = true; break;
             case TargetTypes.AlliesInSameLine: isIt = true; break;
             case TargetTypes.SingleAlly: isIt = false; break;
+            case TargetTypes.AlliesInLineInFrontOfMe: isIt = true; break;
+            case TargetTypes.AlliesInLineBehind: isIt = true; break;
             default: isIt = true; break;
         }
 		return isIt;
@@ -704,6 +712,7 @@ public static class CardActionTools
 			case TargetTypes.AllAllies:
 			case TargetTypes.AlliesNextToMe:
             case TargetTypes.AlliesInLineInFrontOfMe:
+            case TargetTypes.AlliesInLineBehind:
             case TargetTypes.SingleAlly:
 				itIs = true;
 				break;
@@ -733,6 +742,7 @@ public static class CardActionTools
 			case TargetTypes.AlliesNextToMe:
             case TargetTypes.AllEnemies:
             case TargetTypes.AlliesInLineInFrontOfMe:
+            case TargetTypes.AlliesInLineBehind:
                 itIs = true;
 				break;
 		}

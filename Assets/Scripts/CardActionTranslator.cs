@@ -344,7 +344,10 @@ public static class CardTranslator
 						case TargetTypes.AlliesInLineInFrontOfMe:
 							text += "the allies in the line in front of me";
 							break;
-						default:
+                        case TargetTypes.AlliesInLineBehind:
+							text += "the allies in the line behind me";
+							break;
+                        default:
 							text += "they";
 							break;
 					}
@@ -428,6 +431,9 @@ public static class CardTranslator
 							break;
                         case TargetTypes.AlliesInLineInFrontOfMe:
                             text += "s the allies in the line in front of me";
+                            break;
+                        case TargetTypes.AlliesInLineBehind:
+                            text += "s the allies in the line behind me";
                             break;
                         default:
 							text += "s them";
@@ -520,13 +526,47 @@ public static class CardTranslator
                         case TargetTypes.AlliesInLineInFrontOfMe:
                             text += "Attack from allies in the line in front of me";
                             break;
+                        case TargetTypes.AlliesInLineBehind:
+                            text += "Attack from allies in the line behind me";
+                            break;
                         default:
                             text += "Their attack ";
                             break;
                     }
                     text += $" {AttackEffectDescription(buff.attackEffect[0])}";
                 }
-				else
+                else if (buff.specialEffect == BuffSpecialEffects.AllowGuardingPoseRespondToRangedAttacks)
+                {
+                    switch (buff.target)
+                    {
+                        case TargetTypes.Self:
+                            text += "I";
+                            break;
+                        case TargetTypes.AlliesInSameLine:
+                            text += "My allies on the same line";
+                            break;
+                        case TargetTypes.SingleEnemy:
+                        case TargetTypes.LineOfEnemies:
+                        case TargetTypes.AllEnemies:
+                            text += "The enemies";
+                            break;
+                        case TargetTypes.SingleAlly:
+                        case TargetTypes.AllAllies:
+                            text += "My allies";
+                            break;
+                        case TargetTypes.AlliesNextToMe:
+                            text += "The allies next to me";
+                            break;
+                        case TargetTypes.AlliesInLineInFrontOfMe:
+                            text += "The allies in the line in front of me";
+                            break;
+                        default:
+                            text += "They";
+                            break;
+                    }
+                    text += $" can {TextFormat("fight back", Attributes.Attack)} {TextFormat("against ranged attacks",Attributes.Defense)} when {TextFormat("guarding", "guarding")}";
+                }
+                else
 				{
 					switch (buff.Attribute)
 					{
@@ -934,6 +974,7 @@ public static class CardTranslator
 					case TargetTypes.AllEnemies:
 					case TargetTypes.AlliesNextToMe:
 					case TargetTypes.AlliesInLineInFrontOfMe:
+					case TargetTypes.AlliesInLineBehind:
 						switch (requirement.requirement)
 						{
 							case RequirementTypes.TargetHasSubtypesOrFactions:
@@ -1177,7 +1218,10 @@ public static class CardTranslator
             case TargetTypes.AllEnemies:
 				text += "all enemies";
 			break;
-		}
+            case TargetTypes.AlliesInLineBehind:
+                text += "allies in the line behind me";
+            break;
+        }
 		return text;
 	}
 
@@ -1365,6 +1409,9 @@ public static class CardTranslator
 					{
 						text += " as extra attacks ";
 					}
+                } else if (buff.specialEffect == BuffSpecialEffects.AllowGuardingPoseRespondToRangedAttacks)
+                {
+                    text += $"When {TextFormat("guarding", "guarding")}, I can {TextFormat("fight back", Attributes.Attack)} {TextFormat("against ranged attacks", Attributes.Defense)}, ";
                 }
                 else if (buff.specialEffect == BuffSpecialEffects.GrantAttackEffect)
                 {

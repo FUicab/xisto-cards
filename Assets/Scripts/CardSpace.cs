@@ -106,19 +106,20 @@ public class CardSpace : MonoBehaviour, IDropHandler {
 	private bool IsInLineBehind(CardSpace cardSpace)
 	{
         bool itIs = false;
-        if (Owner.MyBoardRows[myRowIndex + 1] != null)
-		{
-			if (Owner.MyBoardRows[myRowIndex  + 1].BoardSpaces.Contains(cardSpace)) {
-				itIs = true;
-			}
-		}
-		return itIs;
+        foreach (CardSpace space in SpacesInLineInBehindMe())
+        {
+            if (space == cardSpace)
+            {
+                itIs = true;
+            }
+        }
+        return itIs;
     }
 
     public bool IsInLineInFront(CardSpace cardSpace)
     {
         bool itIs = false;
-        foreach (CardSpace space in SpacesInFrontOfMe())
+        foreach (CardSpace space in SpacesInLineInFrontOfMe())
         {
             if (space == cardSpace)
             {
@@ -157,7 +158,7 @@ public class CardSpace : MonoBehaviour, IDropHandler {
 		return spacesNextToMe;
     }
 
-    public List<CardSpace> SpacesInFrontOfMe()
+    public List<CardSpace> SpacesInLineInFrontOfMe()
     {
         List<CardSpace> spacesInFrontOfMe = new List<CardSpace>();
         if (myRowIndex - 1 >= 0 && Owner.MyBoardRows[myRowIndex - 1] != null)
@@ -167,6 +168,19 @@ public class CardSpace : MonoBehaviour, IDropHandler {
 				spacesInFrontOfMe.Add(Owner.MyBoardRows[myRowIndex - 1].BoardSpaces[i]);
 			}
 		}
+        return spacesInFrontOfMe;
+    }
+
+    public List<CardSpace> SpacesInLineInBehindMe()
+    {
+        List<CardSpace> spacesInFrontOfMe = new List<CardSpace>();
+        if (myRowIndex + 1 < Owner.MyBoardRows.Count && Owner.MyBoardRows[myRowIndex + 1] != null)
+        {
+            for (int i = 0; i < Owner.MyBoardRows[myRowIndex + 1].BoardSpaces.Count; i++)
+            {
+                spacesInFrontOfMe.Add(Owner.MyBoardRows[myRowIndex + 1].BoardSpaces[i]);
+            }
+        }
         return spacesInFrontOfMe;
     }
 
