@@ -57,8 +57,31 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
     /* The passives that have been used during this round and can't be used again until next round */
     [HideInInspector] public List<PassiveSkill> usedPassives = new();
 
-	/* Get functions. They apply buffs to properties and make the calculation before hand. These values cannot be changed by code and should only be manipulated by buffs or by modifying the card itself. */
-	public List<UnitSubtype> acquiredSubtypes {
+    /* This is used to determine if Doragon and Yatza passives can be activated. Having none of those subtypes will make this always return false. */
+	public bool ElementalExchangeActivated
+	{
+		get
+		{
+			bool activated = false; /* Only 1 ally has to be of the other type to allow activation. */
+			List<UnitSubtype> allSubtypes = acquiredSubtypes.Concat(card.Subtypes).ToList();
+			List<CardDisplay> cardsAtSight = mySpace.SpacesNextToMe().Concat(mySpace.Defendeds).Concat(mySpace.Defenders).Where(space => space.HasCard).Select(space => space.PlayingCard).ToList();
+			cardsAtSight.ForEach(cardDisplay => {
+				if (allSubtypes.Contains(UnitSubtype.Doragon)) /* If also has Yatza subtype it gets ignored over Doragon. (Because that should not be) */
+				{
+					if(cardDisplay.acquiredSubtypes.Concat(cardDisplay.card.Subtypes).ToList().Contains(UnitSubtype.Yatza))
+						activated = true;
+				} else if (allSubtypes.Contains(UnitSubtype.Yatza))
+				{
+                    if (cardDisplay.acquiredSubtypes.Concat(cardDisplay.card.Subtypes).ToList().Contains(UnitSubtype.Doragon))
+                        activated = true;
+                }
+            });
+			return activated;
+		}
+	}
+
+    /* Get functions. They apply buffs to properties and make the calculation before hand. These values cannot be changed by code and should only be manipulated by buffs or by modifying the card itself. */
+    public List<UnitSubtype> acquiredSubtypes {
 		get
 		{
 			List<UnitSubtype> subtypes = new();
@@ -721,7 +744,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
                         foreach (CardDisplay target in buff.GetImplicitTargetsOfAction())
 						{
 							//Debug.Log($"{passive.title} from {passive.source.card.Name} is checking for validity on {target.card.Name}: {buff.TargetMeetsRequirements(target)}");
-							if (!target.passiveBuffs.Exists(x => x.originPassive.title == passive.title && x.originPassive.source == passive.source && buff.Attribute == x.Attribute && buff.amount == x.amount && buff.requirements.Count == x.requirements.Count) && passive.CanBeUsedThisRound) {
+							if (!target.passiveBuffs.Exists(x => x.originPassive.title == passive.title && x.originPassive.source == passive.source && buff.Attribute == x.Attribute && buff.amount == x.amount && buff.requirements.Count == x.requirements.Count) && passive.CanBeUsedThisRound && (ElementalExchangeActivated || !passive.requiresElementalExchange)) {
                                 //Debug.Log($"{passive.title} from {passive.source.card.Name} was successfully applied to {target.card.Name}");
                                 target.ReceivePassiveBuff(buff);
 							}

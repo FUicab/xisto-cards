@@ -160,7 +160,7 @@ public class CardSpace : MonoBehaviour, IDropHandler {
     public List<CardSpace> SpacesInFrontOfMe()
     {
         List<CardSpace> spacesInFrontOfMe = new List<CardSpace>();
-        if (Owner.MyBoardRows[myRowIndex - 1] != null)
+        if (myRowIndex - 1 >= 0 && Owner.MyBoardRows[myRowIndex - 1] != null)
 		{
 			for (int i = 0; i < Owner.MyBoardRows[myRowIndex - 1].BoardSpaces.Count; i++)
 			{
