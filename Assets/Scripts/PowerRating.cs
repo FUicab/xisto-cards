@@ -339,7 +339,8 @@ public class PowerRating
 				effectPower += baseValue * -1;
 				break;
 			case AttackEffects.ApplyDebuff:
-				effectPower += GetBuffPowerBonus(attackEffect.buffs);
+            case AttackEffects.ApplyBuff:
+                effectPower += GetBuffPowerBonus(attackEffect.buffs);
 				break;
 			case AttackEffects.Execute:
                 effectPower += 12f;

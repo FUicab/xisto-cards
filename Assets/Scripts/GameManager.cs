@@ -317,7 +317,10 @@ public class GameManager : MonoBehaviour
 							case TargetTypes.SingleEnemy:
 								tooltipMessage += " Select 1 enemy to ";
 							break;
-						}
+                            case TargetTypes.SingleAlly:
+                                tooltipMessage += " Select 1 ally to ";
+                            break;
+                        }
 						if(actionObject.action.buffs[CurrentAction.nextNullIndex].amount > 0)
 						{
 							tooltipMessage += $"grant {CardTranslator.AttributeAndValue(actionObject.action.buffs[CurrentAction.nextNullIndex])}.";

@@ -268,7 +268,7 @@ public static class CardTranslator
         return text;
     }
 
-	public static string GenerateSkillBuffText(List<BuffAction> buffs, PassiveSkill passiveSkill = null)
+	public static string GenerateSkillBuffText(List<BuffAction> buffs, PassiveSkill passiveSkill = null, bool startWithUppercase = true)
 	{
 		string text = "";
 		int index = 0;
@@ -317,7 +317,7 @@ public static class CardTranslator
 
         foreach (var buff in buffs)
 		{
-			if(index == 0){
+			if(index == 0 && startWithUppercase){
 				if (passiveSkill != null && (passiveSkill.trigger == TriggerTypes.OnAttack || buff.activatesOnHit))
 				{
 					text += "When ";
@@ -611,12 +611,12 @@ public static class CardTranslator
 			} else {
 				if(buffs.Count-1 == index){
                     if (allSameTargetButCanHaveExtraWithRequirements) { text += " to "+TargetTypeDescription(buff.target);}
-                    text += " and ";
+                    if (index != 0) text += " and ";
 					if(buff.Attribute == Attributes.Health)
 					{
-						text += "heals ";
+						text += TextFormat("heals ", Attributes.Health);
 					}
-					if(buff.amount != 0)
+					if(buff.amount != 0 && !buff.addDamageDealtAsValue)
 					{
 						if (allSameTargetButCanHaveExtraWithRequirements) { text += " an additional "; }
 						text += AttributeAndValue(buff);
@@ -626,6 +626,21 @@ public static class CardTranslator
 							text += TargetTypeDescription(buff.target);
 						}
                     }
+
+                    if (buff.addDamageDealtAsValue) {
+						switch (buff.Attribute)
+						{
+							case Attributes.Health:
+								text += TargetTypeDescription(buff.target);
+								text += " for";
+								if (buff.amount != 0){
+									text += $"{AttributeAndValue(buff)} and";
+								}
+								text += " the amount of damage dealt";
+							break;
+						}
+					}
+
 					text += BuffEffectDescription(buff);
 				} else {
 					text += ", ";
@@ -1212,6 +1227,12 @@ public static class CardTranslator
 			case TargetTypes.AlliesNextToMe:
 				text += "allies next to me";
 			break;
+            case TargetTypes.SingleAlly:
+                text += "an ally";
+            break;
+            case TargetTypes.MostHarmedAlly:
+                text += "the most harmed ally <i>(prioritizing the front row)</i>";
+            break;
             case TargetTypes.AlliesInLineInFrontOfMe:
                 text += "allies in the line in front of me";
             break;
@@ -1346,6 +1367,9 @@ public static class CardTranslator
 					index += 1;
 				}
 			break;
+            case AttackEffects.ApplyBuff:
+				text += GenerateSkillBuffText(effect.buffs, null, false);
+            break;
             case AttackEffects.Execute:
                 text += $"{TextFormat("executes",Attributes.Attack)}{RequirementDescription(effect.requirements, effect.originAttack?.target ?? TargetTypes.SingleEnemy, effect.originAttack?.source?.card, "onHit")}{(effect.effectChecksAfterAttack? " after the attack": "")}";
 			break;

@@ -213,16 +213,17 @@ public static class CardActionTools
 				for (int i = 0; i < ActionData.targets.Count; i++)
 				{
 					BuffAction buff = ActionData.actionObject.action.buffs[i];
-					List<CardDisplay> targets = new();
-					if (buff.isTargetImplicit) {
-						targets.AddRange(buff.GetImplicitTargetsOfAction().Where(x => buff.TargetMeetsRequirements(x)));
-					} else if (ActionData.targets[i] != null) {
-						if (buff.TargetMeetsRequirements(ActionData.targets[i])) { targets.Add(ActionData.targets[i]); }
-                    }
-                    foreach (CardDisplay cardDisplay in targets)
-                    {
-						cardDisplay.ReceiveActiveBuff(buff);
-                    }
+                    PerformBuffAction(buff, ActionData.targets[i]);
+					//List<CardDisplay> targets = new();
+					//if (buff.isTargetImplicit) {
+					//	targets.AddRange(buff.GetImplicitTargetsOfAction().Where(x => buff.TargetMeetsRequirements(x)));
+					//} else if (ActionData.targets[i] != null) {
+					//	if (buff.TargetMeetsRequirements(ActionData.targets[i])) { targets.Add(ActionData.targets[i]); }
+     //               }
+     //               foreach (CardDisplay cardDisplay in targets)
+     //               {
+					//	cardDisplay.ReceiveActiveBuff(buff);
+     //               }
 				}
 				break;
 			case ActionTypes.PlayerBuff:
@@ -234,6 +235,31 @@ public static class CardActionTools
                break;
 		}
 	}
+
+    public static void PerformBuffAction(BuffAction buffAction, CardDisplay target = null, AttackActionOutput attackOutput = null)
+    {
+        BuffAction buff = new(buffAction);
+        List<CardDisplay> realTargets = new();
+
+        if (buff.isTargetImplicit)
+        {
+            realTargets.AddRange(buff.GetImplicitTargetsOfAction().Where(x => buff.TargetMeetsRequirements(x)));
+        }
+        else if (target != null)
+        {
+            if (buff.TargetMeetsRequirements(target)) { realTargets.Add(target); }
+        }
+
+        if(attackOutput != null)
+        {
+            if(buff.addDamageDealtAsValue) { buff.amount += attackOutput.damage; }
+        }
+
+        foreach (CardDisplay cardDisplay in realTargets)
+        {
+            cardDisplay.ReceiveActiveBuff(buff);
+        }
+    }
 
 	public static List<CardDisplay> GetImplicitTargetsOfAction(ActiveAction action)
 	{
@@ -286,12 +312,43 @@ public static class CardActionTools
                     targets.Add(cardSpace.PlayingCard);
                 }
                 break;
+            case TargetTypes.MostHarmedAlly:
+                List<List<CardDisplay>> rows = new();
+                CardDisplay chosenTarget = action.source; /* If no ally was found to be harmed then it will heal themselves. */
+                bool found = false;
+
+                /* We should prioritize allies in the front-most rows */
+                Debug.Log($"Source: {action.source}");
+                Debug.Log($"Source of action: {action.source.card.Name}");
+                foreach (BoardRow row in action.source.Owner.MyBoardRows )
+                {
+                    rows.Add(new());
+                    foreach (CardSpace cardSpace in row.BoardSpaces.Where(x=>x.HasCard).OrderBy(x => x.PlayingCard.hp / x.PlayingCard.maxHP ))
+                    {
+                        if(cardSpace.PlayingCard.hp / cardSpace.PlayingCard.maxHP != 1) { /* 1 means unharmed */
+                            rows[cardSpace.myRowIndex].Add(cardSpace.PlayingCard);
+                        }
+                    }
+                }
+
+                foreach (List<CardDisplay> row in rows)
+                {
+                    if(row.Count > 0)
+                    {
+                        chosenTarget = row[0];
+                        found = true;
+                    }
+                    if (found) { break; }
+                }
+
+                targets.Add(chosenTarget);
+                break;
         }
 
-        return targets;
-	}
+    return targets;
+}
 
-	public static bool TargetMeetsRequirementsOfAction(CardDisplay target, ActiveAction action)
+public static bool TargetMeetsRequirementsOfAction(CardDisplay target, ActiveAction action)
 	{
 		bool itDoes = false;
 		//AttackAction attackAction = action as AttackAction;
@@ -580,8 +637,8 @@ public static class CardActionTools
         List<AttackEffect> effectsFromAttack = attackAction.attackEffect.ToList();
 		List<AttackEffect> effectsFromBuffs = attacker.appliedBuffs.Where(buff => buff.specialEffect == BuffSpecialEffects.GrantAttackEffect && buff.attackEffect.Count > 0).SelectMany(buff => buff.attackEffect).ToList();
 
-		List<AttackEffect> attackEffectsBeforeAttack = effectsFromAttack.Concat(effectsFromBuffs).Where(atkFx => !atkFx.effectChecksAfterAttack).ToList();
-        List<AttackEffect> attackEffectsAfterAttack = effectsFromAttack.Concat(effectsFromBuffs).Where(atkFx => atkFx.effectChecksAfterAttack).ToList();
+		List<AttackEffect> attackEffectsBeforeAttack = effectsFromAttack.Concat(effectsFromBuffs).Where(atkFx => !atkFx.effectChecksAfterAttack).Select(atkFx => new AttackEffect(atkFx, attackAction)).ToList();
+        List<AttackEffect> attackEffectsAfterAttack = effectsFromAttack.Concat(effectsFromBuffs).Where(atkFx => atkFx.effectChecksAfterAttack).Select(atkFx => new AttackEffect(atkFx, attackAction)).ToList();
 
         foreach (BuffAction buff in attackAction.temporaryBuffs)
         {
@@ -671,7 +728,7 @@ public static class CardActionTools
 		bool canExecute = (output.targetStats.hp <= 2 && attacker.card.Subtypes.Contains(UnitSubtype.Executioner) || attackerTempModifiers.willExecute );
 		output.deathByExecution = canExecute;
 
-		if (output.targetStats.hp <= 0 || canExecute ) {
+        if (output.targetStats.hp <= 0 || canExecute ) {
 			output.resultsInDeath = true;
 		}
         
@@ -697,6 +754,7 @@ public static class CardActionTools
             case TargetTypes.SingleAlly: isIt = false; break;
             case TargetTypes.AlliesInLineInFrontOfMe: isIt = true; break;
             case TargetTypes.AlliesInLineBehind: isIt = true; break;
+            case TargetTypes.MostHarmedAlly: isIt = true; break;
             default: isIt = true; break;
         }
 		return isIt;
@@ -714,6 +772,7 @@ public static class CardActionTools
             case TargetTypes.AlliesInLineInFrontOfMe:
             case TargetTypes.AlliesInLineBehind:
             case TargetTypes.SingleAlly:
+            case TargetTypes.MostHarmedAlly:
 				itIs = true;
 				break;
 			case TargetTypes.SingleEnemy:
@@ -734,6 +793,7 @@ public static class CardActionTools
 			case TargetTypes.SingleEnemy:
 			case TargetTypes.SameTarget:
 			case TargetTypes.SingleAlly:
+            case TargetTypes.MostHarmedAlly:
 				itIs = false;
 				break;
 			case TargetTypes.AlliesInSameLine:
@@ -832,6 +892,20 @@ public class TempModifiers
 	public TempModifiers() {
 
 	}
+
+    public void ApplyAfterAttackBuffs(AttackActionOutput attackOutput)
+    {
+        foreach (AttackEffect atkFx in usedAttackEffects)
+        {
+            if( (atkFx.effectType == AttackEffects.ApplyBuff || atkFx.effectType == AttackEffects.ApplyDebuff) && atkFx.effectChecksAfterAttack )
+            {
+                foreach (BuffAction buff in atkFx.buffs)
+                {
+                    CardActionTools.PerformBuffAction(buff,null,attackOutput);
+                }
+            }
+        }
+    }
 
 	public void SetModifiersFromBuff(BuffAction buff)
 	{

@@ -602,6 +602,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		myAttackers.Add(attack.source);
 		if (attack.attackActionOutput.deathByExecution) { hp = 0; }
 		ReceiveDamage(attack.attackActionOutput.damage);
+		attack.attackActionOutput.attackerModifiers.ApplyAfterAttackBuffs(attack.attackActionOutput);
 		if (CanFightBack(attack))
 		{
 			FightBack(attack.source);

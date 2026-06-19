@@ -108,6 +108,7 @@ public class BuffAction : ActiveAction{
 	public List<UnitSubtype> grantedSubtypes = new();
     public List<AttackEffect> attackEffect = new();
     public List<SpecialBehavior> specialBehavior = new();
+	public bool addDamageDealtAsValue = false; /* This only works if the buff is triggered as effect of an attack. */
 	public bool multiplyThisBuff = false;
 	public TargetUnitDefinition multiplyForEach = TargetUnitDefinition.BenefitedYatzasAndDoragons; /* The buff re-applies its effects with each unit that matches the definition. If no matches are found the buff does not apply. */
     public AttackAction originAttack;
@@ -131,6 +132,7 @@ public class BuffAction : ActiveAction{
         specialBehavior = values.specialBehavior;
 		multiplyThisBuff = values.multiplyThisBuff;
 		multiplyForEach = values.multiplyForEach;
+		addDamageDealtAsValue = values.addDamageDealtAsValue;
 		values.requirements.ForEach(req => { requirements?.Add(new Requirements(req, (originAttack != null ? originAttack : this) ) ); });
         values.onHitRequirements.ForEach(req => { onHitRequirements?.Add(new Requirements(req, (originAttack != null ? originAttack : this) ) ); });
         values.extraAttacks.ForEach(atk => { extraAttacks?.Add(new AttackAction(atk) { source = values.source, isExtra = true } ); });
@@ -374,13 +376,15 @@ public enum TargetTypes{
 	SingleAlly,
 	AllEnemies,
 	AlliesInLineInFrontOfMe,
-	AlliesInLineBehind
+	AlliesInLineBehind,
+	MostHarmedAlly
 }
 public enum AttackEffects{
 	SplashDamage,
 	SelfDamage,
 	ApplyDebuff,
-	Execute
+	Execute,
+	ApplyBuff
 }
 public enum BuffSpecialEffects
 {
