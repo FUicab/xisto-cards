@@ -60,9 +60,10 @@ public class AttackAction : ActiveAction{
 	public float damageMultiplier = 1;
 	public bool damageMultiplierCanBeAugmented = false;
 	public int flatDamageOverwrite = 0; //This overwrite will make attacks deal a given amount of damage without taking into account the attack value of the card nor any modifiers
+	public bool ignoresDefense = false;
     public List<AttackEffect> attackEffect = new();
     public List<BuffAction> temporaryBuffs = new(); //Temporary buffs are applied during the attack
-    public AttackActionOutput attackActionOutput = new();
+    [HideInInspector] public AttackActionOutput attackActionOutput = new();
     [HideInInspector] public bool isExtra = false; /* Extra attacks do not trigger counter attacks and other "on hit" effects. Armor pierce and executions work as normal. */
 
 	public AttackAction(AttackAction values)
@@ -78,6 +79,7 @@ public class AttackAction : ActiveAction{
 		source = values.source;
 		receiver = values.receiver;
 		isExtra = values.isExtra;
+		ignoresDefense = values.ignoresDefense;
 		attackActionOutput = values.attackActionOutput;
 		values.requirements.ForEach(req => { requirements.Add(new Requirements(req, this) ); });
 		values.attackEffect.ForEach(atkFx => { attackEffect.Add(new AttackEffect(atkFx, this));  } );
@@ -180,6 +182,7 @@ public class Requirements{
 	public List<TargetUnitDefinition> targetIs;
 	public Attributes attribute;
 	public Comparison comparison;
+	public bool not = false; /* Reverts the requirement and the action MUST NOT match to pass. */
 	public bool compareToMyAttribute;
 	public Attributes myAttribute;
 	public int attributeValue = 0;
@@ -193,6 +196,7 @@ public class Requirements{
 		targetIs = requirements.targetIs;
 		attribute = requirements.attribute;
 		comparison = requirements.comparison;
+		not = requirements.not;
 		attributeValue = requirements.attributeValue;
 		targetOfRequirementIsTargetOfAttack = requirements.targetOfRequirementIsTargetOfAttack;
 		this.originAction = originAction ?? requirements.originAction;

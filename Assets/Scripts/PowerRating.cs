@@ -377,6 +377,7 @@ public class PowerRating
         foreach (AttackAction attack in attacks)
         {
             float damagePower = card.Attack * attack.damageMultiplier;
+			if(attack.ignoresDefense) { damagePower *= 2; }
             float attackTypeMultiplier = GetAttackTypeBonus(attack.damageType);
             float requirementsPowerNerf = GetRequirementsNerf(attack.requirements);
             powerBonus += GetBuffPowerBonus(attack.temporaryBuffs);

@@ -23,6 +23,7 @@ public class RequirementsDrawer : PropertyDrawer
             SerializedProperty targetIs = property.FindPropertyRelative("targetIs");
             SerializedProperty attribute = property.FindPropertyRelative("attribute");
             SerializedProperty comparison = property.FindPropertyRelative("comparison");
+            SerializedProperty not = property.FindPropertyRelative("not");
             SerializedProperty attributeValue = property.FindPropertyRelative("attributeValue");
             SerializedProperty targetOfRequirementIsTargetOfAttack = property.FindPropertyRelative("targetOfRequirementIsTargetOfAttack");
 
@@ -62,6 +63,8 @@ public class RequirementsDrawer : PropertyDrawer
                 currentY += height + 2;
             }
             EditorGUI.PropertyField(new Rect(position.x, currentY, position.width, EditorGUIUtility.singleLineHeight), targetOfRequirementIsTargetOfAttack, true);
+            currentY += EditorGUI.GetPropertyHeight(targetOfRequirementIsTargetOfAttack, true) + 2;
+            EditorGUI.PropertyField(new Rect(position.x, currentY, position.width, EditorGUIUtility.singleLineHeight), not, true);
             currentY += currentY + 2;
 
             EditorGUI.indentLevel--;
@@ -90,6 +93,7 @@ public class RequirementsDrawer : PropertyDrawer
             height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("comparison"), true) + 2;
             height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("attributeValue"), true) + 2;
         }
+        height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("not"), true) + 2;
         height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative("targetOfRequirementIsTargetOfAttack"), true) + 2;
 
         return height;

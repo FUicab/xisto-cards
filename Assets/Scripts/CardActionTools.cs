@@ -404,7 +404,7 @@ public static bool TargetMeetsRequirementsOfAction(CardDisplay target, ActiveAct
                 }
 
                 //Debug.Log($"{target.card.Name} seems to be the target of this action.");
-                Debug.Log($"Origin buff: {originBuff != null}. Origin passive: {originBuff != null && originBuff.originPassive != null}");
+                //Debug.Log($"Origin buff: {originBuff != null}. Origin passive: {originBuff != null && originBuff.originPassive != null}");
 
                 if ((originBuff != null && originBuff.originPassive != null && originBuff.originPassive.CanBeUsedThisRound) || (originBuff != null && originBuff.originPassive == null) || originBuff == null)
                     switch (requirement.requirement)
@@ -559,6 +559,8 @@ public static bool TargetMeetsRequirementsOfAction(CardDisplay target, ActiveAct
                             itDoes = targetStats.source.guardingPose;
                             break;
                     }
+
+                if (requirement.not) { itDoes = !itDoes; }
             }
         }
 
@@ -702,7 +704,7 @@ public static bool TargetMeetsRequirementsOfAction(CardDisplay target, ActiveAct
         }
         targetArmor -= output.attackerStats.armorPierce;
         if (targetArmor < 0) { targetArmor = 0; }
-        if (attackAction.damageType == DamageTypes.SelfDamage)
+        if (attackAction.damageType == DamageTypes.SelfDamage || attackAction.ignoresDefense)
         {
             targetArmor = 0;
         }

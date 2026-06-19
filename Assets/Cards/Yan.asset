@@ -16,7 +16,7 @@ MonoBehaviour:
   CardCount: 5
   Type: 3
   Subtypes: 000000000c000000
-  Cost: 1
+  Cost: 6
   Artwork: {fileID: 21300000, guid: b734b3715652f814eb259edb93b6ac8b, type: 3}
   Origin: 00000000
   MaxHP: 18
@@ -39,12 +39,13 @@ MonoBehaviour:
         targetIs: 
         attribute: 0
         comparison: 0
+        not: 0
         compareToMyAttribute: 0
         myAttribute: 0
         attributeValue: 0
         targetOfRequirementIsTargetOfAttack: 0
         originAction:
-          rid: 649267151656976989
+          rid: 649267558426346119
       source: {fileID: 0}
       receiver: {fileID: 0}
       Attribute: 0
@@ -58,6 +59,9 @@ MonoBehaviour:
       grantedSubtypes: 
       attackEffect: []
       specialBehavior: 
+      addDamageDealtAsValue: 0
+      multiplyThisBuff: 0
+      multiplyForEach: 0
       originAttack:
         target: 0
         requirements: []
@@ -157,6 +161,9 @@ MonoBehaviour:
       grantedSubtypes: 
       attackEffect: []
       specialBehavior: 
+      addDamageDealtAsValue: 0
+      multiplyThisBuff: 0
+      multiplyForEach: 0
       originAttack:
         target: 0
         requirements: []
@@ -239,12 +246,13 @@ MonoBehaviour:
         targetIs: 
         attribute: 0
         comparison: 0
+        not: 0
         compareToMyAttribute: 0
         myAttribute: 0
         attributeValue: 0
         targetOfRequirementIsTargetOfAttack: 0
         originAction:
-          rid: 649267151656976990
+          rid: 649267558426346120
       source: {fileID: 0}
       receiver: {fileID: 0}
       Attribute: 2
@@ -258,6 +266,9 @@ MonoBehaviour:
       grantedSubtypes: 
       attackEffect: []
       specialBehavior: 
+      addDamageDealtAsValue: 0
+      multiplyThisBuff: 0
+      multiplyForEach: 0
       originAttack:
         target: 0
         requirements: []
@@ -358,17 +369,21 @@ MonoBehaviour:
         targetIs: 
         attribute: 1
         comparison: 1
+        not: 0
         compareToMyAttribute: 0
         myAttribute: 0
         attributeValue: 10
         targetOfRequirementIsTargetOfAttack: 1
         originAction:
-          rid: 649267151656976991
+          rid: 649267558426346121
       specialEffect: 0
       extraAttacks: []
       grantedSubtypes: 
       attackEffect: []
       specialBehavior: 
+      addDamageDealtAsValue: 0
+      multiplyThisBuff: 0
+      multiplyForEach: 0
       originAttack:
         target: 0
         requirements: []
@@ -461,12 +476,13 @@ MonoBehaviour:
         targetIs: 
         attribute: 0
         comparison: 0
+        not: 0
         compareToMyAttribute: 0
         myAttribute: 0
         attributeValue: 0
         targetOfRequirementIsTargetOfAttack: 0
         originAction:
-          rid: 649267151656976992
+          rid: 649267558426346122
       source: {fileID: 0}
       receiver: {fileID: 0}
       Attribute: 0
@@ -481,17 +497,21 @@ MonoBehaviour:
         targetIs: 
         attribute: 0
         comparison: 0
+        not: 0
         compareToMyAttribute: 0
         myAttribute: 0
         attributeValue: 0
         targetOfRequirementIsTargetOfAttack: 1
         originAction:
-          rid: 649267151656976992
+          rid: 649267558426346122
       specialEffect: 0
       extraAttacks: []
       grantedSubtypes: 
       attackEffect: []
       specialBehavior: 
+      addDamageDealtAsValue: 0
+      multiplyThisBuff: 0
+      multiplyForEach: 0
       originAttack:
         target: 0
         requirements: []
@@ -784,6 +804,9 @@ MonoBehaviour:
       grantedSubtypes: 
       attackEffect: []
       specialBehavior: 
+      addDamageDealtAsValue: 0
+      multiplyThisBuff: 0
+      multiplyForEach: 0
       originAttack:
         target: 0
         requirements: []
@@ -940,6 +963,9 @@ MonoBehaviour:
       grantedSubtypes: 
       attackEffect: []
       specialBehavior: 
+      addDamageDealtAsValue: 0
+      multiplyThisBuff: 0
+      multiplyForEach: 0
       originAttack:
         target: 0
         requirements: []
@@ -1096,6 +1122,9 @@ MonoBehaviour:
       grantedSubtypes: 
       attackEffect: []
       specialBehavior: 
+      addDamageDealtAsValue: 0
+      multiplyThisBuff: 0
+      multiplyForEach: 0
       originAttack:
         target: 0
         requirements: []
@@ -1252,6 +1281,9 @@ MonoBehaviour:
       grantedSubtypes: 
       attackEffect: []
       specialBehavior: 
+      addDamageDealtAsValue: 0
+      multiplyThisBuff: 0
+      multiplyForEach: 0
       originAttack:
         target: 0
         requirements: []
@@ -1348,21 +1380,21 @@ MonoBehaviour:
       or <b><color=#555>Independent units</color></b>.\n<b>Anti-motion</b>: Grants
       <b><color=#15c>+1</color></b> <b><color=#760>defense</color></b> to all allies
       and  an additional <b><color=#15c>+1</color></b> <b><color=#760>defense</color></b>
-      if they're <b><color=#775>guarding</color></b>.\n\U0001F517 <b>Crushing</b>:
+      if they're  <b><color=#775>guarding</color></b>.\n\U0001F517 <b>Crushing</b>:
       When I <b>attack \U0001F4A5</b> I get <b><color=#15c>+4</color></b> <b><color=#900>attack</color></b>
-      <i>(for that attack)</i> when the target's <b><color=#583>HP</color></b> is
+      <i>(for that attack)</i> when the target's <b><color=#583>HP</color></b> is 
       less than or equal to <b>10</b>.\n\U0001F4AB <b>Protector's insignia</b>: When
       the enemies who are <b><color=#714>\U0001F3F4 mercenaries</color></b> <b>attack
       \U0001F4A5</b> they get <b><color=#15c>-2</color></b> <b><color=#900>attack</color></b>
-      <i>(for that attack)</i> when targetting <b><color=#555>Protectors</color></b>
+      <i>(for that attack)</i> when   targetting <b><color=#555>Protectors</color></b>
       or <b><color=#555>Independent units</color></b>.\n"
     passiveBuffDescriptions: "<b><color=#15c>+1</color></b> <b><color=#900>attack</color></b>
       from myself\n<b><color=#15c>+1</color></b> <b><color=#760>defense</color></b>
       from myself\n<b><color=#15c>+1</color></b> <b><color=#760>defense</color></b>
       from myself\n<b>\U0001F4A5 On hit</b>: <b><color=#15c>+4</color></b> <b><color=#900>attack</color></b>
-      when the target's <b><color=#583>HP</color></b> is less than or equal to <b>10</b>,
+      when the target's <b><color=#583>HP</color></b> is  less than or equal to <b>10</b>,
       from myself\n<b>\U0001F4A5 On hit</b>: <b><color=#15c>-2</color></b> <b><color=#900>attack</color></b>
-      when targetting <b><color=#555>Protectors</color></b> or <b><color=#555>Independent
+      when   targetting <b><color=#555>Protectors</color></b> or <b><color=#555>Independent
       units</color></b>, from myself\n"
     actionsDescription: "\u2694\uFE0F Melee attack.\nGrants <b><color=#15c>+2</color></b>
       <b><color=#760>defense</color></b> to all allies.\n\u2694\uFE0F Melee or \u2728
@@ -1370,7 +1402,7 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 649267151656976989
+    - rid: 649267558426346119
       type: {class: AttackAction, ns: , asm: Assembly-CSharp}
       data:
         target: 0
@@ -1435,7 +1467,7 @@ MonoBehaviour:
             origin: 
             source: {fileID: 0}
         isExtra: 0
-    - rid: 649267151656976990
+    - rid: 649267558426346120
       type: {class: AttackAction, ns: , asm: Assembly-CSharp}
       data:
         target: 0
@@ -1500,7 +1532,7 @@ MonoBehaviour:
             origin: 
             source: {fileID: 0}
         isExtra: 0
-    - rid: 649267151656976991
+    - rid: 649267558426346121
       type: {class: AttackAction, ns: , asm: Assembly-CSharp}
       data:
         target: 0
@@ -1565,7 +1597,7 @@ MonoBehaviour:
             origin: 
             source: {fileID: 0}
         isExtra: 0
-    - rid: 649267151656976992
+    - rid: 649267558426346122
       type: {class: AttackAction, ns: , asm: Assembly-CSharp}
       data:
         target: 0

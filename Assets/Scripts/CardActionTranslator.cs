@@ -169,6 +169,11 @@ public static class CardTranslator
 				}
             }
 
+			if (attack.ignoresDefense)
+			{
+                text += $" which {TextFormat("ignores armor", Attributes.ArmorPierce)}";
+            }
+
             // Lists all attack effects
             subIndex = 0;
             if (attack.attackEffect.Count > 0)
@@ -802,40 +807,49 @@ public static class CardTranslator
 						{
 							case RequirementTypes.TargetHasSubtypesOrFactions:
 								text += " if I'm ";
+								if(requirement.not) { text += $"<b>not</b> "; }
 								text += FactionOrSubtypeRequirementDescription(requirement);
 								break;
 							case RequirementTypes.TargetIsNextTo:
 								text += " if I'm next to";
+								if(requirement.not) { text += $" anyone <b>except</b>"; }
 								text += UnitDefinitionDescription(requirement.targetIs, card);
 								break;
 							case RequirementTypes.TargetHasAttackedThisRound:
-								text += " if I have attacked before during this round";
+								text += " if I ";
+								if (requirement.not) { text += $"<b>don't</b> "; } 
+								text += "have attacked before during this round";
 								break;
 							case RequirementTypes.TargetAttributeIs:
 								text += " if my ";
 								text += TextFormat(BuffAttributeDescription(requirement.attribute), requirement.attribute);
 								text += " is ";
+								if(requirement.not) { text += $"<b>not</b> "; }
 								text += $"{ComparisonDescription(requirement.comparison)} <b>{requirement.attributeValue}</b>";
 								break;
 							case RequirementTypes.TargetIsInRowInFrontOf:
-								text += " if I'm in the row in front of ";
+								text += " if I'm ";
+								if(requirement.not) { text += $"<b>not</b> "; }
+								text += "in the row in front of ";
 								text += UnitDefinitionDescription(requirement.targetIs, card);
                             break;
 							case RequirementTypes.TargetHasAffectedUnitDefinition:
-								text += " if I have performed an action that affects ";
+								text += " if I ";
+								if(requirement.not) { text += $"<b>don't</b> "; }
+								text += "have performed an action that affects ";
 								text += UnitDefinitionDescription(requirement.targetIs, card);
                             break;
 							case RequirementTypes.TargetIsStunned:
-								text += $" if I'm {TextFormat("stunned","statusEffect")}";
+								text += $" if I'm {(requirement.not ? "<b>not</b>" : "")} {TextFormat("stunned","statusEffect")}";
                             break;
 							case RequirementTypes.TargetIsDisarmed:
-								text += $" if I'm {TextFormat("disarmed","statusEffect")}";
+								text += $" if I'm {(requirement.not ? "<b>not</b>" : "")} {TextFormat("disarmed","statusEffect")}";
 								break;
 							case RequirementTypes.TargetIsDisrupted:
-								text += $" if I'm {TextFormat("disrupted","statusEffect")}";
+								text += $" if I'm {(requirement.not ? "<b>not</b>" : "")} {TextFormat("disrupted", "statusEffect")}";
 								break;
 							case RequirementTypes.TargetIsGuarding:
-								text += $" if I'm {TextFormat("guarding", "guarding")}";
+								text += $" if I'm {(requirement.not ? "<b>not</b>" : "")} {TextFormat("guarding", "guarding")}";
 								break;
                     }
                     break;
@@ -849,14 +863,14 @@ public static class CardTranslator
 								switch (formattingFor)
 								{
 									case "attack":
-										text += ", but can only target ";
+										text += $", but {(requirement.not ? "<b>can't</b>" : "can only")} target ";
 										break;
 									case "effectOrTempBuff":
 									case "onHit":
-										text += " when targetting ";
+										text += $" when {(requirement.not?"<b>not</b>":"")}  targetting ";
 										break;
 									case "buff":
-										text += " if they're ";
+										text += $" if they're {(requirement.not ? "<b>not</b>" : "")} ";
 										break;
 								}
 								text += FactionOrSubtypeRequirementDescription(requirement);
@@ -866,14 +880,14 @@ public static class CardTranslator
 								switch (formattingFor)
 								{
 									case "attack":
-										text += ", but target must be ";
+										text += $", but target must {(requirement.not ? "<b>not</b>" : "")} be ";
 										break;
 									case "effectOrTempBuff":
 									case "onHit":
-										text += " when target is ";
+										text += $" when target is {(requirement.not ? "<b>not</b>" : "")}";
 										break;
 									case "buff":
-										text += " if they're ";
+										text += $" if they're {(requirement.not ? "<b>not</b>" : "")}";
 										break;
 								}
 								switch (requirement.requirement)
@@ -891,14 +905,14 @@ public static class CardTranslator
 								switch (formattingFor)
 								{
 									case "attack":
-										text += ", but target must have had ";
+										text += $", but target must {(requirement.not ? "<b>not</b>" : "")} have had ";
 										break;
 									case "effectOrTempBuff":
 									case "onHit":
-										text += " when the target has ";
+										text += $" when the target has {(requirement.not ? "<b>not</b>" : "")} ";
 										break;
 									case "buff":
-										text += " if they have ";
+										text += $" if they have {(requirement.not ? "<b>not</b>" : "")} ";
 										break;
 								}
 								text += "attacked before during this round";
@@ -921,12 +935,12 @@ public static class CardTranslator
 								switch (formattingFor)
 								{
 									case "attack":
-										text += " must be ";
+										text += $" must {(requirement.not ? "<b>not</b>" : "")} be ";
 										break;
 									case "effectOrTempBuff":
 									case "onHit":
 									case "buff":
-										text += " is ";
+										text += $" is {(requirement.not ? "<b>not</b>" : "")} ";
 										break;
 								}
 								text += $"{ComparisonDescription(requirement.comparison)} <b>{requirement.attributeValue}</b>";
@@ -935,14 +949,14 @@ public static class CardTranslator
 								switch (formattingFor)
 								{
 									case "attack":
-										text += ", but target must have had";
+										text += $", but target must {(requirement.not ? "<b>not</b>" : "")} have had";
 										break;
 									case "effectOrTempBuff":
 									case "onHit":
-										text += " when the target has";
+										text += $" when the target has {(requirement.not ? "<b>not</b>" : "")} ";
 										break;
 									case "buff":
-										text += " if the target has";
+										text += $" if the target has {(requirement.not ? "<b>not</b>" : "")} ";
 										break;
 								}
 								text += " performed an action that affects ";
@@ -955,14 +969,14 @@ public static class CardTranslator
 								switch (formattingFor)
 								{
 									case "attack":
-										text += ", but target must be";
+										text += $", but target must {(requirement.not ? "<b>not</b>" : "")} be";
 										break;
 									case "effectOrTempBuff":
 									case "onHit":
-										text += " when the target is";
+										text += $" when the target is {(requirement.not ? "<b>not</b>" : "")} ";
 										break;
 									case "buff":
-										text += " if the target is";
+										text += $" if the target is {(requirement.not ? "<b>not</b>" : "")} ";
 										break;
 								}
 								switch (requirement.requirement)
@@ -996,16 +1010,16 @@ public static class CardTranslator
 								switch (formattingFor)
 								{
 									case "attack":
-										text += ", but only hits ";
+										text += $", but {(requirement.not ? "<b>doesn't</b> hit" : "only hits")} ";
 										break;
 									case "effectOrTempBuff":
-										text += " when they're ";
+										text += $" when they're {(requirement.not ? "<b>not</b> " : "")}";
 										break;
 									case "buff":
-										text += " who are ";
+										text += $" who are {(requirement.not ? "<b>not</b> " : "")}";
 										break;
 									case "onHit":
-										text += " when targetting ";
+										text += $" when {(requirement.not ? "<b>not</b> " : "")}targetting ";
 										break;
 								}
 								text += FactionOrSubtypeRequirementDescription(requirement);
@@ -1015,16 +1029,16 @@ public static class CardTranslator
 								switch (formattingFor)
 								{
 									case "attack":
-										text += ", but only hits if they're ";
+										text += $", but only hits if they're {(requirement.not ? "<b>not</b> " : "")}";
 										break;
 									case "effectOrTempBuff":
-										text += " when they're ";
+										text += $" when they're {(requirement.not ? "<b>not</b> " : "")}";
 										break;
 									case "buff":
-										text += " who are ";
+										text += $" who are {(requirement.not ? "<b>not</b> " : "")}";
 										break;
 									case "onHit":
-										text += " when the target is ";
+										text += $" when the target is {(requirement.not ? "<b>not</b> " : "")}";
 										break;
 								}
 								switch (requirement.requirement)
@@ -1042,16 +1056,16 @@ public static class CardTranslator
 								switch (formattingFor)
 								{
 									case "attack":
-										text += ", but hits only those who have ";
+										text += $", but hits only those who have {(requirement.not ? "<b>not</b>" : "")} ";
 										break;
 									case "effectOrTempBuff":
-										text += " who have ";
+										text += $" who have {(requirement.not ? "<b>not</b>" : "")} ";
 										break;
 									case "buff":
-										text += " who have ";
+										text += $" who have {(requirement.not ? "<b>not</b>" : "")} ";
 										break;
 									case "onHit":
-										text += " when the target has ";
+										text += $" when the target has {(requirement.not ? "<b>not</b>" : "")} ";
 										break;
 								}
 								text += "attacked before during this round";
@@ -1071,19 +1085,19 @@ public static class CardTranslator
 										break;
 								}
 								text += TextFormat(BuffAttributeDescription(requirement.attribute), requirement.attribute);
-								text += " is ";
+								text += $" is {(requirement.not ? "<b>not</b>" : "")} ";
 								text += $"{ComparisonDescription(requirement.comparison)} <b>{requirement.attributeValue}</b>";
 								break;
 							case RequirementTypes.TargetHasAffectedUnitDefinition:
 								switch (formattingFor)
 								{
 									case "attack":
-										text += ", but hits only those who have";
+										text += $", but hits only those who have {(requirement.not ? "<b>not</b>" : "")} ";
 										break;
 									case "effectOrTempBuff":
 									case "onHit":
 									case "buff":
-										text += " when they have";
+										text += $" when they have {(requirement.not ? "<b>not</b>" : "")} ";
 										break;
 								}
 								text += " performed an action that affects ";
@@ -1096,14 +1110,14 @@ public static class CardTranslator
 								switch (formattingFor)
 								{
 									case "attack":
-										text += ", but target must be";
+										text += $", but target must {(requirement.not ? "<b>not</b>" : "")} be";
 										break;
 									case "effectOrTempBuff":
 									case "onHit":
-										text += " when they're";
+										text += $" when they're {(requirement.not ? "<b>not</b>" : "")}";
 										break;
 									case "buff":
-										text += " if they're";
+										text += $" if they're {(requirement.not ? "<b>not</b>" : "")}";
 										break;
 								}
 								switch (requirement.requirement)
@@ -1534,7 +1548,7 @@ public static class CardTranslator
 				text += "more than or equal to";
 				break;
 			case Comparison.Not:
-				text += "not";
+				text += "different to";
 				break;
 		}
 		return text;
