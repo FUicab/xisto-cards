@@ -729,7 +729,7 @@ public static class CardTranslator
 				case Attributes.DefenseEnergy: text += "760"; break;
 				case Attributes.DamageReductionBeforeArmor: text += "760"; break;
 				case Attributes.DamageReductionAfterArmor: text += "760"; break;
-				case Attributes.ArmorPierce: text += "b50"; break;
+				case Attributes.ArmorPierce: case Attributes.MinDamageCap:  text += "b50"; break;
                 case Attributes.DamageMultiplier: text += "900"; break;
                 case Attributes.Cost: case "gold": text += "b90"; break;
                 case "faction": text += "555"; break;
@@ -1211,6 +1211,9 @@ public static class CardTranslator
             break;
             case Attributes.DamageMultiplier:
                 text += "damage";
+            break;
+            case Attributes.MinDamageCap:
+                text += "minimal damage (after armor)";
             break;
         }
 		return text;

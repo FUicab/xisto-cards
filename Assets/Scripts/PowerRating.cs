@@ -280,6 +280,9 @@ public class PowerRating
             case Attributes.DamageMultiplier:
                 buffPower += (buff.amount * augmentationBonus) * (card.Attack + 1);
                 break;
+            case Attributes.MinDamageCap:
+                buffPower += (buff.amount * augmentationBonus) * 2f;
+                break;
         }
 		switch (buff.specialEffect)
 		{

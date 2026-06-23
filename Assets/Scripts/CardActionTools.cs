@@ -356,12 +356,12 @@ public static bool TargetMeetsRequirementsOfAction(CardDisplay target, ActiveAct
 		bool isFromMyTeam = (action.targetIsFromMyTeam && target.Owner?.Role == action.source?.Owner?.Role);
 		bool isFromOtherTeam = (!action.targetIsFromMyTeam && target.Owner?.Role != action.source?.Owner?.Role);
 
-        if ( ( isFromMyTeam || isFromOtherTeam || isMyself) && (action.TargetCanBeReached(target)) )
+        if ( ( isFromMyTeam || isMyself) || (isFromOtherTeam && action.TargetCanBeReached(target)) )
 		{
 			itDoes = true;
 		}
-		//Debug.Log($"<b>{action.source?.card.Name}</b>: Does target meet all requirements? -> 1: {itDoes} . 2:{TargetMeetsRequirements(target, action.requirements)}");
-		return itDoes && TargetMeetsRequirements(target, action.requirements);
+		Debug.Log($"<b>{action.source?.card.Name}</b>: Does target meet all requirements? -> 1: {itDoes} . 2:{TargetMeetsRequirements(target, action.requirements)}");
+        return itDoes && TargetMeetsRequirements(target, action.requirements);
 	}
 	public static bool TargetMeetsRequirements(CardDisplay actionTarget, List<Requirements> requirements)
 	{
@@ -714,9 +714,9 @@ public static bool TargetMeetsRequirementsOfAction(CardDisplay target, ActiveAct
         {
             dmg = attackAction.flatDamageOverwrite - targetArmor;
         }
-        if (dmg <= 0)
+        if (dmg < attackerTempModifiers.MinDamageCap)
         {
-            dmg = 1;
+            dmg = attackerTempModifiers.MinDamageCap;
         }
 		output.damage = dmg;
 		output.damageType = damageType;
@@ -884,6 +884,7 @@ public class TempModifiers
 	public int DamageReductionBeforeArmor = 0;
 	public int DamageReductionAfterArmor = 0;
 	public float DamageMultiplier = 0;
+    public int MinDamageCap = 1;
 	//public int HPAtEndOfAction = 0;
 	public List<BuffAction> usedBuffs = new();
 	public List<AttackEffect> usedAttackEffects = new();
@@ -926,6 +927,7 @@ public class TempModifiers
             case Attributes.DamageReductionBeforeArmor: DamageReductionBeforeArmor += buff.amount; break;
             case Attributes.DamageReductionAfterArmor: DamageReductionAfterArmor += buff.amount; break;
             case Attributes.DamageMultiplier: DamageMultiplier += buff.amount; break;
+            case Attributes.MinDamageCap: MinDamageCap += buff.amount; break;
         }
     }
 

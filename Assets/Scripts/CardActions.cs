@@ -349,7 +349,8 @@ public enum Attributes{
 	MaxHealth,
 	Cost,
 	DamageMultiplier,
-	BaseAttack
+	BaseAttack,
+	MinDamageCap
 }
 public enum ActionTypes{
 	Attack,
