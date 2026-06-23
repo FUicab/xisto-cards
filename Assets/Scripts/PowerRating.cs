@@ -277,7 +277,10 @@ public class PowerRating
 			case Attributes.MaxHealth:
 				buffPower += (buff.amount * augmentationBonus) * 1.25f;
 				break;
-		}
+            case Attributes.DamageMultiplier:
+                buffPower += (buff.amount * augmentationBonus) * (card.Attack + 1);
+                break;
+        }
 		switch (buff.specialEffect)
 		{
 			case BuffSpecialEffects.RedirectAttacksTowardsMe:
