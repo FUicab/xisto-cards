@@ -1860,25 +1860,9 @@ MonoBehaviour:
   power: 0
   HandIndex: 0
   isPotentialTargetForPerformingAction: 0
-  Owner:
-    Role: 0
-    useAI: 0
-    Gold: 0
-    maxActionPoints: 3
-    actionPoints: 3
-    actionPointsTurnedToGold: 0
-    Hand: []
-    AvailableCardSlots: 
-    MyBoardRows: []
-    buffs: []
-    Dices: []
-    selectedDice: {fileID: 0}
-    GM: {fileID: 0}
   hp: 0
   ProtectedByDefender: 0
   guardingPose: 0
-  attackSponge: {fileID: 0}
-  activeBuffs: []
   passiveBuffs: []
   cardActions: []
   cardPassives: []
@@ -1894,48 +1878,11 @@ MonoBehaviour:
   DefenderBarrier: {fileID: 4990955454186044427}
   GuardingPoseIndicator: {fileID: 8491155734122193718}
   rectTransform: {fileID: 8186447420902396248}
-  MainUI: {fileID: 0}
   SlotGroup: {fileID: 0}
   OriginPosition: {x: 0, y: 0, z: 0}
   OriginParent: {fileID: 0}
-  mySpace: {fileID: 0}
   Overlay: {fileID: 8212083099162409195}
   UndoButtonObject: {fileID: 751864949390559576}
-  PurchaseAction:
-    movementType: 0
-    CardInAction: {fileID: 0}
-    actionObject:
-      diceValues: 
-      diceAverageValue: 0
-      description: 
-      shortDescription: 
-      isAction: 0
-      sourceCard: {fileID: 0}
-      action:
-        actionType: 0
-        attacks: []
-        attackCountCanBeAugmented: 0
-        buffs: []
-      canBeUsed: 0
-    targets: []
-    nextNullIndex: 0
-    remainingTargets: 0
-    HandIndexOrigin: 0
-    PurchasePrice: 0
-    Owner:
-      Role: 0
-      useAI: 0
-      Gold: 0
-      maxActionPoints: 3
-      actionPoints: 3
-      actionPointsTurnedToGold: 0
-      Hand: []
-      AvailableCardSlots: 
-      MyBoardRows: []
-      buffs: []
-      Dices: []
-      selectedDice: {fileID: 0}
-      GM: {fileID: 0}
 --- !u!225 &8992839128552515199
 CanvasGroup:
   m_ObjectHideFlags: 0

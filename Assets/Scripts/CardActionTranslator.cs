@@ -489,8 +489,7 @@ public static class CardTranslator
 							break;
 					}
 					text += $" take {TextFormat("guarding pose", "guarding")}";
-				}
-				else if (buff.specialEffect == BuffSpecialEffects.Disarm || buff.specialEffect == BuffSpecialEffects.Stun || buff.specialEffect == BuffSpecialEffects.Disrupt)
+				} else if (buff.specialEffect == BuffSpecialEffects.Disarm || buff.specialEffect == BuffSpecialEffects.Stun || buff.specialEffect == BuffSpecialEffects.Disrupt)
 				{
 					switch (buff.specialEffect)
 					{
@@ -570,13 +569,46 @@ public static class CardTranslator
                             break;
                     }
                     text += $" can {TextFormat("fight back", Attributes.Attack)} {TextFormat("against ranged attacks",Attributes.Defense)} when {TextFormat("guarding", "guarding")}";
-                }
-                else
+                } else if (buff.specialEffect == BuffSpecialEffects.ImmunityToExtraAttacks)
+				{
+					switch (buff.target)
+					{
+						case TargetTypes.Self:
+							text += "I'm";
+							break;
+						case TargetTypes.AlliesInSameLine:
+							text += "My allies on the same line are";
+							break;
+						case TargetTypes.SingleEnemy:
+						case TargetTypes.LineOfEnemies:
+						case TargetTypes.AllEnemies:
+							text += "The enemies are";
+							break;
+						case TargetTypes.SingleAlly:
+						case TargetTypes.AllAllies:
+							text += "My allies are";
+							break;
+						case TargetTypes.AlliesNextToMe:
+							text += "The allies next to me are";
+							break;
+						case TargetTypes.AlliesInLineInFrontOfMe:
+							text += "The allies in the line in front of me are";
+							break;
+						default:
+							text += "They are";
+							break;
+					}
+					text += $" {TextFormat("immune to extra attacks", Attributes.Defense)} <i>(including splash damage)</i>";
+				}
+				else
 				{
 					switch (buff.Attribute)
 					{
 						case Attributes.Health: text += "Heals "; break;
-						default: text += "Grants "; break;
+						default:
+							if (!buff.isDebuff) { text += "Grants "; }
+							else { text += "Gives "; }
+							break;
 					}
 				}
 
@@ -731,7 +763,8 @@ public static class CardTranslator
 				case Attributes.DamageReductionAfterArmor: text += "760"; break;
 				case Attributes.ArmorPierce: case Attributes.MinDamageCap:  text += "b50"; break;
                 case Attributes.DamageMultiplier: text += "900"; break;
-                case Attributes.Cost: case "gold": text += "b90"; break;
+                case Attributes.GoldCost: case "gold": text += "b90"; break;
+                case Attributes.ActionPointCost: text += "781"; break;
                 case "faction": text += "555"; break;
 				case "subtype": text += "714"; break;
 				case "self-damage": text += "c42"; break;
@@ -1206,7 +1239,7 @@ public static class CardTranslator
 			case Attributes.MaxHealth:
 				text += "max HP";
 			break;
-            case Attributes.Cost:
+            case Attributes.GoldCost:
                 text += "cost";
             break;
             case Attributes.DamageMultiplier:
@@ -1214,6 +1247,9 @@ public static class CardTranslator
             break;
             case Attributes.MinDamageCap:
                 text += "minimal damage (after armor)";
+            break;
+            case Attributes.ActionPointCost:
+                text += "action point cost";
             break;
         }
 		return text;
@@ -1365,12 +1401,18 @@ public static class CardTranslator
 				foreach (var buff in effect.buffs)
 				{
 					if(index == 0){
-						text += "removes ";
-						text += AttributeAndValue(buff);
-						switch (buff.target)
+						if(buff.specialEffect == BuffSpecialEffects.None)
 						{
-							case TargetTypes.SameTarget: text += " from the target"; break;
-						}
+							text += "removes ";
+							text += AttributeAndValue(buff);
+							switch (buff.target)
+							{
+								case TargetTypes.SameTarget: text += " from the target"; break;
+							}
+						} else
+						{
+                            text += GenerateSkillBuffText(new(){buff}, null);
+                        }
 					} else {
 						if(effect.buffs.Count-1 == index){
 							text += " and ";
@@ -1483,7 +1525,7 @@ public static class CardTranslator
 					text += RequirementDescription(buff.onHitRequirements, buff.target, buff.source?.card, "onHit")+",";
 				}
 				text += " from ";
-				if (buff.originPassive.title == "")
+				if (buff.originPassive?.title == "")
 				{
 					if(buff.source == buff.receiver)
 					{
@@ -1494,7 +1536,7 @@ public static class CardTranslator
 				} else {
 					if (buff.source == buff.receiver)
 					{
-						text += $"my passive <b>{buff.originPassive.title}</b>";
+						text += $"my passive <b>{buff.originPassive?.title}</b>";
 					}
 					else
 					{

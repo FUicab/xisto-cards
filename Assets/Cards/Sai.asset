@@ -52,8 +52,6 @@ MonoBehaviour:
         myAttribute: 0
         attributeValue: 4
         targetOfRequirementIsTargetOfAttack: 0
-        originAction:
-          rid: 649267651297935508
       specialEffect: 0
       extraAttacks: []
       grantedSubtypes: 
@@ -62,83 +60,8 @@ MonoBehaviour:
       addDamageDealtAsValue: 0
       multiplyThisBuff: 0
       multiplyForEach: 0
-      originAttack:
-        target: 0
-        requirements: []
-        source: {fileID: 0}
-        receiver: {fileID: 0}
-        damageType: 0
-        damageMultiplier: 0
-        damageMultiplierCanBeAugmented: 0
-        flatDamageOverwrite: 0
-        ignoresDefense: 0
-        attackEffect: []
-        temporaryBuffs: []
-        attackActionOutput:
-          damage: 0
-          resultsInDeath: 0
-          deathByExecution: 0
-          damageType: 0
-          attackerModifiers:
-            Attack: 0
-            Health: 0
-            MaxHealth: 0
-            Defense: 0
-            Armor: 
-            ArmorPierce: 0
-            DamageReductionBeforeArmor: 0
-            DamageReductionAfterArmor: 0
-            DamageMultiplier: 0
-            usedBuffs: []
-            usedAttackEffects: []
-          targetModifiers:
-            Attack: 0
-            Health: 0
-            MaxHealth: 0
-            Defense: 0
-            Armor: 
-            ArmorPierce: 0
-            DamageReductionBeforeArmor: 0
-            DamageReductionAfterArmor: 0
-            DamageMultiplier: 0
-            usedBuffs: []
-            usedAttackEffects: []
-          attackerStats:
-            hp: 0
-            maxHP: 0
-            armor: 
-            attack: 0
-            armorPierce: 0
-            damageReduction: 0
-            cost: 0
-            subtypes: 
-            origin: 
-            source: {fileID: 0}
-          targetStats:
-            hp: 0
-            maxHP: 0
-            armor: 
-            attack: 0
-            armorPierce: 0
-            damageReduction: 0
-            cost: 0
-            subtypes: 
-            origin: 
-            source: {fileID: 0}
-        isExtra: 0
-      originPassive:
-        title: 
-        description: 
-        trigger: 0
-        canBeShared: 0
-        oncePerRound: 0
-        sharedAcrossAllCardsOfSameKind: 0
-        requiresElementalExchange: 0
-        buffs: []
-        playerBuffs: []
-        source: {fileID: 0}
     playerBuffs: []
-    source: {fileID: 0}
+    GM: {fileID: 0}
   - title: Diamond dust
     description: 
     trigger: 1
@@ -165,83 +88,8 @@ MonoBehaviour:
       addDamageDealtAsValue: 0
       multiplyThisBuff: 0
       multiplyForEach: 0
-      originAttack:
-        target: 0
-        requirements: []
-        source: {fileID: 0}
-        receiver: {fileID: 0}
-        damageType: 0
-        damageMultiplier: 0
-        damageMultiplierCanBeAugmented: 0
-        flatDamageOverwrite: 0
-        ignoresDefense: 0
-        attackEffect: []
-        temporaryBuffs: []
-        attackActionOutput:
-          damage: 0
-          resultsInDeath: 0
-          deathByExecution: 0
-          damageType: 0
-          attackerModifiers:
-            Attack: 0
-            Health: 0
-            MaxHealth: 0
-            Defense: 0
-            Armor: 
-            ArmorPierce: 0
-            DamageReductionBeforeArmor: 0
-            DamageReductionAfterArmor: 0
-            DamageMultiplier: 0
-            usedBuffs: []
-            usedAttackEffects: []
-          targetModifiers:
-            Attack: 0
-            Health: 0
-            MaxHealth: 0
-            Defense: 0
-            Armor: 
-            ArmorPierce: 0
-            DamageReductionBeforeArmor: 0
-            DamageReductionAfterArmor: 0
-            DamageMultiplier: 0
-            usedBuffs: []
-            usedAttackEffects: []
-          attackerStats:
-            hp: 0
-            maxHP: 0
-            armor: 
-            attack: 0
-            armorPierce: 0
-            damageReduction: 0
-            cost: 0
-            subtypes: 
-            origin: 
-            source: {fileID: 0}
-          targetStats:
-            hp: 0
-            maxHP: 0
-            armor: 
-            attack: 0
-            armorPierce: 0
-            damageReduction: 0
-            cost: 0
-            subtypes: 
-            origin: 
-            source: {fileID: 0}
-        isExtra: 0
-      originPassive:
-        title: 
-        description: 
-        trigger: 0
-        canBeShared: 0
-        oncePerRound: 0
-        sharedAcrossAllCardsOfSameKind: 0
-        requiresElementalExchange: 0
-        buffs: []
-        playerBuffs: []
-        source: {fileID: 0}
     playerBuffs: []
-    source: {fileID: 0}
+    GM: {fileID: 0}
   CardActions:
   - actionType: 0
     attacks:
@@ -271,6 +119,7 @@ MonoBehaviour:
           DamageReductionBeforeArmor: 0
           DamageReductionAfterArmor: 0
           DamageMultiplier: 0
+          MinDamageCap: 1
           usedBuffs: []
           usedAttackEffects: []
         targetModifiers:
@@ -283,6 +132,7 @@ MonoBehaviour:
           DamageReductionBeforeArmor: 0
           DamageReductionAfterArmor: 0
           DamageMultiplier: 0
+          MinDamageCap: 1
           usedBuffs: []
           usedAttackEffects: []
         attackerStats:
@@ -307,6 +157,7 @@ MonoBehaviour:
           subtypes: 
           origin: 
           source: {fileID: 0}
+        appliedDebuffs: []
       isExtra: 0
     attackCountCanBeAugmented: 0
     buffs: []
@@ -339,6 +190,7 @@ MonoBehaviour:
           DamageReductionBeforeArmor: 0
           DamageReductionAfterArmor: 0
           DamageMultiplier: 0
+          MinDamageCap: 1
           usedBuffs: []
           usedAttackEffects: []
         targetModifiers:
@@ -351,6 +203,7 @@ MonoBehaviour:
           DamageReductionBeforeArmor: 0
           DamageReductionAfterArmor: 0
           DamageMultiplier: 0
+          MinDamageCap: 1
           usedBuffs: []
           usedAttackEffects: []
         attackerStats:
@@ -375,6 +228,7 @@ MonoBehaviour:
           subtypes: 
           origin: 
           source: {fileID: 0}
+        appliedDebuffs: []
       isExtra: 0
     attackCountCanBeAugmented: 0
     buffs: []
@@ -407,6 +261,7 @@ MonoBehaviour:
           DamageReductionBeforeArmor: 0
           DamageReductionAfterArmor: 0
           DamageMultiplier: 0
+          MinDamageCap: 1
           usedBuffs: []
           usedAttackEffects: []
         targetModifiers:
@@ -419,6 +274,7 @@ MonoBehaviour:
           DamageReductionBeforeArmor: 0
           DamageReductionAfterArmor: 0
           DamageMultiplier: 0
+          MinDamageCap: 1
           usedBuffs: []
           usedAttackEffects: []
         attackerStats:
@@ -443,6 +299,7 @@ MonoBehaviour:
           subtypes: 
           origin: 
           source: {fileID: 0}
+        appliedDebuffs: []
       isExtra: 0
     attackCountCanBeAugmented: 0
     buffs: []
@@ -475,6 +332,7 @@ MonoBehaviour:
           DamageReductionBeforeArmor: 0
           DamageReductionAfterArmor: 0
           DamageMultiplier: 0
+          MinDamageCap: 1
           usedBuffs: []
           usedAttackEffects: []
         targetModifiers:
@@ -487,6 +345,7 @@ MonoBehaviour:
           DamageReductionBeforeArmor: 0
           DamageReductionAfterArmor: 0
           DamageMultiplier: 0
+          MinDamageCap: 1
           usedBuffs: []
           usedAttackEffects: []
         attackerStats:
@@ -511,6 +370,7 @@ MonoBehaviour:
           subtypes: 
           origin: 
           source: {fileID: 0}
+        appliedDebuffs: []
       isExtra: 0
     attackCountCanBeAugmented: 0
     buffs: []
@@ -543,6 +403,7 @@ MonoBehaviour:
           DamageReductionBeforeArmor: 0
           DamageReductionAfterArmor: 0
           DamageMultiplier: 0
+          MinDamageCap: 1
           usedBuffs: []
           usedAttackEffects: []
         targetModifiers:
@@ -555,6 +416,7 @@ MonoBehaviour:
           DamageReductionBeforeArmor: 0
           DamageReductionAfterArmor: 0
           DamageMultiplier: 0
+          MinDamageCap: 1
           usedBuffs: []
           usedAttackEffects: []
         attackerStats:
@@ -579,6 +441,7 @@ MonoBehaviour:
           subtypes: 
           origin: 
           source: {fileID: 0}
+        appliedDebuffs: []
       isExtra: 0
     attackCountCanBeAugmented: 0
     buffs: []
@@ -611,6 +474,7 @@ MonoBehaviour:
           DamageReductionBeforeArmor: 0
           DamageReductionAfterArmor: 0
           DamageMultiplier: 0
+          MinDamageCap: 1
           usedBuffs: []
           usedAttackEffects: []
         targetModifiers:
@@ -623,6 +487,7 @@ MonoBehaviour:
           DamageReductionBeforeArmor: 0
           DamageReductionAfterArmor: 0
           DamageMultiplier: 0
+          MinDamageCap: 1
           usedBuffs: []
           usedAttackEffects: []
         attackerStats:
@@ -647,6 +512,7 @@ MonoBehaviour:
           subtypes: 
           origin: 
           source: {fileID: 0}
+        appliedDebuffs: []
       isExtra: 0
     - target: 2
       requirements: []
@@ -674,6 +540,7 @@ MonoBehaviour:
           DamageReductionBeforeArmor: 0
           DamageReductionAfterArmor: 0
           DamageMultiplier: 0
+          MinDamageCap: 1
           usedBuffs: []
           usedAttackEffects: []
         targetModifiers:
@@ -686,6 +553,7 @@ MonoBehaviour:
           DamageReductionBeforeArmor: 0
           DamageReductionAfterArmor: 0
           DamageMultiplier: 0
+          MinDamageCap: 1
           usedBuffs: []
           usedAttackEffects: []
         attackerStats:
@@ -710,6 +578,7 @@ MonoBehaviour:
           subtypes: 
           origin: 
           source: {fileID: 0}
+        appliedDebuffs: []
       isExtra: 0
     attackCountCanBeAugmented: 0
     buffs: []
@@ -733,76 +602,7 @@ MonoBehaviour:
       <b><color=#b50>armor pierce</color></b> to me.\n"
     passiveBuffDescriptions: "<b>\U0001F4A5 On hit</b>: <b><color=#15c>\xD71</color></b>
       <b><color=#900>damage</color></b> when the target's <b><color=#b90>cost</color></b>
-      is  less than <b>4</b>, from myself\n<b><color=#15c>+2</color></b> <b><color=#b50>armor
-      pierce</color></b> from myself\n"
+      is  less than <b>4</b>, from my passive <b></b>\n<b><color=#15c>+2</color></b>
+      <b><color=#b50>armor pierce</color></b> from my passive <b></b>\n"
     actionsDescription: "\u2694\uFE0F Melee or \U0001F3AF ranged attack.\nA \u2694\uFE0F
       Melee attack and a \U0001F3AF Ranged attack.\n"
-  references:
-    version: 2
-    RefIds:
-    - rid: 649267651297935508
-      type: {class: AttackAction, ns: , asm: Assembly-CSharp}
-      data:
-        target: 0
-        requirements: []
-        source: {fileID: 0}
-        receiver: {fileID: 0}
-        damageType: 0
-        damageMultiplier: 0
-        damageMultiplierCanBeAugmented: 0
-        flatDamageOverwrite: 0
-        ignoresDefense: 0
-        attackEffect: []
-        temporaryBuffs: []
-        attackActionOutput:
-          damage: 0
-          resultsInDeath: 0
-          deathByExecution: 0
-          damageType: 0
-          attackerModifiers:
-            Attack: 0
-            Health: 0
-            MaxHealth: 0
-            Defense: 0
-            Armor: 
-            ArmorPierce: 0
-            DamageReductionBeforeArmor: 0
-            DamageReductionAfterArmor: 0
-            DamageMultiplier: 0
-            usedBuffs: []
-            usedAttackEffects: []
-          targetModifiers:
-            Attack: 0
-            Health: 0
-            MaxHealth: 0
-            Defense: 0
-            Armor: 
-            ArmorPierce: 0
-            DamageReductionBeforeArmor: 0
-            DamageReductionAfterArmor: 0
-            DamageMultiplier: 0
-            usedBuffs: []
-            usedAttackEffects: []
-          attackerStats:
-            hp: 0
-            maxHP: 0
-            armor: 
-            attack: 0
-            armorPierce: 0
-            damageReduction: 0
-            cost: 0
-            subtypes: 
-            origin: 
-            source: {fileID: 0}
-          targetStats:
-            hp: 0
-            maxHP: 0
-            armor: 
-            attack: 0
-            armorPierce: 0
-            damageReduction: 0
-            cost: 0
-            subtypes: 
-            origin: 
-            source: {fileID: 0}
-        isExtra: 0

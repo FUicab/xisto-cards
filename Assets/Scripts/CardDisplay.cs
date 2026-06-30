@@ -27,7 +27,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 	}
 	public int HandIndex;
 	public bool isPotentialTargetForPerformingAction = false;
-    [HideInInspector] public PlayerProfile Owner;
+    [System.NonSerialized] public PlayerProfile Owner;
 
 	/* Card values calculated after all modifiers and other independent values */
 	public int hp;
@@ -36,10 +36,10 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 	/* Guarding pose prevents units from doing any other action until the round ends. While in this state they attack back those who inflict melee damage to them. */
 	public bool guardingPose = false;
 
-	/* Some cards allow to redirect attacks towards them. This variable defines who's doing it for this card. This works differently from defenders in the sense that attacks can be redirected regardless of the position, and affected cards can still be targetted.*/
-	[HideInInspector] public CardDisplay attackSponge = null;
-	public List<BuffAction> activeBuffs = new List<BuffAction>();
-	public List<BuffAction> passiveBuffs = new List<BuffAction>();
+    /* Some cards allow to redirect attacks towards them. This variable defines who's doing it for this card. This works differently from defenders in the sense that attacks can be redirected regardless of the position, and affected cards can still be targetted.*/
+    [System.NonSerialized] public CardDisplay attackSponge = null;
+	[System.NonSerialized] public List<BuffAction> activeBuffs = new List<BuffAction>();
+	[HideInInspector] public List<BuffAction> passiveBuffs = new List<BuffAction>();
 	public List<BuffAction> appliedBuffs{
 		get {
 			List<BuffAction> buffs = new List<BuffAction>();
@@ -52,10 +52,10 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
     [HideInInspector] public List<PassiveSkill> cardPassives;
 
     /* The list of cards that have attacked me during this round */
-    [HideInInspector] public List<CardDisplay> myAttackers = new();
+    [System.NonSerialized] public List<CardDisplay> myAttackers = new();
 
     /* The passives that have been used during this round and can't be used again until next round */
-    [HideInInspector] public List<PassiveSkill> usedPassives = new();
+    [System.NonSerialized] public List<PassiveSkill> usedPassives = new();
 
     /* This is used to determine if Doragon and Yatza passives can be activated. Having none of those subtypes will make this always return false. */
 	public bool ElementalExchangeActivated
@@ -96,6 +96,35 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 			return itCan;
 		}
 	}
+
+    /* This determines if the unit has immunity to extra attacks. */
+    public bool IsImmuneToExtraAttacks
+    {
+        get
+        {
+            bool itIs = false;
+			if (appliedBuffs.Exists(buff => buff.specialEffect == BuffSpecialEffects.ImmunityToExtraAttacks))
+			{
+				itIs = true;
+			}
+            return itIs;
+        }
+    }
+
+    /* This determines if the unit has immunity to extra attacks. */
+    public int CostOfAction
+    {
+        get
+        {
+            int cost = 1;
+            foreach (BuffAction buff in appliedBuffs.Where(buff => buff.Attribute == Attributes.ActionPointCost))
+            {
+				cost += buff.amount;
+            }
+			if( cost < 0 ) { cost = 0; } /* We don't want to deal with negative action-point costs. */
+            return cost;
+        }
+    }
 
     /* Get functions. They apply buffs to properties and make the calculation before hand. These values cannot be changed by code and should only be manipulated by buffs or by modifying the card itself. */
     public List<UnitSubtype> acquiredSubtypes {
@@ -237,7 +266,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 			int bonus = 0;
 			foreach (BuffAction buff in appliedBuffs.Where(x => !x.activatesOnHit))
 			{
-				if (buff.Attribute == Attributes.Cost)
+				if (buff.Attribute == Attributes.GoldCost)
 				{
 					bonus += buff.amount;
 				}
@@ -274,12 +303,12 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 	[HideInInspector] public Transform SlotGroup;
 	[HideInInspector] public Vector3 OriginPosition;
 	[HideInInspector] public Transform OriginParent;
-	[HideInInspector] public CardSpace mySpace;
+    [System.NonSerialized] public CardSpace mySpace;
 	public RawImage Overlay;
 	private LineRenderer line;
 
 	public GameObject UndoButtonObject;
-	[HideInInspector] public TurnAction PurchaseAction;
+    [System.NonSerialized] public TurnAction PurchaseAction;
 
 	public List<TurnAction> MyActionsOfThisRound
 	{
@@ -603,6 +632,7 @@ public class CardDisplay : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 		if (attack.attackActionOutput.deathByExecution) { hp = 0; }
 		ReceiveDamage(attack.attackActionOutput.damage);
 		attack.attackActionOutput.attackerModifiers.ApplyAfterAttackBuffs(attack.attackActionOutput);
+		attack.attackActionOutput.appliedDebuffs.ForEach(debuff => ReceiveActiveBuff(debuff) ); 
 		if (CanFightBack(attack))
 		{
 			FightBack(attack.source);

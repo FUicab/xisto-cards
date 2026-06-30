@@ -142,14 +142,23 @@ public class GameManager : MonoBehaviour
 		bool canUseFreeAttackAction = CurrentAction.actionObject?.action.actionType == ActionTypes.Attack && PlayerAtPlay.FreeAttackActions > 0;
 
         if (PlayerAtPlay.selectedDice != null && !canUseFreeAttackAction) PlayerAtPlay.selectedDice.Use();
-        TurnActions.Add(new TurnAction(CurrentAction) { Owner = PlayerAtPlay });
-        CurrentAction.Clean();
 		if(canUseFreeAttackAction)
 		{
 			PlayerAtPlay.NextFreeAttackBuff.usedAmount += 1;
+			CurrentAction.actionPointCost = 0;
 		} else {
+			if(CurrentAction.movementType == TurnMovementType.CardPurchase)
+			{
+				CurrentAction.actionPointCost = 1;
+			} else
+			{
+				Debug.Log($"{CurrentAction.CardInAction?.card.Name} has performed an action, requiring {CurrentAction.CardInAction?.CostOfAction} action points.");
+				CurrentAction.actionPointCost = CurrentAction.CardInAction?.CostOfAction ?? 1;
+			}
 			availableActionsForThisTurn -= 1;
 		}
+        TurnActions.Add(new TurnAction(CurrentAction) { Owner = PlayerAtPlay });
+        CurrentAction.Clean();
 		SetConfirmationButton("");
 		return TurnActions[TurnActions.Count - 1];
 	}
@@ -263,7 +272,7 @@ public class GameManager : MonoBehaviour
 	/** Starts an action event */
 	public void StartAction(CardActionObject action)
 	{
-		if(!CheckAvailableActions(TurnMovementType.PerformAction, action.action.actionType) || !CheckAvailableTargetsForAction(action)){ return; }
+		if(!CheckAvailableActions(TurnMovementType.PerformAction, action.action.actionType, action.sourceCard.CostOfAction) || !CheckAvailableTargetsForAction(action)){ return; }
 		CurrentAction.movementType = TurnMovementType.PerformAction;
 		switch (action.action.actionType)
 		{
@@ -432,7 +441,7 @@ public class GameManager : MonoBehaviour
 		MainTooltip.text = "";
 
 		PlayerAtPlay = Host;
-		PlayerAtPlay.actionPoints -= 1;
+		//PlayerAtPlay.actionPoints -= 1;
 
 		availableActionsForThisTurn = 1;
 		UpdateDisplayGoldValues();
@@ -462,9 +471,10 @@ public class GameManager : MonoBehaviour
 			}
 			turnActions.Add(action);
 		}
-		if(TurnActions.Count == 0)
+		if(TurnActions.Count == 0 && availableActionsForThisTurn > 0)
 		{
 			turnActions.Add(new TurnAction() { movementType = TurnMovementType.Pass, Owner = PlayerAtPlay});
+			//PlayerAtPlay.actionPoints -= 1;
 		}
 		if(availableActionsForThisTurn > 0)
 		{
@@ -473,6 +483,11 @@ public class GameManager : MonoBehaviour
 		//PlayerAtPlay.Gold += ActionPoints;
 		//PlayerAtPlay.Gold += 1;
 		//DrawCards(PlayerAtPlay);
+		
+		foreach (TurnAction action in turnActions) {
+			PlayerAtPlay.actionPoints -= action.actionPointCost;
+		}
+
 		SaveTurnActions(turnActions);
 		UpdateDisplayGoldValues();
 		//ClearActionPoints();
@@ -500,7 +515,7 @@ public class GameManager : MonoBehaviour
 			DrawCards(player);
 		}
 		turnIndex = 0;
-		PlayerAtPlay.actionPoints--;
+		//PlayerAtPlay.actionPoints--;
 		SetConfirmationButton(EndTurnText, GoldOnPassTip, true);
 		roundIndex++;
 		UpdateDisplayGoldValues();
@@ -509,21 +524,40 @@ public class GameManager : MonoBehaviour
 
 	public void SwitchTurns(){
 		bool newRound = false;
-		if((PlayerAtPlay == Host || Host.actionPoints <= 0) && Opponent.actionPoints > 0){
+		//if (Host.actionPoints <= 0 && Opponent.actionPoints <= 0) {
+  //          newRound = true;
+  //          RoundEnd();
+  //      } else {
+		//	if (PlayerAtPlay == Host || Host.actionPoints <= 0)
+		//	{
+		//		PlayerAtPlay = Opponent;
+		//		SetConfirmationButton(EndTurnText, WaitingForOpponentText, false);
+		//	}
+		//	else if (PlayerAtPlay == Opponent || Opponent.actionPoints <= 0)
+		//	{
+		//		PlayerAtPlay = Host;
+		//		SetConfirmationButton(EndTurnText, GoldOnPassTip, true);
+		//	}
+		//}
+		if((PlayerAtPlay == Host || Host.actionPoints <= 0) && Opponent.actionPoints > 0)
+		{
 			PlayerAtPlay = Opponent;
 			SetConfirmationButton(EndTurnText, WaitingForOpponentText, false);
-		} else if(Host.actionPoints > 0) {
+		}
+		else if (Host.actionPoints > 0)
+		{
 			PlayerAtPlay = Host;
 			SetConfirmationButton(EndTurnText, GoldOnPassTip, true);
-		} else
+		}
+		else
 		{
 			newRound = true;
 			RoundEnd();
-		}		
+		}
 		//Debug.Log($"Host: {Host.actionPoints} | Opponent: {Opponent.actionPoints} | {PlayerAtPlay.Role} will play now.");
 		if (!newRound)
 		{
-			PlayerAtPlay.actionPoints -= 1;
+			//PlayerAtPlay.actionPoints -= 1;
 			turnIndex++;
 			if(Host.actionPoints <= 0 && Opponent.actionPoints <= 0)
 			{
@@ -620,7 +654,7 @@ public class GameManager : MonoBehaviour
 		if(actionObject.action.actionType == ActionTypes.Attack)
         foreach (AttackAction action in actionObject.action.attacks)
         {
-            Debug.Log($"Attack action has {action.GetPotentialTargets().Count} potential targets.");
+            //Debug.Log($"Attack action has {action.GetPotentialTargets().Count} potential targets.");
             if (action.GetPotentialTargets().Count == 0) {
 				isOk = false;
 			}
@@ -629,7 +663,7 @@ public class GameManager : MonoBehaviour
 		if(actionObject.action.actionType == ActionTypes.Buff)
         foreach (BuffAction action in actionObject.action.buffs)
         {
-			Debug.Log($"Buff action has {action.GetPotentialTargets().Count} potential targets.");
+			//Debug.Log($"Buff action has {action.GetPotentialTargets().Count} potential targets.");
             if (action.GetPotentialTargets().Count == 0)
             {
                 isOk = false;
@@ -645,11 +679,22 @@ public class GameManager : MonoBehaviour
 	public bool CheckAvailableActions(TurnMovementType movementType, ActionTypes actionType = ActionTypes.DoNothing, int requirement = 1){
 		bool isOk = false;
 		int bonusActions = (actionType == ActionTypes.Attack ? PlayerAtPlay.FreeAttackActions : 0);
-		if((availableActionsForThisTurn + bonusActions ) >= requirement){
-			isOk = true;
-		} else {
+
+		if((PlayerAtPlay.actionPoints + bonusActions) < requirement)
+		{
+            DisplayFloatingMessage("Not enough action points\nto do this", Camera.main.ScreenToWorldPoint(Input.mousePosition), "green");
+        } else if((availableActionsForThisTurn + bonusActions < 1))
+		{
 			DisplayFloatingMessage("No more actions available\nEnd your turn to continue", Camera.main.ScreenToWorldPoint(Input.mousePosition), "green");
+		} else
+		{
+			isOk = true;
 		}
+
+		//if((availableActionsForThisTurn + bonusActions >= 1) && (PlayerAtPlay.actionPoints + bonusActions ) >= requirement){
+		//	isOk = true;
+		//} else {
+		//}
 		return isOk;
 	}
 
@@ -695,6 +740,7 @@ public class TurnAction{
 	public List<CardDisplay> targets = new List<CardDisplay>();
 	public int nextNullIndex = -1;
 	public int remainingTargets = 0;
+	public int actionPointCost = 1;
 	public int HandIndexOrigin;
 	public int PurchasePrice;
 	public PlayerProfile Owner;
@@ -709,6 +755,7 @@ public class TurnAction{
 			actionObject = Origin.actionObject;
 			targets = new List<CardDisplay>(Origin.targets);
 			Owner = Origin.Owner;
+			actionPointCost = Origin.actionPointCost;
 		}
 		UpdateTargetCountAndIndex();
 	}
@@ -718,6 +765,7 @@ public class TurnAction{
 		Clean();
 		actionObject = actionObj;
 		CardInAction = actionObject.sourceCard;
+		actionPointCost = CardInAction.CostOfAction;
 		CardInAction.SetOutline("orange");
 		switch (actionObject.action.actionType)
 		{

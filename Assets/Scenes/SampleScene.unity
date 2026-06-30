@@ -6004,6 +6004,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 184640e8e414cd8458826210bf18d67f, type: 2}
   - {fileID: 11400000, guid: ec5a42c03810f8f499b952dc83f83e6d, type: 2}
   - {fileID: 11400000, guid: a9c66ecd06264f94fa231cc444f8b533, type: 2}
+  - {fileID: 11400000, guid: 5ccb3c5c6a5400e48b755397a469f684, type: 2}
   Deck: []
   Players: []
   RoundActions: []

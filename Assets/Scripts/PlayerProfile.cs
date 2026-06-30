@@ -21,10 +21,10 @@ public class PlayerProfile
 	//public GameObject DiceUI_2;
 	//public GameObject DiceUI_3;
 	public List<Dice> Dices = new List<Dice>() { };
-	public Dice selectedDice = null;
-	public PlayerProfile otherPlayer;
-	[SerializeReference] public List<PlayerBuffs> activeBuffs = new();
-    [SerializeReference] public List<PlayerBuffs> passiveBuffs = new();
+    [HideInInspector] public Dice selectedDice = null;
+    [System.NonSerialized] public PlayerProfile otherPlayer;
+    [HideInInspector] public List<PlayerBuffs> activeBuffs = new();
+    [HideInInspector] public List<PlayerBuffs> passiveBuffs = new();
 	public List<PlayerBuffs> appliedBuffs{ get { return activeBuffs.Concat(passiveBuffs).ToList(); } }
 	public List<CardSpace> mySpaces {
 		get

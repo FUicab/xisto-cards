@@ -106,6 +106,7 @@ public static class CardActionTools
 					{
 						requirements = new List<Requirements>(),
 						attackEffect = new List<AttackEffect>(),
+                        isExtra = true
 					};
 					if (!effect.useAttackValue)
 					{
@@ -506,7 +507,7 @@ public static bool TargetMeetsRequirementsOfAction(CardDisplay target, ActiveAct
                                 case Attributes.MaxHealth:
                                     attributeValueInTarget = targetStats.maxHP;
                                     break;
-                                case Attributes.Cost:
+                                case Attributes.GoldCost:
                                     attributeValueInTarget = targetStats.cost;
                                     break;
                             }
@@ -718,13 +719,27 @@ public static bool TargetMeetsRequirementsOfAction(CardDisplay target, ActiveAct
         {
             dmg = attackerTempModifiers.MinDamageCap;
         }
+        if (attackAction.isExtra && target.IsImmuneToExtraAttacks)
+        {
+            dmg = 0;
+        }
 		output.damage = dmg;
 		output.damageType = damageType;
 		output.targetStats.hp -= dmg;
 
         foreach (AttackEffect atkFx in attackEffectsAfterAttack)
         {
-            if (atkFx.StatsMeetRequirements(output.targetStats)) attackerTempModifiers.usedAttackEffects.Add(atkFx);
+            if (atkFx.StatsMeetRequirements(output.targetStats)) {
+                attackerTempModifiers.usedAttackEffects.Add(atkFx);
+                if(atkFx.effectType == AttackEffects.ApplyDebuff)
+                {
+                    foreach (BuffAction debuff in atkFx.buffs.Where(x => x.target == TargetTypes.SameTarget && x.TargetMeetsRequirements(target)))
+                    {
+                        output.appliedDebuffs.Add(debuff);
+                        //GetActualTarget(target).ReceiveActiveBuff(debuff);
+                    }
+                }
+            }
         }
 
 		bool canExecute = (output.targetStats.hp <= 2 && attacker.card.Subtypes.Contains(UnitSubtype.Executioner) || attackerTempModifiers.willExecute );
@@ -1009,6 +1024,7 @@ public class AttackActionOutput
 	public TempModifiers targetModifiers = new();
     public StatList attackerStats;
     public StatList targetStats;
+    public List<BuffAction> appliedDebuffs = new();
 	public string damageTypeIcon {
 		get {
 			string character = "🥊";

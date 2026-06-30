@@ -113,8 +113,8 @@ public class BuffAction : ActiveAction{
 	public bool addDamageDealtAsValue = false; /* This only works if the buff is triggered as effect of an attack. */
 	public bool multiplyThisBuff = false;
 	public TargetUnitDefinition multiplyForEach = TargetUnitDefinition.BenefitedYatzasAndDoragons; /* The buff re-applies its effects with each unit that matches the definition. If no matches are found the buff does not apply. */
-    public AttackAction originAttack;
-    public PassiveSkill originPassive;
+    [System.NonSerialized] public AttackAction originAttack;
+    [System.NonSerialized] public PassiveSkill originPassive;
 
 	public BuffAction(BuffAction values, AttackAction sourceAttack = null)
 	{
@@ -156,7 +156,7 @@ public class AttackEffect
     public List<BuffAction> buffs = new();
     //public List<BuffAction> debuffs;
     public List<Requirements> requirements = new();
-	[SerializeReference] public AttackAction originAttack;
+	[System.NonSerialized] public AttackAction originAttack;
 
 	public AttackEffect(AttackEffect values, AttackAction attackSource)
 	{
@@ -187,7 +187,7 @@ public class Requirements{
 	public Attributes myAttribute;
 	public int attributeValue = 0;
 	public bool targetOfRequirementIsTargetOfAttack;
-	[SerializeReference] public ActiveAction originAction;
+    [System.NonSerialized] public ActiveAction originAction;
 
 	public Requirements(Requirements requirements, ActiveAction originAction = null){
 		requirement = requirements.requirement;
@@ -215,8 +215,8 @@ public class PassiveSkill : CardSkill{
 	public bool requiresElementalExchange = false;
 	public List<BuffAction> buffs = new();
     public List<PlayerBuffs> playerBuffs = new();
-	[HideInInspector] public CardDisplay source;
-    [HideInInspector] private GameManager GM;
+    [System.NonSerialized] public CardDisplay source;
+    [SerializeReference] private GameManager GM;
 
 	public PassiveSkill(PassiveSkill passiveSkill) {
 		title = passiveSkill.title;
@@ -293,8 +293,8 @@ public class PlayerBuffs
 	[HideInInspector] public bool hasBeenUsed = false;
     [HideInInspector] public int usedAmount = 0;
     [HideInInspector] public int usableAmount { get {  return amount - usedAmount; }  }
-    [HideInInspector] public CardDisplay source;
-	[HideInInspector] public PassiveSkill originPassive;
+    [System.NonSerialized] public CardDisplay source;
+	[System.NonSerialized] public PassiveSkill originPassive;
 
 	public PlayerBuffs(PlayerBuffs values)
 	{
@@ -347,10 +347,11 @@ public enum Attributes{
 	DamageReductionBeforeArmor,
 	DamageReductionAfterArmor,
 	MaxHealth,
-	Cost,
+	GoldCost,
 	DamageMultiplier,
 	BaseAttack,
-	MinDamageCap
+	MinDamageCap,
+	ActionPointCost
 }
 public enum ActionTypes{
 	Attack,
@@ -402,7 +403,8 @@ public enum BuffSpecialEffects
 	Disarm,
 	Disrupt,
 	GrantAttackEffect,
-	AllowGuardingPoseRespondToRangedAttacks
+	AllowGuardingPoseRespondToRangedAttacks,
+	ImmunityToExtraAttacks
 }
 public enum SpecialBehavior{
 	OnlyActivatesOnce
