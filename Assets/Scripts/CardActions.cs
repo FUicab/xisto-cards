@@ -65,8 +65,9 @@ public class AttackAction : ActiveAction{
     public List<BuffAction> temporaryBuffs = new(); //Temporary buffs are applied during the attack
     [HideInInspector] public AttackActionOutput attackActionOutput = new();
     [HideInInspector] public bool isExtra = false; /* Extra attacks do not trigger counter attacks and other "on hit" effects. Armor pierce and executions work as normal. */
+    [System.NonSerialized] public BuffAction originBuff; /* Indicates when an attack is triggered as effect of a buff */
 
-	public AttackAction(AttackAction values)
+    public AttackAction(AttackAction values)
 	{
 		damageType = values.damageType;
 		damageMultiplier = values.damageMultiplier;
@@ -81,6 +82,7 @@ public class AttackAction : ActiveAction{
 		isExtra = values.isExtra;
 		ignoresDefense = values.ignoresDefense;
 		attackActionOutput = values.attackActionOutput;
+		originBuff = values.originBuff;
 		values.requirements.ForEach(req => { requirements.Add(new Requirements(req, this) ); });
 		values.attackEffect.ForEach(atkFx => { attackEffect.Add(new AttackEffect(atkFx, this));  } );
 		values.temporaryBuffs.ForEach(tempBuff => { temporaryBuffs.Add(new BuffAction(tempBuff, this) { source = source }); });
@@ -137,7 +139,7 @@ public class BuffAction : ActiveAction{
 		addDamageDealtAsValue = values.addDamageDealtAsValue;
 		values.requirements.ForEach(req => { requirements?.Add(new Requirements(req, (originAttack != null ? originAttack : this) ) ); });
         values.onHitRequirements.ForEach(req => { onHitRequirements?.Add(new Requirements(req, (originAttack != null ? originAttack : this) ) ); });
-        values.extraAttacks.ForEach(atk => { extraAttacks?.Add(new AttackAction(atk) { source = values.source, isExtra = true } ); });
+        values.extraAttacks.ForEach(atk => { extraAttacks?.Add(new AttackAction(atk) { source = values.source, isExtra = true, originBuff = this } ); });
         values.attackEffect.ForEach(atkFx => { attackEffect.Add(new AttackEffect(atkFx, null)); });
         //onHitRequirements = values.onHitRequirements;
     }
@@ -156,6 +158,8 @@ public class AttackEffect
     public List<BuffAction> buffs = new();
     //public List<BuffAction> debuffs;
     public List<Requirements> requirements = new();
+	public TargetUnitDefinition from;
+	public List<Attributes> attributes = new();
 	[System.NonSerialized] public AttackAction originAttack;
 
 	public AttackEffect(AttackEffect values, AttackAction attackSource)
@@ -166,6 +170,8 @@ public class AttackEffect
 		valueCanBeAugmented = values.valueCanBeAugmented;
 		effectChecksAfterAttack = values.effectChecksAfterAttack;
 		originAttack = attackSource ?? values.originAttack;
+		from = values.from;
+		attributes = values.attributes;
 		values.buffs.ForEach(buff => { buffs.Add(new BuffAction(buff, originAttack){ source = attackSource.source }); });
         values.requirements.ForEach(req => { requirements?.Add(new Requirements(req, originAttack) ); });
     }
@@ -290,6 +296,7 @@ public class PlayerBuffs
 	public PlayerBuffTypes buffType = PlayerBuffTypes.AddGold;
 	public int amount = 0;
 	public bool canBeAugmented = false;
+	public List<BuffAction> buffs = new();
 	[HideInInspector] public bool hasBeenUsed = false;
     [HideInInspector] public int usedAmount = 0;
     [HideInInspector] public int usableAmount { get {  return amount - usedAmount; }  }
@@ -306,6 +313,7 @@ public class PlayerBuffs
 		usedAmount = values.usedAmount;
 		source = values.source;
 		originPassive = values.originPassive;
+		buffs = values.buffs;
 	}
 
 	public bool IsOfInstantApplication
@@ -322,6 +330,7 @@ public class PlayerBuffs
 					break;
 				case PlayerBuffTypes.ExecutionerThresholdModifier:
 				case PlayerBuffTypes.MercenaryKillGoldReward:
+				case PlayerBuffTypes.BuffForNextAttackingUnit:
 					itIs = false;
 					break;
 			}
@@ -390,7 +399,9 @@ public enum AttackEffects{
 	SelfDamage,
 	ApplyDebuff,
 	Execute,
-	ApplyBuff
+	ApplyBuff,
+	GainAttributesAsTemporaryAttack,
+	GainTemporarySubtypes
 }
 public enum BuffSpecialEffects
 {
@@ -404,7 +415,8 @@ public enum BuffSpecialEffects
 	Disrupt,
 	GrantAttackEffect,
 	AllowGuardingPoseRespondToRangedAttacks,
-	ImmunityToExtraAttacks
+	ImmunityToExtraAttacks,
+	RepeatLastAllyAction
 }
 public enum SpecialBehavior{
 	OnlyActivatesOnce
@@ -419,7 +431,8 @@ public enum RequirementTypes{
 	TargetIsStunned,
 	TargetIsDisarmed,
 	TargetIsDisrupted,
-	TargetIsGuarding
+	TargetIsGuarding,
+	TargetExists
 }
 public enum Comparison
 {
@@ -433,7 +446,9 @@ public enum Comparison
 public enum TargetUnitDefinition{
 	SameAsMyself,
 	TheLeader,
-	BenefitedYatzasAndDoragons
+	BenefitedYatzasAndDoragons,
+	LastAllyWhoAttacked,
+    LastAllyWhoPerformedAnAction,
 }
 public enum TriggerTypes{
 	OnAttack,
@@ -453,5 +468,6 @@ public enum PlayerBuffTypes
 	StealGold,
 	ExecutionerThresholdModifier,
 	MercenaryKillGoldReward,
-	FreeAttackActions
+	FreeAttackActions,
+	BuffForNextAttackingUnit
 }

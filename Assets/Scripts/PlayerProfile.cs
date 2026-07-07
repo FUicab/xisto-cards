@@ -25,7 +25,29 @@ public class PlayerProfile
     [System.NonSerialized] public PlayerProfile otherPlayer;
     [HideInInspector] public List<PlayerBuffs> activeBuffs = new();
     [HideInInspector] public List<PlayerBuffs> passiveBuffs = new();
-	public List<PlayerBuffs> appliedBuffs{ get { return activeBuffs.Concat(passiveBuffs).ToList(); } }
+    public TurnAction LastPerformedActionByAlly{
+		get{
+			TurnAction theAction = GM.RoundActions.FindLast(x => x.movementType == TurnMovementType.PerformAction);
+			return theAction;
+		}
+	}
+    public TurnAction LastPerformedAttackByAlly
+    {
+        get
+        {
+            TurnAction theAction = GM.RoundActions.FindLast(x => x.movementType == TurnMovementType.PerformAction && x.Owner == this && x.actionObject.action.actionType == ActionTypes.Attack);
+            return theAction;
+        }
+    }
+	public List<PlayerBuffs> BuffsForNextAttackingAlly
+	{
+		get
+		{
+			List<PlayerBuffs> buffs = appliedBuffs.FindAll(x => x.buffType == PlayerBuffTypes.BuffForNextAttackingUnit);
+			return buffs;
+		}
+	}
+    public List<PlayerBuffs> appliedBuffs{ get { return activeBuffs.Concat(passiveBuffs).ToList(); } }
 	public List<CardSpace> mySpaces {
 		get
 		{

@@ -152,7 +152,7 @@ public class GameManager : MonoBehaviour
 				CurrentAction.actionPointCost = 1;
 			} else
 			{
-				Debug.Log($"{CurrentAction.CardInAction?.card.Name} has performed an action, requiring {CurrentAction.CardInAction?.CostOfAction} action points.");
+				//Debug.Log($"{CurrentAction.CardInAction?.card.Name} has performed an action, requiring {CurrentAction.CardInAction?.CostOfAction} action points.");
 				CurrentAction.actionPointCost = CurrentAction.CardInAction?.CostOfAction ?? 1;
 			}
 			availableActionsForThisTurn -= 1;

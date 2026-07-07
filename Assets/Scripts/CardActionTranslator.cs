@@ -209,6 +209,15 @@ public static class CardTranslator
                 }
             }
 
+			if(attack.target == TargetTypes.Self)
+			{
+				if(attack.originBuff != null) {
+					text += " to themselves";
+				} else {
+                    text += " to myself";
+                }
+			}
+
             // Lists the temporary buffs of an attack. These buffs only apply while performing the skill.
             //subIndex = 0;
             if (attack.temporaryBuffs.Count > 0)
@@ -322,144 +331,143 @@ public static class CardTranslator
 
         foreach (var buff in buffs)
 		{
-			if(index == 0 && startWithUppercase){
-				if (passiveSkill != null && (passiveSkill.trigger == TriggerTypes.OnAttack || buff.activatesOnHit))
+			if (passiveSkill != null && (passiveSkill.trigger == TriggerTypes.OnAttack || buff.activatesOnHit))
+			{
+				text += "When ";
+				switch (buff.target)
 				{
-					text += "When ";
-					switch (buff.target)
-					{
-						case TargetTypes.Self:
-							text += "I";
-							break;
-						case TargetTypes.AlliesInSameLine:
-							text += "my allies on the same line";
-							break;
-						case TargetTypes.SingleEnemy:
-						case TargetTypes.LineOfEnemies:
-						case TargetTypes.AllEnemies:
-							text += "the enemies";
-							break;
-						case TargetTypes.SingleAlly:
-						case TargetTypes.AllAllies:
-							text += "my allies";
-							break;
-						case TargetTypes.AlliesNextToMe:
-							text += "the allies next to me";
-							break;
-						case TargetTypes.AlliesInLineInFrontOfMe:
-							text += "the allies in the line in front of me";
-							break;
-                        case TargetTypes.AlliesInLineBehind:
-							text += "the allies in the line behind me";
-							break;
-                        default:
-							text += "they";
-							break;
-					}
-					if (buff.requirements.Count > 0)
-						text += RequirementDescription(buff.requirements, buff.target, buff.source?.card);
-					text += " <b>attack 💥</b> ";
+					case TargetTypes.Self:
+						text += "I";
+						break;
+					case TargetTypes.AlliesInSameLine:
+						text += "my allies on the same line";
+						break;
+					case TargetTypes.SingleEnemy:
+					case TargetTypes.LineOfEnemies:
+					case TargetTypes.AllEnemies:
+						text += "the enemies";
+						break;
+					case TargetTypes.SingleAlly:
+					case TargetTypes.AllAllies:
+						text += "my allies";
+						break;
+					case TargetTypes.AlliesNextToMe:
+						text += "the allies next to me";
+						break;
+					case TargetTypes.AlliesInLineInFrontOfMe:
+						text += "the allies in the line in front of me";
+						break;
+                    case TargetTypes.AlliesInLineBehind:
+						text += "the allies in the line behind me";
+						break;
+                    default:
+						text += "they";
+						break;
+				}
+				if (buff.requirements.Count > 0)
+					text += RequirementDescription(buff.requirements, buff.target, buff.source?.card);
+				text += " <b>attack 💥</b> ";
 
-					switch (buff.specialEffect)
-					{
-						case BuffSpecialEffects.TriggerExtraAttack:
-							text += ", ";
-							switch (buff.target)
-							{
-								case TargetTypes.Self:
-									text += "I";
-									break;
-								default:
-									text += "they";
-									break;
-							}
-							text += " perform ";
-							if (buff.extraAttacks.Count == 1)
-							{
-								text += "a ";
-							}
-							text += GenerateAttacksDescription(buff.extraAttacks);
-							if (buff.extraAttacks.Count == 1)
-							{
-								text += " as an extra attack";
-							}
-							else
-							{
-								text += " as extra attacks";
-							}
-							break;
-                        case BuffSpecialEffects.GrantAttackEffect:
-                            text += ", this attack ";
-							text += $"{AttackEffectDescription(buff.attackEffect[0])}";
-                            break;
-                        default:
-							switch (buff.Attribute)
-							{
-								case Attributes.Health: text += "heals "; break;
-								default:
-									switch (buff.target)
-									{
-										case TargetTypes.Self:
-											text += "I get ";
-											break;
-										default:
-											text += "they get ";
-											break;
-									}
-									break;
-							}
-							break;
-					}
-				}
-				else if (buff.specialEffect == BuffSpecialEffects.TriggerExtraAttack)
+				switch (buff.specialEffect)
 				{
-					text += "Make";
-					switch (buff.target)
-					{
-						case TargetTypes.Self:
-							text += "s me";
-							break;
-						case TargetTypes.AlliesInSameLine:
-							text += " my allies on the same line";
-							break;
-						case TargetTypes.SingleEnemy:
-						case TargetTypes.LineOfEnemies:
-						case TargetTypes.AllEnemies:
-							text += " the enemies";
-							break;
-						case TargetTypes.SingleAlly:
-						case TargetTypes.AllAllies:
-							text += " all my allies";
-							break;
-						case TargetTypes.AlliesNextToMe:
-							text += "s the allies next to me";
-							break;
-                        case TargetTypes.AlliesInLineInFrontOfMe:
-                            text += "s the allies in the line in front of me";
-                            break;
-                        case TargetTypes.AlliesInLineBehind:
-                            text += "s the allies in the line behind me";
-                            break;
-                        default:
-							text += "s them";
-							break;
-					}
-					text += " perform ";
-					if (buff.extraAttacks.Count == 1)
-					{
-						text += "a ";
-					}
-					text += GenerateAttacksDescription(buff.extraAttacks);
-					if (buff.extraAttacks.Count == 1)
-					{
-						text += " as an extra attack";
-					}
-					else
-					{
-						text += " as extra attacks";
-					}
+					case BuffSpecialEffects.TriggerExtraAttack:
+						text += ", ";
+						switch (buff.target)
+						{
+							case TargetTypes.Self:
+								text += "I";
+								break;
+							default:
+								text += "they";
+								break;
+						}
+						text += " perform ";
+						if (buff.extraAttacks.Count == 1)
+						{
+							text += "a ";
+						}
+						text += GenerateAttacksDescription(buff.extraAttacks);
+						if (buff.extraAttacks.Count == 1)
+						{
+							text += " as an extra attack";
+						}
+						else
+						{
+							text += " as extra attacks";
+						}
+						break;
+                    case BuffSpecialEffects.GrantAttackEffect:
+                        text += ", this attack ";
+						text += $"{AttackEffectDescription(buff.attackEffect[0])}";
+                        break;
+                    default:
+						switch (buff.Attribute)
+						{
+							case Attributes.Health: text += "heals "; break;
+							default:
+								switch (buff.target)
+								{
+									case TargetTypes.Self:
+										text += "I get ";
+										break;
+									default:
+										text += "they get ";
+										break;
+								}
+								break;
+						}
+						break;
 				}
-				else if (buff.specialEffect == BuffSpecialEffects.EnableGuardingPose)
+			}
+			else if (buff.specialEffect == BuffSpecialEffects.TriggerExtraAttack)
+			{
+				text += "Make";
+				switch (buff.target)
+				{
+					case TargetTypes.Self:
+						text += "s me";
+						break;
+					case TargetTypes.AlliesInSameLine:
+						text += " my allies on the same line";
+						break;
+					case TargetTypes.SingleEnemy:
+					case TargetTypes.LineOfEnemies:
+					case TargetTypes.AllEnemies:
+						text += " the enemies";
+						break;
+					case TargetTypes.SingleAlly:
+					case TargetTypes.AllAllies:
+						text += " all my allies";
+						break;
+					case TargetTypes.AlliesNextToMe:
+						text += "s the allies next to me";
+						break;
+                    case TargetTypes.AlliesInLineInFrontOfMe:
+                        text += "s the allies in the line in front of me";
+                        break;
+                    case TargetTypes.AlliesInLineBehind:
+                        text += "s the allies in the line behind me";
+                        break;
+                    default:
+						text += "s them";
+						break;
+				}
+				text += " perform ";
+				if (buff.extraAttacks.Count == 1)
+				{
+					text += "a ";
+				}
+				text += GenerateAttacksDescription(buff.extraAttacks);
+				if (buff.extraAttacks.Count == 1)
+				{
+					text += " as an extra attack";
+				}
+				else
+				{
+					text += " as extra attacks";
+				}
+			}
+			else if (buff.specialEffect == BuffSpecialEffects.EnableGuardingPose)
 				{
 					switch (buff.target)
 					{
@@ -489,7 +497,8 @@ public static class CardTranslator
 							break;
 					}
 					text += $" take {TextFormat("guarding pose", "guarding")}";
-				} else if (buff.specialEffect == BuffSpecialEffects.Disarm || buff.specialEffect == BuffSpecialEffects.Stun || buff.specialEffect == BuffSpecialEffects.Disrupt)
+				}
+			else if (buff.specialEffect == BuffSpecialEffects.Disarm || buff.specialEffect == BuffSpecialEffects.Stun || buff.specialEffect == BuffSpecialEffects.Disrupt)
 				{
 					switch (buff.specialEffect)
 					{
@@ -505,71 +514,72 @@ public static class CardTranslator
 					}
 					text += " " + TargetTypeDescription(buff.target);
 				}
-				else if (buff.specialEffect == BuffSpecialEffects.GrantAttackEffect)
-				{
-                    switch (buff.target)
-                    {
-                        case TargetTypes.Self:
-                            text += "My attack ";
-                            break;
-                        case TargetTypes.AlliesInSameLine:
-                            text += "Attack from allies in the same line ";
-                            break;
-                        case TargetTypes.SingleEnemy:
-                        case TargetTypes.LineOfEnemies:
-                        case TargetTypes.AllEnemies:
-                            text += "Enemy attack ";
-                            break;
-                        case TargetTypes.SingleAlly:
-                        case TargetTypes.AllAllies:
-                            text += "Ally attack ";
-                            break;
-                        case TargetTypes.AlliesNextToMe:
-                            text += "Attack from allies next to me ";
-                            break;
-                        case TargetTypes.AlliesInLineInFrontOfMe:
-                            text += "Attack from allies in the line in front of me";
-                            break;
-                        case TargetTypes.AlliesInLineBehind:
-                            text += "Attack from allies in the line behind me";
-                            break;
-                        default:
-                            text += "Their attack ";
-                            break;
-                    }
-                    text += $" {AttackEffectDescription(buff.attackEffect[0])}";
-                }
-                else if (buff.specialEffect == BuffSpecialEffects.AllowGuardingPoseRespondToRangedAttacks)
+			else if (buff.specialEffect == BuffSpecialEffects.GrantAttackEffect)
+			{
+                switch (buff.target)
                 {
-                    switch (buff.target)
-                    {
-                        case TargetTypes.Self:
-                            text += "I";
-                            break;
-                        case TargetTypes.AlliesInSameLine:
-                            text += "My allies on the same line";
-                            break;
-                        case TargetTypes.SingleEnemy:
-                        case TargetTypes.LineOfEnemies:
-                        case TargetTypes.AllEnemies:
-                            text += "The enemies";
-                            break;
-                        case TargetTypes.SingleAlly:
-                        case TargetTypes.AllAllies:
-                            text += "My allies";
-                            break;
-                        case TargetTypes.AlliesNextToMe:
-                            text += "The allies next to me";
-                            break;
-                        case TargetTypes.AlliesInLineInFrontOfMe:
-                            text += "The allies in the line in front of me";
-                            break;
-                        default:
-                            text += "They";
-                            break;
-                    }
-                    text += $" can {TextFormat("fight back", Attributes.Attack)} {TextFormat("against ranged attacks",Attributes.Defense)} when {TextFormat("guarding", "guarding")}";
-                } else if (buff.specialEffect == BuffSpecialEffects.ImmunityToExtraAttacks)
+                    case TargetTypes.Self:
+                        text += "My attack";
+                        break;
+                    case TargetTypes.AlliesInSameLine:
+                        text += "Attack from allies in the same line";
+                        break;
+                    case TargetTypes.SingleEnemy:
+                    case TargetTypes.LineOfEnemies:
+                    case TargetTypes.AllEnemies:
+                        text += "Enemy attack";
+                        break;
+                    case TargetTypes.SingleAlly:
+                    case TargetTypes.AllAllies:
+                        text += "Ally attack";
+                        break;
+                    case TargetTypes.AlliesNextToMe:
+                        text += "Attack from allies next to me";
+                        break;
+                    case TargetTypes.AlliesInLineInFrontOfMe:
+                        text += "Attack from allies in the line in front of me";
+                        break;
+                    case TargetTypes.AlliesInLineBehind:
+                        text += "Attack from allies in the line behind me";
+                        break;
+                    default:
+                        text += "Their attack";
+                        break;
+                }
+                text += $" {AttackEffectDescription(buff.attackEffect[0])}";
+            }
+            else if (buff.specialEffect == BuffSpecialEffects.AllowGuardingPoseRespondToRangedAttacks)
+            {
+                switch (buff.target)
+                {
+                    case TargetTypes.Self:
+                        text += "I";
+                        break;
+                    case TargetTypes.AlliesInSameLine:
+                        text += "My allies on the same line";
+                        break;
+                    case TargetTypes.SingleEnemy:
+                    case TargetTypes.LineOfEnemies:
+                    case TargetTypes.AllEnemies:
+                        text += "The enemies";
+                        break;
+                    case TargetTypes.SingleAlly:
+                    case TargetTypes.AllAllies:
+                        text += "My allies";
+                        break;
+                    case TargetTypes.AlliesNextToMe:
+                        text += "The allies next to me";
+                        break;
+                    case TargetTypes.AlliesInLineInFrontOfMe:
+                        text += "The allies in the line in front of me";
+                        break;
+                    default:
+                        text += "They";
+                        break;
+                }
+                text += $" can {TextFormat("fight back", Attributes.Attack)} {TextFormat("against ranged attacks",Attributes.Defense)} when {TextFormat("guarding", "guarding")}";
+            }
+			else if (buff.specialEffect == BuffSpecialEffects.ImmunityToExtraAttacks)
 				{
 					switch (buff.target)
 					{
@@ -600,99 +610,133 @@ public static class CardTranslator
 					}
 					text += $" {TextFormat("immune to extra attacks", Attributes.Defense)} <i>(including splash damage)</i>";
 				}
-				else
+			else if (buff.specialEffect == BuffSpecialEffects.RepeatLastAllyAction)
+                {
+                    switch (buff.target)
+                    {
+                        case TargetTypes.Self:
+                            text += "I ";
+                            break;
+                        case TargetTypes.AlliesInSameLine:
+                            text += "My allies on the same line ";
+                            break;
+                        case TargetTypes.SingleEnemy:
+                        case TargetTypes.LineOfEnemies:
+                        case TargetTypes.AllEnemies:
+                            text += "The enemies ";
+                            break;
+                        case TargetTypes.SingleAlly:
+                        case TargetTypes.AllAllies:
+                            text += "My allies ";
+                            break;
+                        case TargetTypes.AlliesNextToMe:
+                            text += "The allies next to me ";
+                            break;
+                        case TargetTypes.AlliesInLineInFrontOfMe:
+                            text += "The allies in the line in front of me ";
+                            break;
+                        default:
+                            text += "They ";
+                            break;
+                    }
+                    text += $"repeat the last performed action by an ally <i>(attack effects are ignored if action is not offensive)</i>";
+                }
+            else if (buff.specialEffect == BuffSpecialEffects.GrantSubtypes)
+            {
+				text += "Grants ";
+                for (int i = 0; i < buff.grantedSubtypes.Count; i++)
+                {
+                    text += TextFormat(TargetSubtypeDescription(buff.grantedSubtypes[i], true), "subtype");
+
+                    if (i < buff.grantedSubtypes.Count - 2)
+                    {
+                        text += ", ";
+                    }
+                    else if (i == buff.grantedSubtypes.Count - 2)
+                    {
+                        text += " and ";
+                    }
+                }
+                text += " to ";
+                text += TargetTypeDescription(buff.target);
+            } else {
+				switch (buff.Attribute)
 				{
+					case Attributes.Health: text += "Heals "; break;
+					default:
+						if (!buff.isDebuff) { text += "Grants "; }
+						else { text += "Gives "; }
+						break;
+				}
+			}
+
+			if(buff.amount != 0)
+			{
+				text += AttributeAndValue(buff);
+				if ((!allSameTarget || buffs.Count == 1) && !buff.activatesOnHit)
+				{
+					text += " to ";
+					text += TargetTypeDescription(buff.target);
+				}
+				if (passiveSkill != null && (passiveSkill.trigger == TriggerTypes.OnAttack || buff.activatesOnHit) )
+				{ text += " <i>(for that attack)</i>"; }
+				else if (passiveSkill != null && (passiveSkill.trigger == TriggerTypes.OnAttack || buff.activatesOnHit) )
+				{ text += " <i>(until the end of the round)</i>"; }
+				text += BuffEffectDescription(buff);
+			}
+
+			if(buffs.Count-1 == index && buff.specialEffect == BuffSpecialEffects.None){
+                if (allSameTargetButCanHaveExtraWithRequirements) { text += " to "+TargetTypeDescription(buff.target);}
+                if (index != 0) text += " and ";
+				if(buff.Attribute == Attributes.Health)
+				{
+					text += TextFormat("heals ", Attributes.Health);
+				}
+				if(buff.amount != 0 && !buff.addDamageDealtAsValue)
+				{
+					if (allSameTargetButCanHaveExtraWithRequirements) { text += " an additional "; }
+					text += AttributeAndValue(buff);
+                    if (allSameTargetButCanHaveExtraWithRequirements) { text += RequirementDescription(buff.requirements, buff.target, buff.source?.card); }
+					if (!allSameTargetButCanHaveExtraWithRequirements) {
+						text += " to ";
+						text += TargetTypeDescription(buff.target);
+					}
+                }
+
+                if (buff.addDamageDealtAsValue) {
 					switch (buff.Attribute)
 					{
-						case Attributes.Health: text += "Heals "; break;
-						default:
-							if (!buff.isDebuff) { text += "Grants "; }
-							else { text += "Gives "; }
-							break;
+						case Attributes.Health:
+							text += TargetTypeDescription(buff.target);
+							text += " for";
+							if (buff.amount != 0){
+								text += $"{AttributeAndValue(buff)} and";
+							}
+							text += " the amount of damage dealt";
+						break;
 					}
 				}
 
+				text += BuffEffectDescription(buff);
+			} else if(buffs.Count > 2 && buff.specialEffect == BuffSpecialEffects.None)
+            {
+				text += ", ";
 				if(buff.amount != 0)
 				{
 					text += AttributeAndValue(buff);
-					if ((!allSameTarget || buffs.Count == 1) && !buff.activatesOnHit)
+					if (!allSameTarget)
 					{
 						text += " to ";
 						text += TargetTypeDescription(buff.target);
 					}
-					if (passiveSkill != null && (passiveSkill.trigger == TriggerTypes.OnAttack || buff.activatesOnHit) )
-					{ text += " <i>(for that attack)</i>"; }
-					else if (passiveSkill != null && (passiveSkill.trigger == TriggerTypes.OnAttack || buff.activatesOnHit) )
-					{ text += " <i>(until the end of the round)</i>"; }
-					text += BuffEffectDescription(buff);
-				} else
-				{
-					if(buff.specialEffect == BuffSpecialEffects.GrantSubtypes)
-					{
-                        for (int i = 0; i < buff.grantedSubtypes.Count; i++)
-                        {
-							text += TextFormat(TargetSubtypeDescription(buff.grantedSubtypes[i], true), "subtype");
-
-                            if (i < buff.grantedSubtypes.Count - 2)
-							{
-								text += ", ";
-							} else if (i == buff.grantedSubtypes.Count - 2)
-							{
-								text += " and ";
-							}
-                        }
-                        text += " to ";
-                        text += TargetTypeDescription(buff.target);
-                    }
 				}
-			} else {
-				if(buffs.Count-1 == index){
-                    if (allSameTargetButCanHaveExtraWithRequirements) { text += " to "+TargetTypeDescription(buff.target);}
-                    if (index != 0) text += " and ";
-					if(buff.Attribute == Attributes.Health)
-					{
-						text += TextFormat("heals ", Attributes.Health);
-					}
-					if(buff.amount != 0 && !buff.addDamageDealtAsValue)
-					{
-						if (allSameTargetButCanHaveExtraWithRequirements) { text += " an additional "; }
-						text += AttributeAndValue(buff);
-                        if (allSameTargetButCanHaveExtraWithRequirements) { text += RequirementDescription(buff.requirements, buff.target, buff.source?.card); }
-						if (!allSameTargetButCanHaveExtraWithRequirements) {
-							text += " to ";
-							text += TargetTypeDescription(buff.target);
-						}
-                    }
-
-                    if (buff.addDamageDealtAsValue) {
-						switch (buff.Attribute)
-						{
-							case Attributes.Health:
-								text += TargetTypeDescription(buff.target);
-								text += " for";
-								if (buff.amount != 0){
-									text += $"{AttributeAndValue(buff)} and";
-								}
-								text += " the amount of damage dealt";
-							break;
-						}
-					}
-
-					text += BuffEffectDescription(buff);
-				} else {
-					text += ", ";
-					if(buff.amount != 0)
-					{
-						text += AttributeAndValue(buff);
-						if (!allSameTarget)
-						{
-							text += " to ";
-							text += TargetTypeDescription(buff.target);
-						}
-					}
-					text += BuffEffectDescription(buff);
-				}
+				text += BuffEffectDescription(buff);
+			} else if(buffs.Count - 2 == index){
+				text += " and ";
+			} else if(buffs.Count > 2) {
+				text += ", ";
 			}
+
 
 			if (buff.multiplyThisBuff) {
 				text += $", for each{UnitDefinitionDescription(buff.multiplyForEach, buff.source?.card)}";
@@ -709,6 +753,17 @@ public static class CardTranslator
 			}
 			index += 1;
 		}
+
+		if (!startWithUppercase){
+            if (!string.IsNullOrEmpty(text) && text.Length >= 2)
+			{
+				if (!text.StartsWith("I ") && !text.StartsWith("I'm"))
+				{
+					text = char.ToLower(text[0]) + text[1..];
+				}
+			}
+
+        }
 
 		return text;
 	}
@@ -884,6 +939,11 @@ public static class CardTranslator
 							case RequirementTypes.TargetIsGuarding:
 								text += $" if I'm {(requirement.not ? "<b>not</b>" : "")} {TextFormat("guarding", "guarding")}";
 								break;
+							case RequirementTypes.TargetExists:
+								text += " if ";
+								text += UnitDefinitionDescription(requirement.targetIs, card);
+								text += $" is {(requirement.not ? "<b>not</b>" : "")} on the board";
+                            break;
                     }
                     break;
 					case TargetTypes.SameTarget:
@@ -1028,6 +1088,11 @@ public static class CardTranslator
                                     break;
                             }
 							break;
+							case RequirementTypes.TargetExists:
+								text += " if ";
+								text += UnitDefinitionDescription(requirement.targetIs, card);
+								text += $" is {(requirement.not ? "<b>not</b>" : "")} on the board";
+                            break;
                     }
 					break;
 					case TargetTypes.LineOfEnemies:
@@ -1169,7 +1234,12 @@ public static class CardTranslator
 										break;
 								}
 								break;
-						}
+							case RequirementTypes.TargetExists:
+								text += " if ";
+								text += UnitDefinitionDescription(requirement.targetIs, card);
+								text += $" is {(requirement.not ? "<b>not</b>" : "")} on the board";
+								break;
+                    }
 					break;
 				}
 		}
@@ -1432,6 +1502,32 @@ public static class CardTranslator
             case AttackEffects.Execute:
                 text += $"{TextFormat("executes",Attributes.Attack)}{RequirementDescription(effect.requirements, effect.originAttack?.target ?? TargetTypes.SingleEnemy, effect.originAttack?.source?.card, "onHit")}{(effect.effectChecksAfterAttack? " after the attack": "")}";
 			break;
+			case AttackEffects.GainAttributesAsTemporaryAttack:
+				text += $"gains the ";
+				for (int i = 0; i < effect.attributes.Count; i++)
+				{
+					if (index == 0) {
+						text += $"{TextFormat(BuffAttributeDescription(effect.attributes[i]), effect.attributes[i])}";
+					} else
+					{
+						if (effect.attributes.Count - 1 == i)
+						{
+							text += " and ";
+                            text += $"{TextFormat(BuffAttributeDescription(effect.attributes[i]), effect.attributes[i])}";
+                            text += " ";
+						}
+						else
+						{
+							text += ", ";
+							text += $"{TextFormat(BuffAttributeDescription(effect.attributes[i]), effect.attributes[i])}";
+						}
+					}
+                }
+				text += $" value{(effect.attributes.Count>1?"s":"")} from {TextFormat(UnitDefinitionDescription(effect.from))} as {TextFormat("attack", Attributes.Attack)} for this attack";
+				break;
+			case AttackEffects.GainTemporarySubtypes:
+                text += $"gains the {TextFormat("hit effects", "on hit")} from the subtypes of {TextFormat(UnitDefinitionDescription(effect.from))}";
+				break;
         }
 		return text;
 	}
@@ -1557,16 +1653,16 @@ public static class CardTranslator
 		string text = "";
 		switch (buffAction.specialEffect){
 			case BuffSpecialEffects.RedirectAttacksTowardsMe:
-				text += "Redirect all attacks I receive towards <b>"+buffAction.source.card.Name+"</b>";
+				text += "Redirect all attacks I receive towards <b>"+buffAction.source?.card.Name+"</b>";
 			break;
 			case BuffSpecialEffects.Stun:
-				text += $"{TextFormat("Stunned","statusEffect")} by {buffAction.source.card.Name}";
+				text += $"{TextFormat("Stunned","statusEffect")} by {buffAction.source?.card.Name}";
 			break;
             case BuffSpecialEffects.Disarm:
-                text += $"{TextFormat("Disarmed", "statusEffect")} by {buffAction.source.card.Name}";
+                text += $"{TextFormat("Disarmed", "statusEffect")} by {buffAction.source?.card.Name}";
             break;
             case BuffSpecialEffects.Disrupt:
-                text += $"{TextFormat("Disrupted", "statusEffect")} by {buffAction.source.card.Name}";
+                text += $"{TextFormat("Disrupted", "statusEffect")} by {buffAction.source?.card.Name}";
             break;
         }
 		return text;
@@ -1639,6 +1735,12 @@ public static class CardTranslator
 					text += $"{TextFormat("Doragon", "subtype")} or {TextFormat("Yatza", "subtype")}";
 				}
                 break;
+			case TargetUnitDefinition.LastAllyWhoAttacked:
+                text += $" the <b>last ally who attacked</b> during this round";
+                break;
+            case TargetUnitDefinition.LastAllyWhoPerformedAnAction:
+                text += $" the <b>last ally who performed an action</b> during this round";
+                break;
         }
         return text;
     }
@@ -1680,6 +1782,10 @@ public static class CardTranslator
                 case PlayerBuffTypes.FreeAttackActions:
                     if (pBuff.target == PlayerTarget.OtherPlayer) { text += "Opponent's "; } else { text += "Your "; }
                     text += $"cards gain {TextFormat(NumberWithSign(pBuff.amount), null, pBuff.canBeAugmented)} {TextFormat("free attack action"+(pBuff.amount>1?"s":""),"actionPoints")} which also {(pBuff.amount > 1 ? "don't use their" : "doesn't use its")} dice";
+                    break;
+                case PlayerBuffTypes.BuffForNextAttackingUnit:
+                    if (pBuff.target == PlayerTarget.OtherPlayer) { text += "Opponent's "; } else { text += "Your "; }
+                    text += $"next attacking unit {GenerateSkillBuffText(pBuff.buffs, null, false)}";
                     break;
             }
 		}

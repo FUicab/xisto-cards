@@ -64,26 +64,65 @@ public static class CardActionTools
 
 	public static void PerformAttackAction(CardDisplay target, CardDisplay attacker, AttackAction attack)
 	{
-		CardDisplay actualTarget = GetActualTarget(target);
-		actualTarget.ReceiveDamageFromAttack(attack);
-		if (attack.attackActionOutput.resultsInDeath)
-		{
-			actualTarget = GetActualTarget(target);
-		}
-		if(actualTarget != null)
-		{
-            foreach (BuffAction buff in attacker.appliedBuffs.Where(x => x.specialEffect == BuffSpecialEffects.TriggerExtraAttack && x.extraAttacks.Count > 0))
-            {
-				if(buff.TargetMeetsOnHitRequirements(actualTarget))
-				foreach (AttackAction extraAttack in attacker.appliedBuffs.Where(x => x.specialEffect == BuffSpecialEffects.TriggerExtraAttack).SelectMany(x => x.extraAttacks))
-					{
-						if (extraAttack.TargetMeetsRequirements(actualTarget))
-						{
-							actualTarget.ReceiveDamageFromAttack(extraAttack);
-						}
-					}
+        Debug.Log($"{attacker.card.Name} attacks {target.card.Name}. Extra: {attack.isExtra} . Damage: {attack.damageMultiplier*100}%|+{attack.flatDamageOverwrite}");
+        //CardDisplay actualTarget = GetActualTarget(target);
+        List<CardDisplay> actualTargets = new();
+        if (attack.isTargetImplicit)
+        {
+            actualTargets.AddRange(attack.GetImplicitTargetsOfAction());
+        } else
+        {
+            actualTargets.Add(target);
+        }
+
+        foreach (CardDisplay theTarget in actualTargets)
+        {
+            CardDisplay actualTarget = theTarget;
+            actualTarget.ReceiveDamageFromAttack(attack);
+		    if (attack.attackActionOutput.resultsInDeath)
+		    {
+			    actualTarget = GetActualTarget(actualTarget);
+		    }
+
+
+            if (actualTarget != null && !attack.isExtra)
+		    {
+                List<BuffAction> buffsFromPlayerEvents = new();
+                foreach (PlayerBuffs pBuff in attacker.Owner.BuffsForNextAttackingAlly)
+                {
+                    if (!pBuff.hasBeenUsed)
+                    {
+                        buffsFromPlayerEvents.AddRange(pBuff.buffs);
+                        pBuff.hasBeenUsed = true;
+                    }
+                }
+                foreach (BuffAction buff in attacker.appliedBuffs.Concat(buffsFromPlayerEvents).Where(x => x.specialEffect == BuffSpecialEffects.TriggerExtraAttack && x.extraAttacks.Count > 0))
+                {
+
+                    Debug.Log($"Found a buff with effect {buff.specialEffect}.");
+
+				    if(buff.TargetMeetsOnHitRequirements(actualTarget))
+				    foreach (AttackAction extraAttack in buff.extraAttacks)
+					    {
+                            AttackAction extraAttackAction = new(extraAttack) { source = attacker };
+                            Debug.Log($"Found an extra attack from {attacker.card.Name} towards {actualTarget.card.Name}. Damage: {extraAttackAction.damageMultiplier * 100}%|+{extraAttackAction.flatDamageOverwrite}");
+                            if(extraAttackAction.target == TargetTypes.SameTarget)
+                            {
+						        if (extraAttackAction.TargetMeetsRequirements(actualTarget))
+						        {
+							        actualTarget.ReceiveDamageFromAttack(extraAttackAction);
+						        }
+                            } else {
+                                foreach (CardDisplay implicitTarget in extraAttackAction.GetImplicitTargetsOfAction())
+                                {
+                                    implicitTarget.ReceiveDamageFromAttack(extraAttackAction);
+                                }
+                            }
+					    }
+                }
             }
         }
+
 
         foreach (BuffAction instantEffectBuff in attack.temporaryBuffs.Where(x => x.Attribute == Attributes.Health).Concat(attacker.appliedBuffs.Where(x => x.activatesOnHit && x.IsBuffEffectOfInstantEffect() )).ToList())
         {
@@ -183,6 +222,7 @@ public static class CardActionTools
 			case PlayerBuffTypes.ExecutionerThresholdModifier:
 			case PlayerBuffTypes.MercenaryKillGoldReward:
             case PlayerBuffTypes.FreeAttackActions:
+            case PlayerBuffTypes.BuffForNextAttackingUnit:
                 playerTarget.ReceiveActiveBuff(playerBuff);
 				break;
 		}
@@ -361,7 +401,7 @@ public static bool TargetMeetsRequirementsOfAction(CardDisplay target, ActiveAct
 		{
 			itDoes = true;
 		}
-		Debug.Log($"<b>{action.source?.card.Name}</b>: Does target meet all requirements? -> 1: {itDoes} . 2:{TargetMeetsRequirements(target, action.requirements)}");
+		//Debug.Log($"<b>{action.source?.card.Name}</b>: Does target meet all requirements? -> 1: {itDoes} . 2:{TargetMeetsRequirements(target, action.requirements)}");
         return itDoes && TargetMeetsRequirements(target, action.requirements);
 	}
 	public static bool TargetMeetsRequirements(CardDisplay actionTarget, List<Requirements> requirements)
@@ -547,6 +587,20 @@ public static bool TargetMeetsRequirementsOfAction(CardDisplay target, ActiveAct
                                 }
                             }
                             break;
+                        case RequirementTypes.TargetExists:
+                            foreach (TargetUnitDefinition targetUnitDefinition in requirement.targetIs)
+                            {
+                                switch (targetUnitDefinition)
+                                {
+                                    case TargetUnitDefinition.LastAllyWhoAttacked:
+                                        itDoes = requirement.originAction.source.Owner.LastPerformedAttackByAlly != null;
+                                        break;
+                                    case TargetUnitDefinition.LastAllyWhoPerformedAnAction:
+                                        itDoes = requirement.originAction.source.Owner.LastPerformedActionByAlly != null;
+                                        break;
+                                }
+                            }
+                            break;
                         case RequirementTypes.TargetIsStunned:
                             itDoes = targetStats.source.IsStunned;
                             break;
@@ -624,13 +678,18 @@ public static bool TargetMeetsRequirementsOfAction(CardDisplay target, ActiveAct
         return itCan;
 	}
 
+    /* GetAttackActionOutput doesn't actually make any changes to the cards!
+     * It only generates the outcome of an attack. This makes it useful for displaying the outcome of all possible interactions. */
 	public static AttackActionOutput GetAttackActionOutput(CardDisplay target, AttackAction attackAction)
 	{
 		AttackActionOutput output = new AttackActionOutput();
         CardDisplay attacker = attackAction.source;
-        List<BuffAction> onHitBuffs = attackAction.source.appliedBuffs.Where(x => x.activatesOnHit).ToList();
+        List<BuffAction> onHitBuffs = new();
         output.attackerStats = new(attacker);
         output.targetStats = new(target);
+
+        if (!attackAction.isExtra)
+            onHitBuffs.AddRange(attackAction.source.appliedBuffs.Where(x => x.activatesOnHit));
 
         /* Calculation of temporary buffs and debuffs */
         TempModifiers attackerTempModifiers = output.attackerModifiers;
@@ -638,9 +697,12 @@ public static bool TargetMeetsRequirementsOfAction(CardDisplay target, ActiveAct
 
         /* Extract and organize attack effects */
         List<AttackEffect> effectsFromAttack = attackAction.attackEffect.ToList();
-		List<AttackEffect> effectsFromBuffs = attacker.appliedBuffs.Where(buff => buff.specialEffect == BuffSpecialEffects.GrantAttackEffect && buff.attackEffect.Count > 0).SelectMany(buff => buff.attackEffect).ToList();
+		List<AttackEffect> effectsFromBuffs = new();
 
-		List<AttackEffect> attackEffectsBeforeAttack = effectsFromAttack.Concat(effectsFromBuffs).Where(atkFx => !atkFx.effectChecksAfterAttack).Select(atkFx => new AttackEffect(atkFx, attackAction)).ToList();
+        if (!attackAction.isExtra)
+            effectsFromBuffs.AddRange(attacker.appliedBuffs.Where(buff => buff.specialEffect == BuffSpecialEffects.GrantAttackEffect && buff.attackEffect.Count > 0).SelectMany(buff => buff.attackEffect));
+
+        List<AttackEffect> attackEffectsBeforeAttack = effectsFromAttack.Concat(effectsFromBuffs).Where(atkFx => !atkFx.effectChecksAfterAttack).Select(atkFx => new AttackEffect(atkFx, attackAction)).ToList();
         List<AttackEffect> attackEffectsAfterAttack = effectsFromAttack.Concat(effectsFromBuffs).Where(atkFx => atkFx.effectChecksAfterAttack).Select(atkFx => new AttackEffect(atkFx, attackAction)).ToList();
 
         foreach (BuffAction buff in attackAction.temporaryBuffs)
@@ -663,14 +725,28 @@ public static bool TargetMeetsRequirementsOfAction(CardDisplay target, ActiveAct
                 attackerTempModifiers.SetModifiersFromBuff(buff);
             }
         }
+        foreach (AttackEffect atkFx in attackEffectsBeforeAttack)
+        {
+            if (atkFx.StatsMeetRequirements(output.targetStats)) attackerTempModifiers.SetModifiersFromAttackEffect(atkFx);
+        }
+        if (!attackAction.isExtra)
+            foreach (PlayerBuffs pBuff in attacker.Owner.BuffsForNextAttackingAlly)
+            {
+                if (!pBuff.hasBeenUsed)
+                {
+                    foreach (BuffAction buff in pBuff.buffs)
+                    {
+                        if (buff.TargetMeetsRequirements(attacker))
+                        {
+                            attackerTempModifiers.SetModifiersFromBuff(buff);
+                        }
+                    }
+                }
+            }
 
         output.attackerStats.ApplyModifiers(attackerTempModifiers);
         output.targetStats.ApplyModifiers(targetTempModifiers);
 
-        foreach (AttackEffect atkFx in attackEffectsBeforeAttack)
-        {
-            if (atkFx.StatsMeetRequirements(output.targetStats)) output.attackerModifiers.usedAttackEffects.Add(atkFx);
-        }
 
         int targetArmor = 0;
         DamageTypes damageType = DamageTypes.Melee;
@@ -742,7 +818,10 @@ public static bool TargetMeetsRequirementsOfAction(CardDisplay target, ActiveAct
             }
         }
 
-		bool canExecute = (output.targetStats.hp <= 2 && attacker.card.Subtypes.Contains(UnitSubtype.Executioner) || attackerTempModifiers.willExecute );
+        //if (!attackAction.isExtra)
+        //    attackerTempModifiers.PerformExtraAttacks(attacker, target);
+
+		bool canExecute = (output.targetStats.hp <= 2 && output.attackerStats.subtypes.Contains(UnitSubtype.Executioner) || attackerTempModifiers.willExecute );
 		output.deathByExecution = canExecute;
 
         if (output.targetStats.hp <= 0 || canExecute ) {
@@ -842,6 +921,7 @@ public static bool TargetMeetsRequirementsOfAction(CardDisplay target, ActiveAct
 				break;
 			case BuffSpecialEffects.EnableGuardingPose:
 			case BuffSpecialEffects.TriggerExtraAttack:
+            case BuffSpecialEffects.RepeatLastAllyAction:
 				itIs = true;
 				break;
 		}
@@ -900,6 +980,7 @@ public class TempModifiers
 	public int DamageReductionAfterArmor = 0;
 	public float DamageMultiplier = 0;
     public int MinDamageCap = 1;
+    public List<UnitSubtype> subtypes = new();
 	//public int HPAtEndOfAction = 0;
 	public List<BuffAction> usedBuffs = new();
 	public List<AttackEffect> usedAttackEffects = new();
@@ -945,6 +1026,64 @@ public class TempModifiers
             case Attributes.MinDamageCap: MinDamageCap += buff.amount; break;
         }
     }
+
+    public void SetModifiersFromAttackEffect(AttackEffect effect)
+    {
+        usedAttackEffects.Add(effect);
+        List<CardDisplay> targets = new();
+
+        switch (effect.effectType)
+        {
+            case AttackEffects.GainAttributesAsTemporaryAttack:
+                switch (effect.from) /* Migrate this into a card action tool. */
+                {
+                    case TargetUnitDefinition.LastAllyWhoAttacked:
+                        CardDisplay lastAllyWhoAttacked = effect.originAttack.source.Owner.LastPerformedAttackByAlly.CardInAction;
+                        if(lastAllyWhoAttacked != null) targets.Add(lastAllyWhoAttacked);
+                        break;
+                    default: break;
+                }
+                targets.ForEach(target => {
+                    effect.attributes.ForEach(attribute => {
+                        switch (attribute) {
+                            case Attributes.Attack: Attack += target.attack; break;
+                        }
+                    });
+                });
+                break;
+            case AttackEffects.GainTemporarySubtypes:
+                switch (effect.from)
+                {
+                    case TargetUnitDefinition.LastAllyWhoAttacked:
+                        CardDisplay lastAllyWhoAttacked = effect.originAttack.source.Owner.LastPerformedAttackByAlly.CardInAction;
+                        if (lastAllyWhoAttacked != null) targets.Add(lastAllyWhoAttacked);
+                        break;
+                    default: break;
+                }
+                targets.ForEach(target => {
+                    foreach(UnitSubtype subtype in target.acquiredSubtypes.Concat(target.card.Subtypes))
+                    {
+                        switch (subtype)
+                        {
+                            case UnitSubtype.Executioner: subtypes.Add(subtype); break;
+                            case UnitSubtype.Mercenary: subtypes.Add(subtype); break;
+                            case UnitSubtype.Solitary: subtypes.Add(subtype); break;
+                        }
+                    }
+                });
+                break;
+        }
+    }
+
+    //public void PerformExtraAttacks(CardDisplay attacker, CardDisplay target)
+    //{
+    //    List<AttackAction> extraAttacks = usedBuffs.Where(x => x.specialEffect == BuffSpecialEffects.TriggerExtraAttack).SelectMany(x => x.extraAttacks).ToList();
+    //    foreach (AttackAction extraAttack in extraAttacks)
+    //    {
+    //        AttackAction newExtraAttack = new(extraAttack) { source = attacker, isExtra = true, attackEffect = { } };
+    //        CardActionTools.PerformAttackAction(target, attacker, newExtraAttack);
+    //    }
+    //}
 
 	public bool CheckComparison(Comparison comparisonType, int what, int toWhat) {
 		bool checks = false;
@@ -1010,6 +1149,7 @@ public class StatList
         attack += modifiers.Attack;
         armorPierce += modifiers.ArmorPierce;
         damageReduction += modifiers.DamageReductionBeforeArmor + modifiers.DamageReductionAfterArmor;
+        subtypes = subtypes.Union(modifiers.subtypes).ToList();
     }
 }
 
